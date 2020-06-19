@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="Spring," />
 
 
 
@@ -79,16 +79,17 @@
 
 
 
-<meta name="description" content="永久的coder">
+<meta name="description" content="导入Spring 从github上clone Spring的源码到本地。 好处 : 可以进行代码的修改和打入备注。当你看到某个方法,不是很明白的时候,你可以进行注释掉debug执行,看下具体的效果。最好是能从github上下载出来，在本地进行编译下即可。  准备 JDK , Gradle 等环境。其中可能会遇见不少问题。需要耐心百度下或者看下错误具体的原因。  遇见的错误 :    https:&#x2F;">
 <meta property="og:type" content="article">
-<meta property="og:title" content="测试">
-<meta property="og:url" content="http://yoursite.com/2020/06/18/%E6%B5%8B%E8%AF%95/index.html">
+<meta property="og:title" content="Spring源码阅读日记">
+<meta property="og:url" content="http://yoursite.com/2020/01/16/Spring%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB%E6%97%A5%E8%AE%B0/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="永久的coder">
+<meta property="og:description" content="导入Spring 从github上clone Spring的源码到本地。 好处 : 可以进行代码的修改和打入备注。当你看到某个方法,不是很明白的时候,你可以进行注释掉debug执行,看下具体的效果。最好是能从github上下载出来，在本地进行编译下即可。  准备 JDK , Gradle 等环境。其中可能会遇见不少问题。需要耐心百度下或者看下错误具体的原因。  遇见的错误 :    https:&#x2F;">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2020-06-17T16:15:43.000Z">
-<meta property="article:modified_time" content="2020-06-17T16:15:43.122Z">
+<meta property="article:published_time" content="2020-01-16T14:47:50.000Z">
+<meta property="article:modified_time" content="2020-01-21T08:37:07.550Z">
 <meta property="article:author" content="鲍洋">
+<meta property="article:tag" content="Spring">
 <meta name="twitter:card" content="summary">
 
 
@@ -119,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2020/06/18/测试/"/>
+  <link rel="canonical" href="http://yoursite.com/2020/01/16/Spring源码阅读日记/"/>
 
 
 
 
 
-  <title>测试 | Hexo</title>
+  <title>Spring源码阅读日记 | Hexo</title>
   
 
 
@@ -286,7 +287,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/18/%E6%B5%8B%E8%AF%95/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/01/16/Spring%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB%E6%97%A5%E8%AE%B0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="鲍洋">
@@ -303,7 +304,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">测试</h1>
+          <h1 class="post-title" itemprop="name headline">Spring源码阅读日记</h1>
         
 
         <div class="post-meta">
@@ -315,8 +316,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-06-18T00:15:43+08:00">
-                2020-06-18
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-01-16T22:47:50+08:00">
+                2020-01-16
               </time>
             
 
@@ -325,6 +326,39 @@
             
           </span>
 
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Spring/" itemprop="url" rel="index">
+                    <span itemprop="name">Spring</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Spring/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
           
 
           
@@ -384,7 +418,25 @@
       
 
       
-        
+        <h3 id=""><a href="#" class="headerlink" title=""></a></h3><h3 id="导入Spring"><a href="#导入Spring" class="headerlink" title="导入Spring"></a>导入Spring</h3><ol>
+<li><p>从github上clone Spring的源码到本地。</p>
+<p>好处 : 可以进行代码的修改和打入备注。当你看到某个方法,不是很明白的时候,你可以进行注释掉debug执行,看下具体的效果。最好是能从github上下载出来，在本地进行编译下即可。</p>
+</li>
+<li><p>准备 JDK , Gradle 等环境。其中可能会遇见不少问题。需要耐心百度下或者看下错误具体的原因。</p>
+</li>
+<li><p>遇见的错误 : </p>
+<blockquote>
+<p> <a href="https://blog.csdn.net/m0_37798534/article/details/79584031" target="_blank" rel="noopener">https://blog.csdn.net/m0_37798534/article/details/79584031</a></p>
+</blockquote>
+</li>
+</ol>
+<h3 id="创建Project"><a href="#创建Project" class="headerlink" title="创建Project"></a>创建Project</h3><ul>
+<li><p>在编译的Spring项目中创建一个自己的project.</p>
+</li>
+<li><p>引入 spring-context 的依赖,就可以debug进行操作</p>
+</li>
+</ul>
+
       
     </div>
     
@@ -404,7 +456,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>Post link:</strong>
-    <a href="http://yoursite.com/2020/06/18/%E6%B5%8B%E8%AF%95/" title="测试">http://yoursite.com/2020/06/18/%E6%B5%8B%E8%AF%95/</a>
+    <a href="http://yoursite.com/2020/01/16/Spring%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB%E6%97%A5%E8%AE%B0/" title="Spring源码阅读日记">http://yoursite.com/2020/01/16/Spring%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB%E6%97%A5%E8%AE%B0/</a>
   </li>
   <li class="post-copyright-license">
     <strong>Copyright Notice: </strong>
@@ -417,6 +469,12 @@
 
     <footer class="post-footer">
       
+        <div class="post-tags">
+          
+            <a href="/tags/Spring/" rel="tag"><i class="fa fa-tag"></i> Spring</a>
+          
+        </div>
+      
 
       
       
@@ -426,8 +484,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2020/06/16/hello-world/" rel="next" title="Hello World">
-                <i class="fa fa-chevron-left"></i> Hello World
+              <a href="/2019/10/07/%E5%85%B3%E4%BA%8E%E6%88%91/" rel="next" title="关于我BaoYang">
+                <i class="fa fa-chevron-left"></i> 关于我BaoYang
               </a>
             
           </div>
@@ -435,6 +493,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/04/18/%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3JVM%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/" rel="prev" title="深入了解JVM阅读笔记">
+                深入了解JVM阅读笔记 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -512,8 +574,17 @@ var jiathis_config={
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -532,14 +603,32 @@ var jiathis_config={
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-count">6</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
             
 
             
+              
+              
+              <div class="site-state-item site-state-categories">
+                
+                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-name">categories</span>
+                
+              </div>
+            
 
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">tags</span>
+                
+              </div>
             
 
           </nav>
@@ -575,6 +664,22 @@ var jiathis_config={
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">1.</span> <span class="nav-text"></span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#导入Spring"><span class="nav-number">2.</span> <span class="nav-text">导入Spring</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#创建Project"><span class="nav-number">3.</span> <span class="nav-text">创建Project</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
