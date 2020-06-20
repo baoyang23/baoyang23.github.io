@@ -85,6 +85,36 @@
       </tags>
   </entry>
   <entry>
+    <title>Spring源码阅读日记</title>
+    <url>/2020/01/16/Spring%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB%E6%97%A5%E8%AE%B0/</url>
+    <content><![CDATA[<h3 id=""><a href="#" class="headerlink" title=""></a></h3><h3 id="导入Spring"><a href="#导入Spring" class="headerlink" title="导入Spring"></a>导入Spring</h3><ol>
+<li><p>从github上clone Spring的源码到本地。</p>
+<p>好处 : 可以进行代码的修改和打入备注。当你看到某个方法,不是很明白的时候,你可以进行注释掉debug执行,看下具体的效果。最好是能从github上下载出来，在本地进行编译下即可。</p>
+</li>
+<li><p>准备 JDK , Gradle 等环境。其中可能会遇见不少问题。需要耐心百度下或者看下错误具体的原因。</p>
+</li>
+<li><p>遇见的错误 : </p>
+<blockquote>
+<p> <a href="https://blog.csdn.net/m0_37798534/article/details/79584031" target="_blank" rel="noopener">https://blog.csdn.net/m0_37798534/article/details/79584031</a></p>
+</blockquote>
+</li>
+</ol>
+<h3 id="创建Project"><a href="#创建Project" class="headerlink" title="创建Project"></a>创建Project</h3><ul>
+<li><p>在编译的Spring项目中创建一个自己的project.</p>
+</li>
+<li><p>引入 spring-context 的依赖,就可以debug进行操作</p>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>Spring源码</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+        <tag>Spring</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>ReentrantLock源码阅读</title>
     <url>/2020/06/20/ReentrantLock_source/</url>
     <content><![CDATA[<h2 id="ReentrantLock-源码阅读"><a href="#ReentrantLock-源码阅读" class="headerlink" title="ReentrantLock 源码阅读"></a>ReentrantLock 源码阅读</h2><h4 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h4><p>​        ReetrantLock 效果是和 synchronized 是一样的,只不过 synchronized 是内置锁,ReetrantLock是语法级别的锁, 相对于而言是比synchronized灵活性高些. 不过从我目前公司写代码角度来看,都是直接使用 synchronized . 但是不妨碍我们来看 ReetrantLock 里面的代码实现.</p>
@@ -139,36 +169,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Spring源码阅读日记</title>
-    <url>/2020/01/16/Spring%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB%E6%97%A5%E8%AE%B0/</url>
-    <content><![CDATA[<h3 id=""><a href="#" class="headerlink" title=""></a></h3><h3 id="导入Spring"><a href="#导入Spring" class="headerlink" title="导入Spring"></a>导入Spring</h3><ol>
-<li><p>从github上clone Spring的源码到本地。</p>
-<p>好处 : 可以进行代码的修改和打入备注。当你看到某个方法,不是很明白的时候,你可以进行注释掉debug执行,看下具体的效果。最好是能从github上下载出来，在本地进行编译下即可。</p>
-</li>
-<li><p>准备 JDK , Gradle 等环境。其中可能会遇见不少问题。需要耐心百度下或者看下错误具体的原因。</p>
-</li>
-<li><p>遇见的错误 : </p>
-<blockquote>
-<p> <a href="https://blog.csdn.net/m0_37798534/article/details/79584031" target="_blank" rel="noopener">https://blog.csdn.net/m0_37798534/article/details/79584031</a></p>
-</blockquote>
-</li>
-</ol>
-<h3 id="创建Project"><a href="#创建Project" class="headerlink" title="创建Project"></a>创建Project</h3><ul>
-<li><p>在编译的Spring项目中创建一个自己的project.</p>
-</li>
-<li><p>引入 spring-context 的依赖,就可以debug进行操作</p>
-</li>
-</ul>
-]]></content>
-      <categories>
-        <category>Spring源码</category>
-      </categories>
-      <tags>
-        <tag>Java</tag>
-        <tag>Spring</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>ThreadLocal源码阅读</title>
     <url>/2020/06/20/ThreadLocal_source/</url>
     <content><![CDATA[<h2 id="ThreadLocal源码阅读"><a href="#ThreadLocal源码阅读" class="headerlink" title="ThreadLocal源码阅读"></a>ThreadLocal源码阅读</h2><p>ThreadLocal 是来这个公司有过使用一次的感受,所以就学习阅读下源码。  其实Thread 这个里面,就有一个 Map(这里是用ThreadLocal内部类中实现的) , 里面的key就是 ThreadLocal, value 就是存储的值,所以一个Thread是有多个 ThreadLocal。 </p>
@@ -205,296 +205,6 @@
       <tags>
         <tag>java源码</tag>
         <tag>Java锁</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Redis缓存知识学习</title>
-    <url>/2020/04/19/redis%E7%BC%93%E5%AD%98/</url>
-    <content><![CDATA[<h3 id="Redis-缓存知识的学习"><a href="#Redis-缓存知识的学习" class="headerlink" title="Redis 缓存知识的学习"></a>Redis 缓存知识的学习</h3><blockquote>
-<p>现在缓存,消息队列,集群(集群就涉及到很多中间件)的使用或者说是学习都是必须的,也是必备的. 所以就这周就打算学习下Redis缓存方面的知识来记录。</p>
-</blockquote>
-<h3 id="Redis-安装-基于Linux"><a href="#Redis-安装-基于Linux" class="headerlink" title="Redis 安装(基于Linux)"></a>Redis 安装(基于Linux)</h3><blockquote>
-<p>这里说下我使用的电脑环境是 Ubuntu , 所以在执行make的时候,很多gcc之类的东西是不需要安装的.</p>
-</blockquote>
-<p>  这里我们使用Redis 官方给出来的案例来进行安装</p>
-<ol>
-<li><p>wget <a href="http://download.redis.io/releases/redis-5.0.8.tar.gz" target="_blank" rel="noopener">http://download.redis.io/releases/redis-5.0.8.tar.gz</a> (<a href="https://redis.io/download" target="_blank" rel="noopener">https://redis.io/download</a>) 使用wget 或者去官网上下载都是可以的。</p>
-</li>
-<li><p>tar zxvf redis-5.0.8.tar.gz   这里使用官方目前提供的来进来下载。</p>
-</li>
-<li><p>cd redis-5.0.8   目录下面  然后执行 make (看你的权限是不是要执行 sudo make) </p>
-</li>
-<li><p>cd src 下面  sudo ./redis-server</p>
-</li>
-</ol>
-<hr>
-<p>启动成功界面</p>
-<p>13827:C 19 Apr 2020 14:48:09.023 # oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo<br>13827:C 19 Apr 2020 14:48:09.023 # Redis version=5.0.8, bits=64, commit=00000000, modified=0, pid=13827, just started<br>13827:C 19 Apr 2020 14:48:09.023 # Warning: no config file specified, using the default config. In order to specify a config file use ./redis-server /path/to/redis.conf<br>13827:M 19 Apr 2020 14:48:09.024 * Increased maximum number of open files to 10032 (it was originally set to 1024).<br>           <em>.</em><br>      <em>.-``__ ‘’-.</em><br> <em>.-``    <code>.</code></em>.  ‘’-._           Redis 5.0.8 (00000000/0) 64 bit<br>.-<code>.-```.  ```\/    _.,_ &#39;&#39;-._                                   
-(    &#39;      ,       .-`  | `,    )     Running in standalone mode
-|`-._`-...-` __...-.</code>-.<em>|’<code>_.-&#39;|     Port: 6379
-|</code>-.</em>   <code>._    /     _.-&#39;    |     PID: 13827</code>-._    <code>-._</code>-./  <em>.-‘    _.-‘<br>|<code>-._</code>-.</em>    <code>-.__.-&#39;    _.-&#39;_.-&#39;|                                  
-|</code>-.<em>`-.</em>        <em>.-‘</em>.-‘    |           <a href="http://redis.io" target="_blank" rel="noopener">http://redis.io</a><br><code>-._</code>-.<em>`-.__.-‘</em>.-‘    <em>.-‘<br>|<code>-._</code>-.</em>    <code>-.__.-&#39;    _.-&#39;_.-&#39;|                                  
-|</code>-.<em>`-.</em>        <em>.-‘</em>.-‘    |<br><code>-._</code>-.<em>`-.__.-‘</em>.-‘    <em>.-‘<br> `-.</em>    <code>-.__.-&#39;    _.-&#39;</code>-._        <em>.-‘<br>         `-._</em>.-‘                                      </p>
-<hr>
-<p>13827:M 19 Apr 2020 14:48:09.024 # WARNING: The TCP backlog setting of 511 cannot be enforced because /proc/sys/net/core/somaxconn is set to the lower value of 128.<br>13827:M 19 Apr 2020 14:48:09.024 # Server initialized<br>13827:M 19 Apr 2020 14:48:09.024 # WARNING overcommit_memory is set to 0! Background save may fail under low memory condition. To fix this issue add ‘vm.overcommit_memory = 1’ to /etc/sysctl.conf and then reboot or run the command ‘sysctl vm.overcommit_memory=1’ for this to take effect.<br>13827:M 19 Apr 2020 14:48:09.024 # WARNING you have Transparent Huge Pages (THP) support enabled in your kernel. This will create latency and memory usage issues with Redis. To fix this issue run the command ‘echo never &gt; /sys/kernel/mm/transparent_hugepage/enabled’ as root, and add it to your /etc/rc.local in order to retain the setting after a reboot. Redis must be restarted after THP is disabled.<br>13827:M 19 Apr 2020 14:48:09.024 * Ready to accept connections</p>
-<hr>
-<p>   然后就可以看到 redis的启动界面, 然后再开一个黑窗口,也同样是在src下面, sudo ./redis-cli  就可以连上(这里我都是在同一台server上,ip,port什么都是默认的, 如果你启动有修改的话,那么连接的时候,这些配置也是需要进行修改的)</p>
-<p><strong>对于 Redis的安装,熟悉Linux的朋友还是很快的。</strong></p>
-<hr>
-<h3 id="Redis-数据结构"><a href="#Redis-数据结构" class="headerlink" title="Redis 数据结构"></a>Redis 数据结构</h3><ol>
-<li><p>字符串 String</p>
-<blockquote>
-<p>127.0.0.1:6379[1]&gt; set name yang<br>OK<br>127.0.0.1:6379[1]&gt; get name<br>“yang”</p>
-<p>可以看到对于 String 存储还是常规的</p>
-</blockquote>
-</li>
-<li><p>字典 Hash</p>
-<blockquote>
-<p>127.0.0.1:6379[1]&gt; HSET json1 name gavin age 18<br>(integer) 2</p>
-<p>127.0.0.1:6379[1]&gt; hget json1 name<br>“gavin”<br>127.0.0.1:6379[1]&gt; hget json1 age<br>“18”</p>
-<p> 对于Hash 存储的基本操作,基于还是看你个人想怎么存储. </p>
-<p> 127.0.0.1:6379[1]&gt; HEXISTS json1 json<br>(integer) 0<br>127.0.0.1:6379[1]&gt; HEXISTS json1 name<br>(integer) 1</p>
-<p> 这是判断这个key是否存在</p>
-</blockquote>
-</li>
-<li><p>列表List</p>
-<blockquote>
-<p>127.0.0.1:6379[1]&gt; lpush list1 1,2,3,4,5,6,7<br>(integer) 1<br>127.0.0.1:6379[1]&gt; lpush list1 8 9 10 11 12 13 14<br>(integer) 8<br>127.0.0.1:6379[1]&gt; LRANGE list1 0 11<br>1) “14”<br>2) “13”<br>3) “12”<br>4) “11”<br>5) “10”<br>6) “9”<br>7) “8”<br>8) “1,2,3,4,5,6,7”</p>
-<p>可以看出lpush 对于添加的顺序，最先添加的值是在最后面的。</p>
-<p>127.0.0.1:6379[1]&gt; RPUSH list1 latsone<br>(integer) 9</p>
-<p>127.0.0.1:6379[1]&gt; LRANGE list1 0 13<br>1) “14”<br>2) “13”<br>3) “12”<br>4) “11”<br>5) “10”<br>6) “9”<br>7) “8”<br>8) “1,2,3,4,5,6,7”<br>9) “latsone”</p>
-<p>rpush 就是直接在最尾部进行追加.</p>
-<p>lpop key(lits1 对应自己的key) : 返回并删除指定 Key 的链表中的第一个元素</p>
-<p>rpop key: 返回并删除指定 Key 的链表中的最后一个元素,即尾元素 </p>
-</blockquote>
-</li>
-<li><p>集合Set</p>
-<blockquote>
-<p>127.0.0.1:6379[1]&gt; sadd set1 a b c<br>(integer) 3<br>127.0.0.1:6379[1]&gt; sadd set z<br>(integer) 1<br>127.0.0.1:6379[1]&gt; SMEMBERS set1<br>1) “b”<br>2) “a”<br>3) “c”<br>127.0.0.1:6379[1]&gt; SISMEMBER set1 c<br>(integer) 1<br>127.0.0.1:6379[1]&gt; SISMEMBER set1 x<br>(integer) 0<br>127.0.0.1:6379[1]&gt; SMEMBERS set1<br>1) “b”<br>2) “a”<br>3) “c”<br>127.0.0.1:6379[1]&gt; SREM set1 a<br>(integer) 1<br>127.0.0.1:6379[1]&gt; SMEMBERS set1<br>1) “b”<br>2) “c”</p>
-<p>sadd  是进行添加</p>
-<p>smembers  进行查看该集合中数据</p>
-<p>sismember 判断集合中是否有该值,如果是有的话,就会返回1,如果是没有的话,就会返回0</p>
-<p>srem 是删除集合中某个元素. 如果存在删除就返回1,如果不存在删除就会返回0 </p>
-</blockquote>
-</li>
-<li><p>有序集合 ZSet</p>
-<blockquote>
-<p>127.0.0.1:6379[1]&gt; SREM set1 add<br>(integer) 0<br>127.0.0.1:6379[1]&gt; zadd scores 90 ‘Chinese’<br>(integer) 1<br>127.0.0.1:6379[1]&gt; zadd scores 94 ‘math’<br>(integer) 1<br>127.0.0.1:6379[1]&gt; zadd scores 96 ‘english’<br>(integer) 1<br>127.0.0.1:6379[1]&gt; ZRANGE scores 0 -1<br>1) “Chinese”<br>2) “math”<br>3) “english”<br>127.0.0.1:6379[1]&gt; ZRANGE scores 0 -1 withscores<br>1) “Chinese”<br>2) “90”<br>3) “math”<br>4) “94”<br>5) “english”<br>6) “96”<br>127.0.0.1:6379[1]&gt; zadd scores 88 ‘matha’<br>(integer) 1<br>127.0.0.1:6379[1]&gt; ZRANGE scores 0 -1 withscores<br>1) “matha”<br>2) “88”<br>3) “Chinese”<br>4) “90”<br>5) “math”<br>6) “94”<br>7) “english”<br>8) “96”</p>
-<p>zset 的基本操作.等到你工作需要使用的时候,可以在权衡来具体使用</p>
-</blockquote>
-<hr>
-</li>
-</ol>
-<p>   还有一些数据结果，对于平常的项目或者需求是很少使用到的.这里也列举出来,做一个大概的说明.</p>
-<ol>
-<li><p>HyperLogLog</p>
-<blockquote>
-<p>HyperLogLog 是用来做 <strong>基数统计</strong> 的算法. 优点 : 再输入元素的数量或者体积非常非常大的时候时候,计算基数所需要的空间总是固定的,并且很小.</p>
-<p>Redis 中 HyperLogLog 键只需花费12KB内存,就可以计算接近 2^64 个不同的元素的基数.</p>
-<p>127.0.0.1:6379[1]&gt; PFADD pf1 1 2 3 4 1 2 3 2 2 2 2<br>(integer) 1<br>127.0.0.1:6379[1]&gt; PFCOUNT pf1<br>(integer) 4<br>127.0.0.1:6379[1]&gt; pfadd m2 3 3 3 4 4 4 5 5 5 6 6 6 1<br>(integer) 1<br>127.0.0.1:6379[1]&gt; PFMERGE mergeN pf1 m2<br>OK<br>127.0.0.1:6379[1]&gt; PFCOUNT mergeN<br>(integer) 6</p>
-<p>从结果可以看出, HyperLogLog 就是对进行统计.</p>
-<p>实用场景 :  统计注册Ip个数,统计每日访问IP数 等数有关</p>
-</blockquote>
-</li>
-<li><p>Geo</p>
-<blockquote>
-<p>127.0.0.1:6379[1]&gt; GEOADD cities:locations 117.12 39.08 tianjin 114.29 38.02 shijiazhuang 118.01 39.08 tangshan 115.29 38.51 baoding<br>(integer) 4</p>
-<p>127.0.0.1:6379[1]&gt; GEOPOS cities:locations tianjin<br>1) 1) “117.12000042200088501”<br>  2) “39.0800000535766543”<br>127.0.0.1:6379[1]&gt; GEOPOS cities:locations tianjin baoding<br>1) 1) “117.12000042200088501”<br>  2) “39.0800000535766543”<br>2) 1) “115.28999894857406616”<br>  2) “38.50999956342798924”</p>
-<p>geoadd 是存储</p>
-<p>geopos 是根据地名来进行存储数据</p>
-<p>127.0.0.1:6379[1]&gt; geodist cities:locations tianjin tangshan km<br>“76.8434”<br>127.0.0.1:6379[1]&gt; geodist cities:locations tianjin tangshans km<br>(nil)</p>
-<p>km 是计算具体的单位 : m(米),km(千米),mi(英里),ft(英尺)</p>
-<p>参考连接(<a href="https://blog.csdn.net/qq_34206560/article/details/91049218" target="_blank" rel="noopener">https://blog.csdn.net/qq_34206560/article/details/91049218</a>)</p>
-</blockquote>
-</li>
-<li><p>Pub/Sub</p>
-<blockquote>
-<p>开启二个 黑窗口 来连接 redis</p>
-<p>窗口一 : 对CCTV 进行订阅</p>
-<p>127.0.0.1:6379&gt; subscribe CCTV<br>Reading messages… (press Ctrl-C to quit)<br>1) “subscribe”<br>2) “CCTV”<br>3) (integer) 1</p>
-<p>1) “message”<br>2) “CCTV”<br>3) “\xe6\x88\x91\xe6\x98\xafGavin”</p>
-<p>1) “message”<br>2) “CCTV”<br>3) “Hello Gavin”</p>
-<p>窗口二 :  对CCTV 进行写</p>
-<p>127.0.0.1:6379[1]&gt; publish CCTV “我是Gavin”<br>(integer) 1<br>127.0.0.1:6379[1]&gt; publish CCTV “Hello Gavin”<br>(integer) 1</p>
-<p>要先开启 订阅，不然发送的消息会丢失。</p>
-</blockquote>
-</li>
-</ol>
-<hr>
-<p>还有一个更需要了解的知识,是更加必不可少的.</p>
-<ul>
-<li>Redis Module </li>
-<li>BloomFilter</li>
-<li>RedisSearch</li>
-<li>Redis-ML</li>
-</ul>
-<p>等等</p>
-<hr>
-<h3 id="Redis-实现分布式锁"><a href="#Redis-实现分布式锁" class="headerlink" title="Redis 实现分布式锁"></a>Redis 实现分布式锁</h3><ul>
-<li><p>获取锁的时候,如果先用 setnx 来争取到锁,再给expire 的锁来设置过期时间 防止锁忘记释放. 如果在expire之前,程序出现异常的话,那么这个setnx获取到的锁就无法被释放掉.</p>
-<p>如果是正常获获取锁并且设置过期时间</p>
-<hr>
-<p>/**</p>
-<ul>
-<li><p>尝试获取 分布式锁</p>
-</li>
-<li><p>我们使用key来当锁，因为key是唯一的。</p>
-</li>
-<li><p>原因就是我们在上面讲到可靠性时，分布式锁要满足第四个条件解铃还须系铃人，通过给value赋值为requestId，</p>
-</li>
-<li><p>我们就知道这把锁是哪个请求加的了，在解锁的时候就可以有依据。requestId可以使用UUID.randomUUID().toString()方法生成<br>*</p>
-</li>
-<li><p>这个参数我们填的是NX，意思是SET IF NOT EXIST，即当key不存在时，我们进行set操作；若key已经存在，则不做任何操作</p>
-</li>
-<li><p>这个参数我们传的是PX，意思是我们要给这个key加一个过期的设置，具体时间由第五个参数决定</p>
-</li>
-<li><p>设置超时时期</p>
-</li>
-<li><p>@param jedis</p>
-</li>
-<li><p>@param localKey</p>
-</li>
-<li><p>@param requestId  请求表示</p>
-</li>
-<li><p>@param expireTime 超时时间</p>
-</li>
-<li><p>@return<br>*/<br>public static boolean tryGetDistributedLock(Jedis jedis,String localKey,String requestId,int expireTime){<br> return LOCK_SUCCESS.equalsIgnoreCase(jedis.set(localKey, requestId, SET_IF_NOT_EXIST, SET_WITH_EXPIRE_TIME, expireTime));<br>}</p>
-<hr>
-</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li><p>释放锁 </p>
-<hr>
-<p> /**</p>
-<ul>
-<li><p>释放锁</p>
-</li>
-<li><p>requestId : 请求标识</p>
-</li>
-<li><p>@param jedis</p>
-</li>
-<li><p>@param localKey</p>
-</li>
-<li><p>@param requestId</p>
-</li>
-<li><p>@return<br>*</p>
-</li>
-<li><p>不能直接使用 jedis.del(lockKey) 来删除锁,可能当前进来的锁并不是 先前判断出锁的拥有者<br>*<br>*/<br>public static boolean releaseDistributedLock(Jedis jedis,String localKey,String requestId){<br> String script = “if redis.call(‘get’, KEYS[1]) == ARGV[1] then return redis.call(‘del’, KEYS[1]) else return 0 end”;<br> Object result = jedis.eval(script, Collections.singletonList(localKey), Collections.singletonList(requestId));<br> return RELEASE_SUCCESS.equals(result);</p>
-<p>}</p>
-<hr>
-</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li>如果Redis的Key需要设置同一时期过去,key是很多的话,redis可能会出现短暂的卡顿现象.</li>
-</ul>
-<hr>
-<h3 id="Redis-获取-Key-技巧"><a href="#Redis-获取-Key-技巧" class="headerlink" title="Redis 获取 Key 技巧"></a>Redis 获取 Key 技巧</h3><p>抛出问题 :   <strong>加入Redis 里面有 一亿个Key,其中有10w个key是以某个固定的的已知前缀开头,如何将它们全部找出来?</strong></p>
-<p>使用keys指令可以扫出指定模式的key列表。 X </p>
-<p>使用scan指令来获取key列表。  Y</p>
-<p>这个时候你要回答redis关键的一个特性：redis的单线程的。keys指令会导致线程阻塞一段时间，线上服务会停顿，直到指令执行完毕，服务才能恢复。这个时候可以使用scan指令，scan指令可以无阻塞的提取出指定模式的key列表，但是会有一定的重复概率，在客户端做一次去重就可以了，但是整体所花费的时间会比直接用keys指令长。</p>
-<hr>
-<h3 id="Redis-持久化"><a href="#Redis-持久化" class="headerlink" title="Redis 持久化"></a>Redis 持久化</h3><p>​         默认情况下, Redis 将内存数据库快照保存到dump.rdb二进制文件中. </p>
-<ul>
-<li><p>RDB :  配置文件 save 60 1000 . 除了在配置文件中使用save,还可以手动执行save来生成RDB快照文件.save 是同步命令,bgsave是异步命令, bgsave 会从 redis 主进程fork出一个子进程来专门生成rdb二进制文件</p>
-<blockquote>
-<p>127.0.0.1:6379[1]&gt; save<br>OK        </p>
-</blockquote>
-</li>
-<li><p>AOF : 配置文件中 appendonly : yes 修改为yes.</p>
-<blockquote>
-<p>appendfsync  always: 每次有新命令追加到aof文件中就执行一个持久化指令,非常慢但是安全</p>
-<p>appendfsync  everysec : 每次执行一次持久化,足够快(和使用rdb持久化差不多) 并且故障时只丢失1s的数据</p>
-<p>appendfsync no : 从不持久化</p>
-</blockquote>
-</li>
-</ul>
-<hr>
-<h3 id="Pipeline-学习"><a href="#Pipeline-学习" class="headerlink" title="Pipeline 学习"></a>Pipeline 学习</h3><p>​      pipeline 可以将多次 IO 往返的时间缩减为一次,前提是pipeline执行的指令之间没有因果关系.</p>
-<hr>
-<p>package com.yang.basicjavacache.redis.test;</p>
-<p>import redis.clients.jedis.Jedis;<br>import redis.clients.jedis.Pipeline;</p>
-<p>import java.util.HashMap;<br>import java.util.Map;</p>
-<p>/<strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong>***</strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong><br>*<PRE><br>*</p>
-<ul>
-<li>File Name       : </li>
-<li></li>
-<li>Creation Date   : 20-4-19</li>
-<li></li>
-<li>Author          : Gavin</li>
-<li></li>
-<li>Purpose         : </li>
-<li></li>
-<li>History         : </li>
-<li></li>
-<li></PRE></li>
-<li><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong>**</strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong>/</li>
-</ul>
-<p>public class PipelineTestMain {</p>
-<pre><code>public static void main(String[] args) {
-
-    Jedis redis = new Jedis(&quot;192.168.18.141&quot;, 6379);
-    redis.auth(&quot;123456&quot;);
-    Map&lt;String, String&gt; data = new HashMap&lt;String, String&gt;();
-    redis.select(8);
-    redis.flushDB();
-    long start = System.currentTimeMillis();
-    for (int i = 0; i &lt; 1000000; i++) {
-        data.clear();
-        data.put(&quot;k_&quot; + i, &quot;v_&quot; + i);
-        redis.hmset(&quot;key_&quot; + i, data);
-    }
-    long end = System.currentTimeMillis();
-    System.out.println(&quot;    共插入:[&quot; + redis.dbSize() + &quot;]条 .. &quot;);
-    System.out.println(&quot;1,未使用PIPE批量设值耗时&quot; + (end - start) / 1000 + &quot;秒..&quot;);
-
-    redis.select(8);
-    redis.flushDB();
-    Pipeline pipe = redis.pipelined();
-    start = System.currentTimeMillis();
-    for (int i = 0; i &lt; 1000000; i++) {
-        data.clear();
-        data.put(&quot;k_&quot; + i, &quot;v_&quot; + i);
-        pipe.hmset(&quot;key_&quot; + i, data); //将值封装到PIPE对象，此时并未执行，还停留在客户端
-    }
-    pipe.sync();
-    end = System.currentTimeMillis();
-    System.out.println(&quot;    PIPE共插入:[&quot; + redis.dbSize() + &quot;]条 .. &quot;);
-    System.out.println(&quot;2,使用PIPE批量设值耗时&quot; + (end - start) / 1000 + &quot;秒 ..&quot;);
-}</code></pre><p>}</p>
-<blockquote>
-<p>   共插入:[1000000]条 ..<br>1,未使用PIPE批量设值耗时14秒..<br>   PIPE共插入:[1000000]条 ..<br>2,使用PIPE批量设值耗时1秒 ..</p>
-<p>从执行的结果来看的，这中间的时间差别还是很大的.</p>
-</blockquote>
-<p>Pipeline 管道技术,指的是客户端可以发送多个请求到服务端,过程中不需要等待请求的回复,在最后一次并读结果即可.</p>
-<hr>
-]]></content>
-      <categories>
-        <category>Redis</category>
-      </categories>
-      <tags>
-        <tag>Redis</tag>
-        <tag>缓存</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>关于我BaoYang</title>
-    <url>/2019/10/07/%E5%85%B3%E4%BA%8E%E6%88%91/</url>
-    <content><![CDATA[<p>这里用于记录个人学习和生活的博客;使用的是Github + Hexo 来搭建的，由于是第一次使用,在很多方面都不是很懂，后续会慢慢的来更新这些信息。</p>
-<p>最近犯了一个很严重的错误,让我严重的意识到一些态度的问题对于个人来说还是很重要的。如果不是这些事,也许我还是无法很快速的成长，也许给我现在的感触最深的几个地方就是.我为什么会有这种错误的出现?当出现这种错误后,又是因为我个人不能很好的处理掉乱七八糟的.</p>
-<p>2019-10-17  已经有好几天没有提交代码上github，提心吊胆的感觉也是让我觉得很难受。有些错误,我相信我自己以后是不会再出现的了.</p>
-<p>2019-10-22 坚持使用csdn来记录技术或者博客等,这里的博客希望更多的总结或者文章的汇总等.加油,给自己.</p>
-<p>个人 : BaoYang , Java爱好者,虽然平时也会捣鼓一些其他的东西,毕竟刚刚工作对一些新的东西有时候或者说是居多的时候,总是会充满一些好奇感忍不住去研究下它的好处或者使用啥的啊。</p>
-<p><a href="https://blog.csdn.net/by_yangge" target="_blank" rel="noopener">https://blog.csdn.net/by_yangge</a> csdn博客地址也是用于记录一些个人的学习东西或者遇见的错误记录等问题。关于写博客或者记录一下个人的状态等信息,我个人虽然也是刚刚开始,更多的时候,我也是希望我可以长期的坚持下来记录学习和博客的记载等. 也是看个人和 贵在坚持这点吧.</p>
-]]></content>
-      <categories>
-        <category>关于个人的</category>
-      </categories>
-      <tags>
-        <tag>关于我</tag>
       </tags>
   </entry>
   <entry>
@@ -787,6 +497,296 @@ docker-engine
       <tags>
         <tag>docker</tag>
         <tag>容器</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Redis缓存知识学习</title>
+    <url>/2020/04/19/redis%E7%BC%93%E5%AD%98/</url>
+    <content><![CDATA[<h3 id="Redis-缓存知识的学习"><a href="#Redis-缓存知识的学习" class="headerlink" title="Redis 缓存知识的学习"></a>Redis 缓存知识的学习</h3><blockquote>
+<p>现在缓存,消息队列,集群(集群就涉及到很多中间件)的使用或者说是学习都是必须的,也是必备的. 所以就这周就打算学习下Redis缓存方面的知识来记录。</p>
+</blockquote>
+<h3 id="Redis-安装-基于Linux"><a href="#Redis-安装-基于Linux" class="headerlink" title="Redis 安装(基于Linux)"></a>Redis 安装(基于Linux)</h3><blockquote>
+<p>这里说下我使用的电脑环境是 Ubuntu , 所以在执行make的时候,很多gcc之类的东西是不需要安装的.</p>
+</blockquote>
+<p>  这里我们使用Redis 官方给出来的案例来进行安装</p>
+<ol>
+<li><p>wget <a href="http://download.redis.io/releases/redis-5.0.8.tar.gz" target="_blank" rel="noopener">http://download.redis.io/releases/redis-5.0.8.tar.gz</a> (<a href="https://redis.io/download" target="_blank" rel="noopener">https://redis.io/download</a>) 使用wget 或者去官网上下载都是可以的。</p>
+</li>
+<li><p>tar zxvf redis-5.0.8.tar.gz   这里使用官方目前提供的来进来下载。</p>
+</li>
+<li><p>cd redis-5.0.8   目录下面  然后执行 make (看你的权限是不是要执行 sudo make) </p>
+</li>
+<li><p>cd src 下面  sudo ./redis-server</p>
+</li>
+</ol>
+<hr>
+<p>启动成功界面</p>
+<p>13827:C 19 Apr 2020 14:48:09.023 # oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo<br>13827:C 19 Apr 2020 14:48:09.023 # Redis version=5.0.8, bits=64, commit=00000000, modified=0, pid=13827, just started<br>13827:C 19 Apr 2020 14:48:09.023 # Warning: no config file specified, using the default config. In order to specify a config file use ./redis-server /path/to/redis.conf<br>13827:M 19 Apr 2020 14:48:09.024 * Increased maximum number of open files to 10032 (it was originally set to 1024).<br>           <em>.</em><br>      <em>.-``__ ‘’-.</em><br> <em>.-``    <code>.</code></em>.  ‘’-._           Redis 5.0.8 (00000000/0) 64 bit<br>.-<code>.-```.  ```\/    _.,_ &#39;&#39;-._                                   
+(    &#39;      ,       .-`  | `,    )     Running in standalone mode
+|`-._`-...-` __...-.</code>-.<em>|’<code>_.-&#39;|     Port: 6379
+|</code>-.</em>   <code>._    /     _.-&#39;    |     PID: 13827</code>-._    <code>-._</code>-./  <em>.-‘    _.-‘<br>|<code>-._</code>-.</em>    <code>-.__.-&#39;    _.-&#39;_.-&#39;|                                  
+|</code>-.<em>`-.</em>        <em>.-‘</em>.-‘    |           <a href="http://redis.io" target="_blank" rel="noopener">http://redis.io</a><br><code>-._</code>-.<em>`-.__.-‘</em>.-‘    <em>.-‘<br>|<code>-._</code>-.</em>    <code>-.__.-&#39;    _.-&#39;_.-&#39;|                                  
+|</code>-.<em>`-.</em>        <em>.-‘</em>.-‘    |<br><code>-._</code>-.<em>`-.__.-‘</em>.-‘    <em>.-‘<br> `-.</em>    <code>-.__.-&#39;    _.-&#39;</code>-._        <em>.-‘<br>         `-._</em>.-‘                                      </p>
+<hr>
+<p>13827:M 19 Apr 2020 14:48:09.024 # WARNING: The TCP backlog setting of 511 cannot be enforced because /proc/sys/net/core/somaxconn is set to the lower value of 128.<br>13827:M 19 Apr 2020 14:48:09.024 # Server initialized<br>13827:M 19 Apr 2020 14:48:09.024 # WARNING overcommit_memory is set to 0! Background save may fail under low memory condition. To fix this issue add ‘vm.overcommit_memory = 1’ to /etc/sysctl.conf and then reboot or run the command ‘sysctl vm.overcommit_memory=1’ for this to take effect.<br>13827:M 19 Apr 2020 14:48:09.024 # WARNING you have Transparent Huge Pages (THP) support enabled in your kernel. This will create latency and memory usage issues with Redis. To fix this issue run the command ‘echo never &gt; /sys/kernel/mm/transparent_hugepage/enabled’ as root, and add it to your /etc/rc.local in order to retain the setting after a reboot. Redis must be restarted after THP is disabled.<br>13827:M 19 Apr 2020 14:48:09.024 * Ready to accept connections</p>
+<hr>
+<p>   然后就可以看到 redis的启动界面, 然后再开一个黑窗口,也同样是在src下面, sudo ./redis-cli  就可以连上(这里我都是在同一台server上,ip,port什么都是默认的, 如果你启动有修改的话,那么连接的时候,这些配置也是需要进行修改的)</p>
+<p><strong>对于 Redis的安装,熟悉Linux的朋友还是很快的。</strong></p>
+<hr>
+<h3 id="Redis-数据结构"><a href="#Redis-数据结构" class="headerlink" title="Redis 数据结构"></a>Redis 数据结构</h3><ol>
+<li><p>字符串 String</p>
+<blockquote>
+<p>127.0.0.1:6379[1]&gt; set name yang<br>OK<br>127.0.0.1:6379[1]&gt; get name<br>“yang”</p>
+<p>可以看到对于 String 存储还是常规的</p>
+</blockquote>
+</li>
+<li><p>字典 Hash</p>
+<blockquote>
+<p>127.0.0.1:6379[1]&gt; HSET json1 name gavin age 18<br>(integer) 2</p>
+<p>127.0.0.1:6379[1]&gt; hget json1 name<br>“gavin”<br>127.0.0.1:6379[1]&gt; hget json1 age<br>“18”</p>
+<p> 对于Hash 存储的基本操作,基于还是看你个人想怎么存储. </p>
+<p> 127.0.0.1:6379[1]&gt; HEXISTS json1 json<br>(integer) 0<br>127.0.0.1:6379[1]&gt; HEXISTS json1 name<br>(integer) 1</p>
+<p> 这是判断这个key是否存在</p>
+</blockquote>
+</li>
+<li><p>列表List</p>
+<blockquote>
+<p>127.0.0.1:6379[1]&gt; lpush list1 1,2,3,4,5,6,7<br>(integer) 1<br>127.0.0.1:6379[1]&gt; lpush list1 8 9 10 11 12 13 14<br>(integer) 8<br>127.0.0.1:6379[1]&gt; LRANGE list1 0 11<br>1) “14”<br>2) “13”<br>3) “12”<br>4) “11”<br>5) “10”<br>6) “9”<br>7) “8”<br>8) “1,2,3,4,5,6,7”</p>
+<p>可以看出lpush 对于添加的顺序，最先添加的值是在最后面的。</p>
+<p>127.0.0.1:6379[1]&gt; RPUSH list1 latsone<br>(integer) 9</p>
+<p>127.0.0.1:6379[1]&gt; LRANGE list1 0 13<br>1) “14”<br>2) “13”<br>3) “12”<br>4) “11”<br>5) “10”<br>6) “9”<br>7) “8”<br>8) “1,2,3,4,5,6,7”<br>9) “latsone”</p>
+<p>rpush 就是直接在最尾部进行追加.</p>
+<p>lpop key(lits1 对应自己的key) : 返回并删除指定 Key 的链表中的第一个元素</p>
+<p>rpop key: 返回并删除指定 Key 的链表中的最后一个元素,即尾元素 </p>
+</blockquote>
+</li>
+<li><p>集合Set</p>
+<blockquote>
+<p>127.0.0.1:6379[1]&gt; sadd set1 a b c<br>(integer) 3<br>127.0.0.1:6379[1]&gt; sadd set z<br>(integer) 1<br>127.0.0.1:6379[1]&gt; SMEMBERS set1<br>1) “b”<br>2) “a”<br>3) “c”<br>127.0.0.1:6379[1]&gt; SISMEMBER set1 c<br>(integer) 1<br>127.0.0.1:6379[1]&gt; SISMEMBER set1 x<br>(integer) 0<br>127.0.0.1:6379[1]&gt; SMEMBERS set1<br>1) “b”<br>2) “a”<br>3) “c”<br>127.0.0.1:6379[1]&gt; SREM set1 a<br>(integer) 1<br>127.0.0.1:6379[1]&gt; SMEMBERS set1<br>1) “b”<br>2) “c”</p>
+<p>sadd  是进行添加</p>
+<p>smembers  进行查看该集合中数据</p>
+<p>sismember 判断集合中是否有该值,如果是有的话,就会返回1,如果是没有的话,就会返回0</p>
+<p>srem 是删除集合中某个元素. 如果存在删除就返回1,如果不存在删除就会返回0 </p>
+</blockquote>
+</li>
+<li><p>有序集合 ZSet</p>
+<blockquote>
+<p>127.0.0.1:6379[1]&gt; SREM set1 add<br>(integer) 0<br>127.0.0.1:6379[1]&gt; zadd scores 90 ‘Chinese’<br>(integer) 1<br>127.0.0.1:6379[1]&gt; zadd scores 94 ‘math’<br>(integer) 1<br>127.0.0.1:6379[1]&gt; zadd scores 96 ‘english’<br>(integer) 1<br>127.0.0.1:6379[1]&gt; ZRANGE scores 0 -1<br>1) “Chinese”<br>2) “math”<br>3) “english”<br>127.0.0.1:6379[1]&gt; ZRANGE scores 0 -1 withscores<br>1) “Chinese”<br>2) “90”<br>3) “math”<br>4) “94”<br>5) “english”<br>6) “96”<br>127.0.0.1:6379[1]&gt; zadd scores 88 ‘matha’<br>(integer) 1<br>127.0.0.1:6379[1]&gt; ZRANGE scores 0 -1 withscores<br>1) “matha”<br>2) “88”<br>3) “Chinese”<br>4) “90”<br>5) “math”<br>6) “94”<br>7) “english”<br>8) “96”</p>
+<p>zset 的基本操作.等到你工作需要使用的时候,可以在权衡来具体使用</p>
+</blockquote>
+<hr>
+</li>
+</ol>
+<p>   还有一些数据结果，对于平常的项目或者需求是很少使用到的.这里也列举出来,做一个大概的说明.</p>
+<ol>
+<li><p>HyperLogLog</p>
+<blockquote>
+<p>HyperLogLog 是用来做 <strong>基数统计</strong> 的算法. 优点 : 再输入元素的数量或者体积非常非常大的时候时候,计算基数所需要的空间总是固定的,并且很小.</p>
+<p>Redis 中 HyperLogLog 键只需花费12KB内存,就可以计算接近 2^64 个不同的元素的基数.</p>
+<p>127.0.0.1:6379[1]&gt; PFADD pf1 1 2 3 4 1 2 3 2 2 2 2<br>(integer) 1<br>127.0.0.1:6379[1]&gt; PFCOUNT pf1<br>(integer) 4<br>127.0.0.1:6379[1]&gt; pfadd m2 3 3 3 4 4 4 5 5 5 6 6 6 1<br>(integer) 1<br>127.0.0.1:6379[1]&gt; PFMERGE mergeN pf1 m2<br>OK<br>127.0.0.1:6379[1]&gt; PFCOUNT mergeN<br>(integer) 6</p>
+<p>从结果可以看出, HyperLogLog 就是对进行统计.</p>
+<p>实用场景 :  统计注册Ip个数,统计每日访问IP数 等数有关</p>
+</blockquote>
+</li>
+<li><p>Geo</p>
+<blockquote>
+<p>127.0.0.1:6379[1]&gt; GEOADD cities:locations 117.12 39.08 tianjin 114.29 38.02 shijiazhuang 118.01 39.08 tangshan 115.29 38.51 baoding<br>(integer) 4</p>
+<p>127.0.0.1:6379[1]&gt; GEOPOS cities:locations tianjin<br>1) 1) “117.12000042200088501”<br>  2) “39.0800000535766543”<br>127.0.0.1:6379[1]&gt; GEOPOS cities:locations tianjin baoding<br>1) 1) “117.12000042200088501”<br>  2) “39.0800000535766543”<br>2) 1) “115.28999894857406616”<br>  2) “38.50999956342798924”</p>
+<p>geoadd 是存储</p>
+<p>geopos 是根据地名来进行存储数据</p>
+<p>127.0.0.1:6379[1]&gt; geodist cities:locations tianjin tangshan km<br>“76.8434”<br>127.0.0.1:6379[1]&gt; geodist cities:locations tianjin tangshans km<br>(nil)</p>
+<p>km 是计算具体的单位 : m(米),km(千米),mi(英里),ft(英尺)</p>
+<p>参考连接(<a href="https://blog.csdn.net/qq_34206560/article/details/91049218" target="_blank" rel="noopener">https://blog.csdn.net/qq_34206560/article/details/91049218</a>)</p>
+</blockquote>
+</li>
+<li><p>Pub/Sub</p>
+<blockquote>
+<p>开启二个 黑窗口 来连接 redis</p>
+<p>窗口一 : 对CCTV 进行订阅</p>
+<p>127.0.0.1:6379&gt; subscribe CCTV<br>Reading messages… (press Ctrl-C to quit)<br>1) “subscribe”<br>2) “CCTV”<br>3) (integer) 1</p>
+<p>1) “message”<br>2) “CCTV”<br>3) “\xe6\x88\x91\xe6\x98\xafGavin”</p>
+<p>1) “message”<br>2) “CCTV”<br>3) “Hello Gavin”</p>
+<p>窗口二 :  对CCTV 进行写</p>
+<p>127.0.0.1:6379[1]&gt; publish CCTV “我是Gavin”<br>(integer) 1<br>127.0.0.1:6379[1]&gt; publish CCTV “Hello Gavin”<br>(integer) 1</p>
+<p>要先开启 订阅，不然发送的消息会丢失。</p>
+</blockquote>
+</li>
+</ol>
+<hr>
+<p>还有一个更需要了解的知识,是更加必不可少的.</p>
+<ul>
+<li>Redis Module </li>
+<li>BloomFilter</li>
+<li>RedisSearch</li>
+<li>Redis-ML</li>
+</ul>
+<p>等等</p>
+<hr>
+<h3 id="Redis-实现分布式锁"><a href="#Redis-实现分布式锁" class="headerlink" title="Redis 实现分布式锁"></a>Redis 实现分布式锁</h3><ul>
+<li><p>获取锁的时候,如果先用 setnx 来争取到锁,再给expire 的锁来设置过期时间 防止锁忘记释放. 如果在expire之前,程序出现异常的话,那么这个setnx获取到的锁就无法被释放掉.</p>
+<p>如果是正常获获取锁并且设置过期时间</p>
+<hr>
+<p>/**</p>
+<ul>
+<li><p>尝试获取 分布式锁</p>
+</li>
+<li><p>我们使用key来当锁，因为key是唯一的。</p>
+</li>
+<li><p>原因就是我们在上面讲到可靠性时，分布式锁要满足第四个条件解铃还须系铃人，通过给value赋值为requestId，</p>
+</li>
+<li><p>我们就知道这把锁是哪个请求加的了，在解锁的时候就可以有依据。requestId可以使用UUID.randomUUID().toString()方法生成<br>*</p>
+</li>
+<li><p>这个参数我们填的是NX，意思是SET IF NOT EXIST，即当key不存在时，我们进行set操作；若key已经存在，则不做任何操作</p>
+</li>
+<li><p>这个参数我们传的是PX，意思是我们要给这个key加一个过期的设置，具体时间由第五个参数决定</p>
+</li>
+<li><p>设置超时时期</p>
+</li>
+<li><p>@param jedis</p>
+</li>
+<li><p>@param localKey</p>
+</li>
+<li><p>@param requestId  请求表示</p>
+</li>
+<li><p>@param expireTime 超时时间</p>
+</li>
+<li><p>@return<br>*/<br>public static boolean tryGetDistributedLock(Jedis jedis,String localKey,String requestId,int expireTime){<br> return LOCK_SUCCESS.equalsIgnoreCase(jedis.set(localKey, requestId, SET_IF_NOT_EXIST, SET_WITH_EXPIRE_TIME, expireTime));<br>}</p>
+<hr>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p>释放锁 </p>
+<hr>
+<p> /**</p>
+<ul>
+<li><p>释放锁</p>
+</li>
+<li><p>requestId : 请求标识</p>
+</li>
+<li><p>@param jedis</p>
+</li>
+<li><p>@param localKey</p>
+</li>
+<li><p>@param requestId</p>
+</li>
+<li><p>@return<br>*</p>
+</li>
+<li><p>不能直接使用 jedis.del(lockKey) 来删除锁,可能当前进来的锁并不是 先前判断出锁的拥有者<br>*<br>*/<br>public static boolean releaseDistributedLock(Jedis jedis,String localKey,String requestId){<br> String script = “if redis.call(‘get’, KEYS[1]) == ARGV[1] then return redis.call(‘del’, KEYS[1]) else return 0 end”;<br> Object result = jedis.eval(script, Collections.singletonList(localKey), Collections.singletonList(requestId));<br> return RELEASE_SUCCESS.equals(result);</p>
+<p>}</p>
+<hr>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>如果Redis的Key需要设置同一时期过去,key是很多的话,redis可能会出现短暂的卡顿现象.</li>
+</ul>
+<hr>
+<h3 id="Redis-获取-Key-技巧"><a href="#Redis-获取-Key-技巧" class="headerlink" title="Redis 获取 Key 技巧"></a>Redis 获取 Key 技巧</h3><p>抛出问题 :   <strong>加入Redis 里面有 一亿个Key,其中有10w个key是以某个固定的的已知前缀开头,如何将它们全部找出来?</strong></p>
+<p>使用keys指令可以扫出指定模式的key列表。 X </p>
+<p>使用scan指令来获取key列表。  Y</p>
+<p>这个时候你要回答redis关键的一个特性：redis的单线程的。keys指令会导致线程阻塞一段时间，线上服务会停顿，直到指令执行完毕，服务才能恢复。这个时候可以使用scan指令，scan指令可以无阻塞的提取出指定模式的key列表，但是会有一定的重复概率，在客户端做一次去重就可以了，但是整体所花费的时间会比直接用keys指令长。</p>
+<hr>
+<h3 id="Redis-持久化"><a href="#Redis-持久化" class="headerlink" title="Redis 持久化"></a>Redis 持久化</h3><p>​         默认情况下, Redis 将内存数据库快照保存到dump.rdb二进制文件中. </p>
+<ul>
+<li><p>RDB :  配置文件 save 60 1000 . 除了在配置文件中使用save,还可以手动执行save来生成RDB快照文件.save 是同步命令,bgsave是异步命令, bgsave 会从 redis 主进程fork出一个子进程来专门生成rdb二进制文件</p>
+<blockquote>
+<p>127.0.0.1:6379[1]&gt; save<br>OK        </p>
+</blockquote>
+</li>
+<li><p>AOF : 配置文件中 appendonly : yes 修改为yes.</p>
+<blockquote>
+<p>appendfsync  always: 每次有新命令追加到aof文件中就执行一个持久化指令,非常慢但是安全</p>
+<p>appendfsync  everysec : 每次执行一次持久化,足够快(和使用rdb持久化差不多) 并且故障时只丢失1s的数据</p>
+<p>appendfsync no : 从不持久化</p>
+</blockquote>
+</li>
+</ul>
+<hr>
+<h3 id="Pipeline-学习"><a href="#Pipeline-学习" class="headerlink" title="Pipeline 学习"></a>Pipeline 学习</h3><p>​      pipeline 可以将多次 IO 往返的时间缩减为一次,前提是pipeline执行的指令之间没有因果关系.</p>
+<hr>
+<p>package com.yang.basicjavacache.redis.test;</p>
+<p>import redis.clients.jedis.Jedis;<br>import redis.clients.jedis.Pipeline;</p>
+<p>import java.util.HashMap;<br>import java.util.Map;</p>
+<p>/<strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong>***</strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong><br>*<PRE><br>*</p>
+<ul>
+<li>File Name       : </li>
+<li></li>
+<li>Creation Date   : 20-4-19</li>
+<li></li>
+<li>Author          : Gavin</li>
+<li></li>
+<li>Purpose         : </li>
+<li></li>
+<li>History         : </li>
+<li></li>
+<li></PRE></li>
+<li><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong>**</strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong>/</li>
+</ul>
+<p>public class PipelineTestMain {</p>
+<pre><code>public static void main(String[] args) {
+
+    Jedis redis = new Jedis(&quot;192.168.18.141&quot;, 6379);
+    redis.auth(&quot;123456&quot;);
+    Map&lt;String, String&gt; data = new HashMap&lt;String, String&gt;();
+    redis.select(8);
+    redis.flushDB();
+    long start = System.currentTimeMillis();
+    for (int i = 0; i &lt; 1000000; i++) {
+        data.clear();
+        data.put(&quot;k_&quot; + i, &quot;v_&quot; + i);
+        redis.hmset(&quot;key_&quot; + i, data);
+    }
+    long end = System.currentTimeMillis();
+    System.out.println(&quot;    共插入:[&quot; + redis.dbSize() + &quot;]条 .. &quot;);
+    System.out.println(&quot;1,未使用PIPE批量设值耗时&quot; + (end - start) / 1000 + &quot;秒..&quot;);
+
+    redis.select(8);
+    redis.flushDB();
+    Pipeline pipe = redis.pipelined();
+    start = System.currentTimeMillis();
+    for (int i = 0; i &lt; 1000000; i++) {
+        data.clear();
+        data.put(&quot;k_&quot; + i, &quot;v_&quot; + i);
+        pipe.hmset(&quot;key_&quot; + i, data); //将值封装到PIPE对象，此时并未执行，还停留在客户端
+    }
+    pipe.sync();
+    end = System.currentTimeMillis();
+    System.out.println(&quot;    PIPE共插入:[&quot; + redis.dbSize() + &quot;]条 .. &quot;);
+    System.out.println(&quot;2,使用PIPE批量设值耗时&quot; + (end - start) / 1000 + &quot;秒 ..&quot;);
+}</code></pre><p>}</p>
+<blockquote>
+<p>   共插入:[1000000]条 ..<br>1,未使用PIPE批量设值耗时14秒..<br>   PIPE共插入:[1000000]条 ..<br>2,使用PIPE批量设值耗时1秒 ..</p>
+<p>从执行的结果来看的，这中间的时间差别还是很大的.</p>
+</blockquote>
+<p>Pipeline 管道技术,指的是客户端可以发送多个请求到服务端,过程中不需要等待请求的回复,在最后一次并读结果即可.</p>
+<hr>
+]]></content>
+      <categories>
+        <category>Redis</category>
+      </categories>
+      <tags>
+        <tag>Redis</tag>
+        <tag>缓存</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>关于我BaoYang</title>
+    <url>/2019/10/07/%E5%85%B3%E4%BA%8E%E6%88%91/</url>
+    <content><![CDATA[<p>这里用于记录个人学习和生活的博客;使用的是Github + Hexo 来搭建的，由于是第一次使用,在很多方面都不是很懂，后续会慢慢的来更新这些信息。</p>
+<p>最近犯了一个很严重的错误,让我严重的意识到一些态度的问题对于个人来说还是很重要的。如果不是这些事,也许我还是无法很快速的成长，也许给我现在的感触最深的几个地方就是.我为什么会有这种错误的出现?当出现这种错误后,又是因为我个人不能很好的处理掉乱七八糟的.</p>
+<p>2019-10-17  已经有好几天没有提交代码上github，提心吊胆的感觉也是让我觉得很难受。有些错误,我相信我自己以后是不会再出现的了.</p>
+<p>2019-10-22 坚持使用csdn来记录技术或者博客等,这里的博客希望更多的总结或者文章的汇总等.加油,给自己.</p>
+<p>个人 : BaoYang , Java爱好者,虽然平时也会捣鼓一些其他的东西,毕竟刚刚工作对一些新的东西有时候或者说是居多的时候,总是会充满一些好奇感忍不住去研究下它的好处或者使用啥的啊。</p>
+<p><a href="https://blog.csdn.net/by_yangge" target="_blank" rel="noopener">https://blog.csdn.net/by_yangge</a> csdn博客地址也是用于记录一些个人的学习东西或者遇见的错误记录等问题。关于写博客或者记录一下个人的状态等信息,我个人虽然也是刚刚开始,更多的时候,我也是希望我可以长期的坚持下来记录学习和博客的记载等. 也是看个人和 贵在坚持这点吧.</p>
+]]></content>
+      <categories>
+        <category>关于个人的</category>
+      </categories>
+      <tags>
+        <tag>关于我</tag>
       </tags>
   </entry>
   <entry>
