@@ -55,129 +55,6 @@
       </tags>
   </entry>
   <entry>
-    <title>HashMap源码阅读记录</title>
-    <url>/2020/04/29/HashMap%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB%E8%AE%B0%E5%BD%95/</url>
-    <content><![CDATA[<h3 id="HashMap"><a href="#HashMap" class="headerlink" title="HashMap"></a>HashMap</h3><blockquote>
-<p>HashMap 是基于哈希表的Map接口.是可以使用null来做为key.不保证映射的顺序.</p>
-<p>HashMap 是一种基于Key-Value的数据结构.</p>
-</blockquote>
-<p>​    </p>
-<p><img src="" alt="[https://github.com/baoyang23/images_repository/blob/master/java/hashMap/HashMap%E7%BB%93%E6%9E%84%E5%9B%BE.png](https://github.com/baoyang23/images_repository/blob/master/java/hashMap/HashMap结构图.png)"></p>
-<h3 id="HashMap源码分析"><a href="#HashMap源码分析" class="headerlink" title="HashMap源码分析"></a>HashMap源码分析</h3><p>默认初始化容量</p>
-<blockquote>
-<p>static final int DEFAULT_INITIAL_CAPACITY = 1 &lt;&lt; 4; // aka 16</p>
-</blockquote>
-<hr>
-<p>构造函数中未指定时使用的加载因子.</p>
-<blockquote>
-<p>static final float DEFAULT_LOAD_FACTOR = 0.75f</p>
-</blockquote>
-<hr>
-<p>存储数据使用的Node节点,可以理解为你Java中定义的一个类,就是这个类的next中的值,可能是下一个类似的节点，也可能是null(没有下一个指向).</p>
-<blockquote>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">&gt;<span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Node</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">implements</span> <span class="title">Map</span>.<span class="title">Entry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">   <span class="keyword">final</span> <span class="keyword">int</span> hash;</span><br><span class="line">   <span class="keyword">final</span> K key;</span><br><span class="line">   V value;</span><br><span class="line">   Node&lt;K,V&gt; next;</span><br><span class="line"></span><br><span class="line">   Node(<span class="keyword">int</span> hash, K key, V value, Node&lt;K,V&gt; next) &#123;</span><br><span class="line">       <span class="keyword">this</span>.hash = hash;</span><br><span class="line">       <span class="keyword">this</span>.key = key;</span><br><span class="line">       <span class="keyword">this</span>.value = value;</span><br><span class="line">       <span class="keyword">this</span>.next = next;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> K <span class="title">getKey</span><span class="params">()</span>        </span>&#123; <span class="keyword">return</span> key; &#125;</span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> V <span class="title">getValue</span><span class="params">()</span>      </span>&#123; <span class="keyword">return</span> value; &#125;</span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> key + <span class="string">"="</span> + value; &#125;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">hashCode</span><span class="params">()</span> </span>&#123;</span><br><span class="line">       <span class="keyword">return</span> Objects.hashCode(key) ^ Objects.hashCode(value);</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> V <span class="title">setValue</span><span class="params">(V newValue)</span> </span>&#123;</span><br><span class="line">       V oldValue = value;</span><br><span class="line">       value = newValue;</span><br><span class="line">       <span class="keyword">return</span> oldValue;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">equals</span><span class="params">(Object o)</span> </span>&#123;</span><br><span class="line">       <span class="keyword">if</span> (o == <span class="keyword">this</span>)</span><br><span class="line">           <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">       <span class="keyword">if</span> (o <span class="keyword">instanceof</span> Map.Entry) &#123;</span><br><span class="line">           Map.Entry&lt;?,?&gt; e = (Map.Entry&lt;?,?&gt;)o;</span><br><span class="line">           <span class="keyword">if</span> (Objects.equals(key, e.getKey()) &amp;&amp;</span><br><span class="line">               Objects.equals(value, e.getValue()))</span><br><span class="line">               <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">       &#125;</span><br><span class="line">       <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">   &#125;</span><br><span class="line">&gt;&#125;</span><br></pre></td></tr></table></figure>
-</blockquote>
-<hr>
-<p><strong>Note: TreeNode这个内部类也是需要仔细看的。Java8中,当链表中的Node个数大于8的时候，就会转化为TreNode来进行存储Node节点.这里由于代码比较多，就不贴出来，但是对于要提升的，就要去仔细看看。</strong></p>
-<hr>
-<p>来看put方法，就是我们每次调用存储的方法，来看看代码层面是怎么实现。先根据key来调用hash()方法,可以看到调用hash方法后，就返回了int类型的,也就是调用hash来计算出哈希值.然后直接调用putVal方法，这才是真正的存储数据的方法.</p>
-<blockquote>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">&gt;<span class="function"><span class="keyword">public</span> V <span class="title">put</span><span class="params">(K key, V value)</span> </span>&#123;</span><br><span class="line">   <span class="keyword">return</span> putVal(hash(key), key, value, <span class="keyword">false</span>, <span class="keyword">true</span>);</span><br><span class="line">&gt;&#125;</span><br></pre></td></tr></table></figure>
-
-<p>注释的译文: 将指定值与此映射中的指定键相关联。如果映射先前包含键的映射，则替换旧值。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">&gt;<span class="function"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">hash</span><span class="params">(Object key)</span> </span>&#123;</span><br><span class="line">   <span class="keyword">int</span> h;</span><br><span class="line">   <span class="keyword">return</span> (key == <span class="keyword">null</span>) ? <span class="number">0</span> : (h = key.hashCode()) ^ (h &gt;&gt;&gt; <span class="number">16</span>);</span><br><span class="line">&gt;&#125;</span><br></pre></td></tr></table></figure>
-</blockquote>
-<p><strong>putVal 方法讲解:</strong></p>
-<p>定义tab 的 Node数组, (tab = table) == null 这行代码是可以看到,全局变量的 table赋值给tab.</p>
-<p>Node&lt;K,V&gt; p 的话，这里如果算出来的hash值，tab[i= ()n-1 &amp; hash] , 也就是这样代码,如果是null的话,就说明在数组tab(table)中是不存在的.反正,就说明该哈希值在数组中是已经存在的(这就是哈希冲突).</p>
-<p>然后发生哈希冲突怎么办呢？</p>
-<p>我们看到代码 p.hash == hash &amp;&amp; ((k = p. key) == key || (key != null &amp;&amp; key.equals(k))), 判断hash值是否相等并且二者的key的值是否相等,使用==或者equals来进行判断，如果是想相同的话,就说明 Key 已经是存在的了,覆盖掉。   </p>
-<p>如果p是 TreeNode类型的话,就说明该哈希值冲突的个数已经大于8了，看到 e = ((TreeNode&lt;K,V&gt;)p).putTreeVal(this,tab,hash,key,value)这行代码，点进去看就可以,这里就有之前提到的说需要看TreeNode这个类的。</p>
-<p>for(int bigCount = 0;;++bigCount){} 中的代码,就是发生了put进来的key的哈希值是一样的,但是Key的值却不是一样。 e = p.next == null,如果p节点的next是Null的话,就是说明没有下一个节点,然后调用newNode来生成一个Node节点. bigCount &gt;= TREEIFY_THRESHOLD - 1 , 如果大于7的话,链表就会调用treeIfBin(tab,hash)这个方法转化为红黑树结构.</p>
-<p>可以看到putVal中的方法，仔细去阅读还是比较容易理解的.</p>
-<blockquote>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">&gt;<span class="function"><span class="keyword">final</span> V <span class="title">putVal</span><span class="params">(<span class="keyword">int</span> hash, K key, V value, <span class="keyword">boolean</span> onlyIfAbsent,</span></span></span><br><span class="line"><span class="function"><span class="params">              <span class="keyword">boolean</span> evict)</span> </span>&#123;</span><br><span class="line">   Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; p; <span class="keyword">int</span> n, i;</span><br><span class="line">   <span class="keyword">if</span> ((tab = table) == <span class="keyword">null</span> || (n = tab.length) == <span class="number">0</span>)</span><br><span class="line">       n = (tab = resize()).length;</span><br><span class="line">   <span class="keyword">if</span> ((p = tab[i = (n - <span class="number">1</span>) &amp; hash]) == <span class="keyword">null</span>)</span><br><span class="line">       tab[i] = newNode(hash, key, value, <span class="keyword">null</span>);</span><br><span class="line">   <span class="keyword">else</span> &#123;</span><br><span class="line">       Node&lt;K,V&gt; e; K k;</span><br><span class="line">       <span class="keyword">if</span> (p.hash == hash &amp;&amp;</span><br><span class="line">           ((k = p.key) == key || (key != <span class="keyword">null</span> &amp;&amp; key.equals(k))))</span><br><span class="line">           e = p;</span><br><span class="line">       <span class="keyword">else</span> <span class="keyword">if</span> (p <span class="keyword">instanceof</span> TreeNode)</span><br><span class="line">           e = ((TreeNode&lt;K,V&gt;)p).putTreeVal(<span class="keyword">this</span>, tab, hash, key, value);</span><br><span class="line">       <span class="keyword">else</span> &#123;</span><br><span class="line">           <span class="keyword">for</span> (<span class="keyword">int</span> binCount = <span class="number">0</span>; ; ++binCount) &#123;</span><br><span class="line">               <span class="keyword">if</span> ((e = p.next) == <span class="keyword">null</span>) &#123;</span><br><span class="line">                   p.next = newNode(hash, key, value, <span class="keyword">null</span>);</span><br><span class="line">                   <span class="keyword">if</span> (binCount &gt;= TREEIFY_THRESHOLD - <span class="number">1</span>) <span class="comment">// -1 for 1st</span></span><br><span class="line">                       treeifyBin(tab, hash);</span><br><span class="line">                   <span class="keyword">break</span>;</span><br><span class="line">               &#125;</span><br><span class="line">               <span class="keyword">if</span> (e.hash == hash &amp;&amp;</span><br><span class="line">                   ((k = e.key) == key || (key != <span class="keyword">null</span> &amp;&amp; key.equals(k))))</span><br><span class="line">                   <span class="keyword">break</span>;</span><br><span class="line">               p = e;</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;</span><br><span class="line">       <span class="keyword">if</span> (e != <span class="keyword">null</span>) &#123; <span class="comment">// existing mapping for key</span></span><br><span class="line">           V oldValue = e.value;</span><br><span class="line">           <span class="keyword">if</span> (!onlyIfAbsent || oldValue == <span class="keyword">null</span>)</span><br><span class="line">               e.value = value;</span><br><span class="line">           afterNodeAccess(e);</span><br><span class="line">           <span class="keyword">return</span> oldValue;</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br><span class="line">   ++modCount;</span><br><span class="line">   <span class="keyword">if</span> (++size &gt; threshold)</span><br><span class="line">       resize();</span><br><span class="line">   afterNodeInsertion(evict);</span><br><span class="line">   <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&gt;&#125;</span><br></pre></td></tr></table></figure>
-</blockquote>
-<p><strong>resize() 方法讲解</strong></p>
-<p>这是HashMap中进行扩容的方法.</p>
-<p>int oldCap = (oldTab == null) ? 0 : oldTab.length;  拿出tab的长度,如果没有就是0(第一次初始化的时候,就是没有值1).</p>
-<p>threshold 这个值,是根据你传入进来的数值,比如第一次初始化的时候，你在构造函数中传入进来的值，就会调用返回生成值并且赋值给threshold这个全局变量。</p>
-<p>oldCap &gt; 0 , 看到 newThr = old &lt;&lt;&lt;1; 二倍扩容.</p>
-<p>oldThr &gt; 0 , 这个 newCap = oldThr 这个值取决于threshold，目前感觉像是第一次初始化并且构造函数有传入值才是有用的.</p>
-<p>否则就是使用默认的数值来进行初始化.大小确定完后,就将 newTab的值也会赋值给threshold.</p>
-<p>Node&lt;K,V&gt;[] newTab = (Node&lt;K,V&gt;[])new Node[newCap];</p>
-<p>table = newTable;</p>
-<p>for int j =0; j &lt; oldCap; ++j 中可以看出来,根据每个下标去进行迭代的，每个值有可能是 单个Node节点,也就是Node的next的值是null。 也有可能是 TreeNode类型的 。 也有可能是 Node下面的next还是有Node的。然后分别根据这三种情况,将老的数组中的值赋值给新扩容大小的数组中.</p>
-<blockquote>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">&gt;<span class="keyword">final</span> Node&lt;K,V&gt;[] resize() &#123;</span><br><span class="line">   Node&lt;K,V&gt;[] oldTab = table;</span><br><span class="line">   <span class="keyword">int</span> oldCap = (oldTab == <span class="keyword">null</span>) ? <span class="number">0</span> : oldTab.length;</span><br><span class="line">   <span class="keyword">int</span> oldThr = threshold;</span><br><span class="line">   <span class="keyword">int</span> newCap, newThr = <span class="number">0</span>;</span><br><span class="line">   <span class="keyword">if</span> (oldCap &gt; <span class="number">0</span>) &#123;</span><br><span class="line">       <span class="keyword">if</span> (oldCap &gt;= MAXIMUM_CAPACITY) &#123;</span><br><span class="line">           threshold = Integer.MAX_VALUE;</span><br><span class="line">           <span class="keyword">return</span> oldTab;</span><br><span class="line">       &#125;</span><br><span class="line">       <span class="keyword">else</span> <span class="keyword">if</span> ((newCap = oldCap &lt;&lt; <span class="number">1</span>) &lt; MAXIMUM_CAPACITY &amp;&amp;</span><br><span class="line">                oldCap &gt;= DEFAULT_INITIAL_CAPACITY)</span><br><span class="line">           newThr = oldThr &lt;&lt; <span class="number">1</span>; <span class="comment">// double threshold</span></span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">else</span> <span class="keyword">if</span> (oldThr &gt; <span class="number">0</span>) <span class="comment">// initial capacity was placed in threshold</span></span><br><span class="line">       newCap = oldThr;</span><br><span class="line">   <span class="keyword">else</span> &#123;               <span class="comment">// zero initial threshold signifies using defaults</span></span><br><span class="line">       newCap = DEFAULT_INITIAL_CAPACITY;</span><br><span class="line">       newThr = (<span class="keyword">int</span>)(DEFAULT_LOAD_FACTOR * DEFAULT_INITIAL_CAPACITY);</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">if</span> (newThr == <span class="number">0</span>) &#123;</span><br><span class="line">       <span class="keyword">float</span> ft = (<span class="keyword">float</span>)newCap * loadFactor;</span><br><span class="line">       newThr = (newCap &lt; MAXIMUM_CAPACITY &amp;&amp; ft &lt; (<span class="keyword">float</span>)MAXIMUM_CAPACITY ?</span><br><span class="line">                 (<span class="keyword">int</span>)ft : Integer.MAX_VALUE);</span><br><span class="line">   &#125;</span><br><span class="line">   threshold = newThr;</span><br><span class="line">   <span class="meta">@SuppressWarnings</span>(&#123;<span class="string">"rawtypes"</span>,<span class="string">"unchecked"</span>&#125;)</span><br><span class="line">   Node&lt;K,V&gt;[] newTab = (Node&lt;K,V&gt;[])<span class="keyword">new</span> Node[newCap];</span><br><span class="line">   table = newTab;</span><br><span class="line">   <span class="keyword">if</span> (oldTab != <span class="keyword">null</span>) &#123;</span><br><span class="line">       <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; oldCap; ++j) &#123;</span><br><span class="line">           Node&lt;K,V&gt; e;</span><br><span class="line">           <span class="keyword">if</span> ((e = oldTab[j]) != <span class="keyword">null</span>) &#123;</span><br><span class="line">               oldTab[j] = <span class="keyword">null</span>;</span><br><span class="line">               <span class="keyword">if</span> (e.next == <span class="keyword">null</span>)</span><br><span class="line">                   newTab[e.hash &amp; (newCap - <span class="number">1</span>)] = e;</span><br><span class="line">               <span class="keyword">else</span> <span class="keyword">if</span> (e <span class="keyword">instanceof</span> TreeNode)</span><br><span class="line">                   ((TreeNode&lt;K,V&gt;)e).split(<span class="keyword">this</span>, newTab, j, oldCap);</span><br><span class="line">               <span class="keyword">else</span> &#123; <span class="comment">// preserve order</span></span><br><span class="line">                   Node&lt;K,V&gt; loHead = <span class="keyword">null</span>, loTail = <span class="keyword">null</span>;</span><br><span class="line">                   Node&lt;K,V&gt; hiHead = <span class="keyword">null</span>, hiTail = <span class="keyword">null</span>;</span><br><span class="line">                   Node&lt;K,V&gt; next;</span><br><span class="line">                   <span class="keyword">do</span> &#123;</span><br><span class="line">                       next = e.next;</span><br><span class="line">                       <span class="keyword">if</span> ((e.hash &amp; oldCap) == <span class="number">0</span>) &#123;</span><br><span class="line">                           <span class="keyword">if</span> (loTail == <span class="keyword">null</span>)</span><br><span class="line">                               loHead = e;</span><br><span class="line">                           <span class="keyword">else</span></span><br><span class="line">                               loTail.next = e;</span><br><span class="line">                           loTail = e;</span><br><span class="line">                       &#125;</span><br><span class="line">                       <span class="keyword">else</span> &#123;</span><br><span class="line">                           <span class="keyword">if</span> (hiTail == <span class="keyword">null</span>)</span><br><span class="line">                               hiHead = e;</span><br><span class="line">                           <span class="keyword">else</span></span><br><span class="line">                               hiTail.next = e;</span><br><span class="line">                           hiTail = e;</span><br><span class="line">                       &#125;</span><br><span class="line">                   &#125; <span class="keyword">while</span> ((e = next) != <span class="keyword">null</span>);</span><br><span class="line">                   <span class="keyword">if</span> (loTail != <span class="keyword">null</span>) &#123;</span><br><span class="line">                       loTail.next = <span class="keyword">null</span>;</span><br><span class="line">                       newTab[j] = loHead;</span><br><span class="line">                   &#125;</span><br><span class="line">                   <span class="keyword">if</span> (hiTail != <span class="keyword">null</span>) &#123;</span><br><span class="line">                       hiTail.next = <span class="keyword">null</span>;</span><br><span class="line">                       newTab[j + oldCap] = hiHead;</span><br><span class="line">                   &#125;</span><br><span class="line">               &#125;</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">return</span> newTab;</span><br><span class="line">&gt;&#125;</span><br></pre></td></tr></table></figure>
-
-
-</blockquote>
-<p><strong>get方法讲解</strong></p>
-<p>调用hash()方法，这个在pul的方法中是有提到的.我们这里主要是看getNode方法,可以看到get方法中也有tab数组(这个数组才是存储数据的). if条件,tab不为null,并且长度也是大于0的,并且根据 tab[(n-1)&amp;hash]算出来的下表在数组中的值是不为null的.先判断,hash是否相等,key对应的值是否也相等,如果是的话，直接返回first节点,first节点是在if判断条件中进行赋值了的。如果不是的话,就拿取first节点的next值,如果是TreeNode类型的话,就说明这个哈希值已经冲突8次甚至更多,然后调用TreeNode的getTreeNode()来获取节点并且返回。还有一种就是没有转化TreeNode，还是使用单链表, while(e=e.next) 可以看出来,往下继续next，就是在迭代单链表,如果满足key值相同的话,就会返回。</p>
-<blockquote>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">&gt;<span class="function"><span class="keyword">public</span> V <span class="title">get</span><span class="params">(Object key)</span> </span>&#123; </span><br><span class="line">   Node&lt;K,V&gt; e;</span><br><span class="line">   <span class="keyword">return</span> (e = getNode(hash(key), key)) == <span class="keyword">null</span> ? <span class="keyword">null</span> : e.value;</span><br><span class="line">&gt;&#125;</span><br></pre></td></tr></table></figure>
-
-<p>注释译文: 返回指定键映射到的值，如果此映射不包含键的映射，则返回{@code null}。可以看到译文,如果根据Key映射到值,就返回值,如果没有映射到的话,就会返回Null.</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt;final Node&lt;K,V&gt; getNode(int hash, Object key) &#123;</span><br><span class="line">   Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; first, e; int n; K k;</span><br><span class="line">   if ((tab &#x3D; table) !&#x3D; null &amp;&amp; (n &#x3D; tab.length) &gt; 0 &amp;&amp;</span><br><span class="line">       (first &#x3D; tab[(n - 1) &amp; hash]) !&#x3D; null) &#123;</span><br><span class="line">       if (first.hash &#x3D;&#x3D; hash &amp;&amp; &#x2F;&#x2F; always check first node</span><br><span class="line">           ((k &#x3D; first.key) &#x3D;&#x3D; key || (key !&#x3D; null &amp;&amp; key.equals(k))))</span><br><span class="line">           return first;</span><br><span class="line">       if ((e &#x3D; first.next) !&#x3D; null) &#123;</span><br><span class="line">           if (first instanceof TreeNode)</span><br><span class="line">               return ((TreeNode&lt;K,V&gt;)first).getTreeNode(hash, key);</span><br><span class="line">           do &#123;</span><br><span class="line">               if (e.hash &#x3D;&#x3D; hash &amp;&amp;</span><br><span class="line">                   ((k &#x3D; e.key) &#x3D;&#x3D; key || (key !&#x3D; null &amp;&amp; key.equals(k))))</span><br><span class="line">                   return e;</span><br><span class="line">           &#125; while ((e &#x3D; e.next) !&#x3D; null);</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br><span class="line">   return null;</span><br><span class="line">&gt;&#125;</span><br></pre></td></tr></table></figure>
-</blockquote>
-<hr>
-<p><strong>containKey 方法讲解</strong></p>
-<p>可以看出来判断是否包含一个key，是直接调用getNode()方法,然后根据判断是否等于null来进行返回。</p>
-<blockquote>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">&gt;<span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">containsKey</span><span class="params">(Object key)</span> </span>&#123;</span><br><span class="line">   <span class="keyword">return</span> getNode(hash(key), key) != <span class="keyword">null</span>;</span><br><span class="line">&gt;&#125;</span><br></pre></td></tr></table></figure>
-</blockquote>
-<hr>
-<p>好啦,HashMap中put 和 get 理解明白即可,主要是 put 方法,这才是整个HashMap中的灵魂代码，也是必须了解的。</p>
-]]></content>
-      <categories>
-        <category>Java源码</category>
-      </categories>
-      <tags>
-        <tag>Java</tag>
-        <tag>HashMap</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>ThreadLocal源码阅读</title>
-    <url>/2020/06/20/ThreadLocal_source/</url>
-    <content><![CDATA[<h2 id="ThreadLocal源码阅读"><a href="#ThreadLocal源码阅读" class="headerlink" title="ThreadLocal源码阅读"></a>ThreadLocal源码阅读</h2><p>ThreadLocal 是来这个公司有过使用一次的感受,所以就学习阅读下源码。  其实Thread 这个里面,就有一个 Map(这里是用ThreadLocal内部类中实现的) , 里面的key就是 ThreadLocal, value 就是存储的值,所以一个Thread是有多个 ThreadLocal。 </p>
-<hr>
-<h4 id="参数"><a href="#参数" class="headerlink" title="参数"></a>参数</h4><p>  参数部分</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> threadLocalHashCode = nextHashCode();</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * The next hash code to be given out. Updated atomically. Starts at</span></span><br><span class="line"><span class="comment"> * zero.</span></span><br><span class="line"><span class="comment">   AtomicInteger 是一个线程安全的,实现原理是采用了cas.	</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> AtomicInteger nextHashCode =</span><br><span class="line">    <span class="keyword">new</span> AtomicInteger();</span><br></pre></td></tr></table></figure>
-
-
-
-<h4 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h4><p> set 赋值</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*	首先获取当前线程.</span></span><br><span class="line"><span class="comment">	调用 getMap 方法, 直接调用 t.trheadLocals来获取 ThreadLocalMap。(ThreadLocalMap这里是ThreadLocal内部自己实现的类)</span></span><br><span class="line"><span class="comment">	如果map不是null的话,就进行set值,这里可以看到 set 的key是this,也就是ThreadLocal它自己.</span></span><br><span class="line"><span class="comment">	否则就是调用createMap方法,走这个方法是可以确认 currentThread中的threadLocals的值是null,所以直接new了一个进行赋值即可.</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">set</span><span class="params">(T value)</span> </span>&#123;</span><br><span class="line">    Thread t = Thread.currentThread();</span><br><span class="line">    ThreadLocalMap map = getMap(t);</span><br><span class="line">    <span class="keyword">if</span> (map != <span class="keyword">null</span>)</span><br><span class="line">        map.set(<span class="keyword">this</span>, value);</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        createMap(t, value);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">ThreadLocalMap <span class="title">getMap</span><span class="params">(Thread t)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> t.threadLocals;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">createMap</span><span class="params">(Thread t, T firstValue)</span> </span>&#123;</span><br><span class="line">        t.threadLocals = <span class="keyword">new</span> ThreadLocalMap(<span class="keyword">this</span>, firstValue);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h4 id="Get-方法"><a href="#Get-方法" class="headerlink" title="Get 方法"></a>Get 方法</h4><p> get 方法,获取值.</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">	这里可以看到,获取ThreadLocalMap,如果ThreadLocalMap的是null的话,就会走setInitialValue方法。</span></span><br><span class="line"><span class="comment">	如果有值的话,就会进行获取值并且返回.</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> T <span class="title">get</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    Thread t = Thread.currentThread();</span><br><span class="line">    ThreadLocalMap map = getMap(t);</span><br><span class="line">    <span class="keyword">if</span> (map != <span class="keyword">null</span>) &#123;</span><br><span class="line">        ThreadLocalMap.Entry e = map.getEntry(<span class="keyword">this</span>);</span><br><span class="line">        <span class="keyword">if</span> (e != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="meta">@SuppressWarnings</span>(<span class="string">"unchecked"</span>)</span><br><span class="line">            T result = (T)e.value;</span><br><span class="line">            <span class="keyword">return</span> result;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> setInitialValue();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">	如果获取出来的ThreadLocalMap 不是null的话,就会进行set,这个时候set进去的值,value就是null了.</span></span><br><span class="line"><span class="comment">	如果获取出来是nulld</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> T <span class="title">setInitialValue</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        T value = initialValue();</span><br><span class="line">        Thread t = Thread.currentThread();</span><br><span class="line">        ThreadLocalMap map = getMap(t);</span><br><span class="line">        <span class="keyword">if</span> (map != <span class="keyword">null</span>)</span><br><span class="line">            map.set(<span class="keyword">this</span>, value);</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            createMap(t, value);</span><br><span class="line">        <span class="keyword">return</span> value;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">protected</span> T <span class="title">initialValue</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h4 id="remove-方法"><a href="#remove-方法" class="headerlink" title="remove 方法"></a>remove 方法</h4><p>remove 方法就是获取map,如果map不是null的话,就调用m.remove(this)，根据当前this来删除.</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">remove</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    ThreadLocalMap m = getMap(Thread.currentThread());</span><br><span class="line">    <span class="keyword">if</span> (m != <span class="keyword">null</span>)</span><br><span class="line">        m.remove(<span class="keyword">this</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-
-
-<hr>
-<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p> ThreadLocal里面的方法也比较少,还是比较好理解的。只要弄清楚ThreadLocal和Thread是怎么在存储的,就很好的理解了。</p>
-<p>注意 : 使用ThreadLocal一定要进行remove,否则容易出现内存泄漏，从而导致内存溢出。</p>
-]]></content>
-      <categories>
-        <category>ThreadLocal</category>
-      </categories>
-      <tags>
-        <tag>java源码</tag>
-        <tag>Java锁</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Redis缓存知识学习</title>
     <url>/2020/04/19/redis%E7%BC%93%E5%AD%98/</url>
     <content><![CDATA[<h3 id="Redis-缓存知识的学习"><a href="#Redis-缓存知识的学习" class="headerlink" title="Redis 缓存知识的学习"></a>Redis 缓存知识的学习</h3><blockquote>
@@ -451,6 +328,146 @@
       </tags>
   </entry>
   <entry>
+    <title>ThreadLocal源码阅读</title>
+    <url>/2020/06/20/ThreadLocal_source/</url>
+    <content><![CDATA[<h2 id="ThreadLocal源码阅读"><a href="#ThreadLocal源码阅读" class="headerlink" title="ThreadLocal源码阅读"></a>ThreadLocal源码阅读</h2><p>ThreadLocal 是来这个公司有过使用一次的感受,所以就学习阅读下源码。  其实Thread 这个里面,就有一个 Map(这里是用ThreadLocal内部类中实现的) , 里面的key就是 ThreadLocal, value 就是存储的值,所以一个Thread是有多个 ThreadLocal。 </p>
+<hr>
+<h4 id="参数"><a href="#参数" class="headerlink" title="参数"></a>参数</h4><p>  参数部分</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> threadLocalHashCode = nextHashCode();</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * The next hash code to be given out. Updated atomically. Starts at</span></span><br><span class="line"><span class="comment"> * zero.</span></span><br><span class="line"><span class="comment">   AtomicInteger 是一个线程安全的,实现原理是采用了cas.	</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> AtomicInteger nextHashCode =</span><br><span class="line">    <span class="keyword">new</span> AtomicInteger();</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h4><p> set 赋值</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*	首先获取当前线程.</span></span><br><span class="line"><span class="comment">	调用 getMap 方法, 直接调用 t.trheadLocals来获取 ThreadLocalMap。(ThreadLocalMap这里是ThreadLocal内部自己实现的类)</span></span><br><span class="line"><span class="comment">	如果map不是null的话,就进行set值,这里可以看到 set 的key是this,也就是ThreadLocal它自己.</span></span><br><span class="line"><span class="comment">	否则就是调用createMap方法,走这个方法是可以确认 currentThread中的threadLocals的值是null,所以直接new了一个进行赋值即可.</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">set</span><span class="params">(T value)</span> </span>&#123;</span><br><span class="line">    Thread t = Thread.currentThread();</span><br><span class="line">    ThreadLocalMap map = getMap(t);</span><br><span class="line">    <span class="keyword">if</span> (map != <span class="keyword">null</span>)</span><br><span class="line">        map.set(<span class="keyword">this</span>, value);</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        createMap(t, value);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">ThreadLocalMap <span class="title">getMap</span><span class="params">(Thread t)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> t.threadLocals;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">createMap</span><span class="params">(Thread t, T firstValue)</span> </span>&#123;</span><br><span class="line">        t.threadLocals = <span class="keyword">new</span> ThreadLocalMap(<span class="keyword">this</span>, firstValue);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="Get-方法"><a href="#Get-方法" class="headerlink" title="Get 方法"></a>Get 方法</h4><p> get 方法,获取值.</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">	这里可以看到,获取ThreadLocalMap,如果ThreadLocalMap的是null的话,就会走setInitialValue方法。</span></span><br><span class="line"><span class="comment">	如果有值的话,就会进行获取值并且返回.</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> T <span class="title">get</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    Thread t = Thread.currentThread();</span><br><span class="line">    ThreadLocalMap map = getMap(t);</span><br><span class="line">    <span class="keyword">if</span> (map != <span class="keyword">null</span>) &#123;</span><br><span class="line">        ThreadLocalMap.Entry e = map.getEntry(<span class="keyword">this</span>);</span><br><span class="line">        <span class="keyword">if</span> (e != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="meta">@SuppressWarnings</span>(<span class="string">"unchecked"</span>)</span><br><span class="line">            T result = (T)e.value;</span><br><span class="line">            <span class="keyword">return</span> result;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> setInitialValue();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">	如果获取出来的ThreadLocalMap 不是null的话,就会进行set,这个时候set进去的值,value就是null了.</span></span><br><span class="line"><span class="comment">	如果获取出来是nulld</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> T <span class="title">setInitialValue</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        T value = initialValue();</span><br><span class="line">        Thread t = Thread.currentThread();</span><br><span class="line">        ThreadLocalMap map = getMap(t);</span><br><span class="line">        <span class="keyword">if</span> (map != <span class="keyword">null</span>)</span><br><span class="line">            map.set(<span class="keyword">this</span>, value);</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            createMap(t, value);</span><br><span class="line">        <span class="keyword">return</span> value;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">protected</span> T <span class="title">initialValue</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="remove-方法"><a href="#remove-方法" class="headerlink" title="remove 方法"></a>remove 方法</h4><p>remove 方法就是获取map,如果map不是null的话,就调用m.remove(this)，根据当前this来删除.</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">remove</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    ThreadLocalMap m = getMap(Thread.currentThread());</span><br><span class="line">    <span class="keyword">if</span> (m != <span class="keyword">null</span>)</span><br><span class="line">        m.remove(<span class="keyword">this</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<hr>
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p> ThreadLocal里面的方法也比较少,还是比较好理解的。只要弄清楚ThreadLocal和Thread是怎么在存储的,就很好的理解了。</p>
+<p>注意 : 使用ThreadLocal一定要进行remove,否则容易出现内存泄漏，从而导致内存溢出。</p>
+]]></content>
+      <categories>
+        <category>ThreadLocal</category>
+      </categories>
+      <tags>
+        <tag>java源码</tag>
+        <tag>Java锁</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>HashMap源码阅读记录</title>
+    <url>/2020/04/29/HashMap%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB%E8%AE%B0%E5%BD%95/</url>
+    <content><![CDATA[<h3 id="HashMap"><a href="#HashMap" class="headerlink" title="HashMap"></a>HashMap</h3><blockquote>
+<p>HashMap 是基于哈希表的Map接口.是可以使用null来做为key.不保证映射的顺序.</p>
+<p>HashMap 是一种基于Key-Value的数据结构.</p>
+</blockquote>
+<p>​    </p>
+<p><img src="" alt="[https://github.com/baoyang23/images_repository/blob/master/java/hashMap/HashMap%E7%BB%93%E6%9E%84%E5%9B%BE.png](https://github.com/baoyang23/images_repository/blob/master/java/hashMap/HashMap结构图.png)"></p>
+<h3 id="HashMap源码分析"><a href="#HashMap源码分析" class="headerlink" title="HashMap源码分析"></a>HashMap源码分析</h3><p>默认初始化容量</p>
+<blockquote>
+<p>static final int DEFAULT_INITIAL_CAPACITY = 1 &lt;&lt; 4; // aka 16</p>
+</blockquote>
+<hr>
+<p>构造函数中未指定时使用的加载因子.</p>
+<blockquote>
+<p>static final float DEFAULT_LOAD_FACTOR = 0.75f</p>
+</blockquote>
+<hr>
+<p>存储数据使用的Node节点,可以理解为你Java中定义的一个类,就是这个类的next中的值,可能是下一个类似的节点，也可能是null(没有下一个指向).</p>
+<blockquote>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">&gt;<span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Node</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">implements</span> <span class="title">Map</span>.<span class="title">Entry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">   <span class="keyword">final</span> <span class="keyword">int</span> hash;</span><br><span class="line">   <span class="keyword">final</span> K key;</span><br><span class="line">   V value;</span><br><span class="line">   Node&lt;K,V&gt; next;</span><br><span class="line"></span><br><span class="line">   Node(<span class="keyword">int</span> hash, K key, V value, Node&lt;K,V&gt; next) &#123;</span><br><span class="line">       <span class="keyword">this</span>.hash = hash;</span><br><span class="line">       <span class="keyword">this</span>.key = key;</span><br><span class="line">       <span class="keyword">this</span>.value = value;</span><br><span class="line">       <span class="keyword">this</span>.next = next;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> K <span class="title">getKey</span><span class="params">()</span>        </span>&#123; <span class="keyword">return</span> key; &#125;</span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> V <span class="title">getValue</span><span class="params">()</span>      </span>&#123; <span class="keyword">return</span> value; &#125;</span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> key + <span class="string">"="</span> + value; &#125;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">hashCode</span><span class="params">()</span> </span>&#123;</span><br><span class="line">       <span class="keyword">return</span> Objects.hashCode(key) ^ Objects.hashCode(value);</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> V <span class="title">setValue</span><span class="params">(V newValue)</span> </span>&#123;</span><br><span class="line">       V oldValue = value;</span><br><span class="line">       value = newValue;</span><br><span class="line">       <span class="keyword">return</span> oldValue;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">equals</span><span class="params">(Object o)</span> </span>&#123;</span><br><span class="line">       <span class="keyword">if</span> (o == <span class="keyword">this</span>)</span><br><span class="line">           <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">       <span class="keyword">if</span> (o <span class="keyword">instanceof</span> Map.Entry) &#123;</span><br><span class="line">           Map.Entry&lt;?,?&gt; e = (Map.Entry&lt;?,?&gt;)o;</span><br><span class="line">           <span class="keyword">if</span> (Objects.equals(key, e.getKey()) &amp;&amp;</span><br><span class="line">               Objects.equals(value, e.getValue()))</span><br><span class="line">               <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">       &#125;</span><br><span class="line">       <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">   &#125;</span><br><span class="line">&gt;&#125;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<hr>
+<p><strong>Note: TreeNode这个内部类也是需要仔细看的。Java8中,当链表中的Node个数大于8的时候，就会转化为TreNode来进行存储Node节点.这里由于代码比较多，就不贴出来，但是对于要提升的，就要去仔细看看。</strong></p>
+<hr>
+<p>来看put方法，就是我们每次调用存储的方法，来看看代码层面是怎么实现。先根据key来调用hash()方法,可以看到调用hash方法后，就返回了int类型的,也就是调用hash来计算出哈希值.然后直接调用putVal方法，这才是真正的存储数据的方法.</p>
+<blockquote>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">&gt;<span class="function"><span class="keyword">public</span> V <span class="title">put</span><span class="params">(K key, V value)</span> </span>&#123;</span><br><span class="line">   <span class="keyword">return</span> putVal(hash(key), key, value, <span class="keyword">false</span>, <span class="keyword">true</span>);</span><br><span class="line">&gt;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注释的译文: 将指定值与此映射中的指定键相关联。如果映射先前包含键的映射，则替换旧值。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">&gt;<span class="function"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">hash</span><span class="params">(Object key)</span> </span>&#123;</span><br><span class="line">   <span class="keyword">int</span> h;</span><br><span class="line">   <span class="keyword">return</span> (key == <span class="keyword">null</span>) ? <span class="number">0</span> : (h = key.hashCode()) ^ (h &gt;&gt;&gt; <span class="number">16</span>);</span><br><span class="line">&gt;&#125;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<p><strong>putVal 方法讲解:</strong></p>
+<p>定义tab 的 Node数组, (tab = table) == null 这行代码是可以看到,全局变量的 table赋值给tab.</p>
+<p>Node&lt;K,V&gt; p 的话，这里如果算出来的hash值，tab[i= ()n-1 &amp; hash] , 也就是这样代码,如果是null的话,就说明在数组tab(table)中是不存在的.反正,就说明该哈希值在数组中是已经存在的(这就是哈希冲突).</p>
+<p>然后发生哈希冲突怎么办呢？</p>
+<p>我们看到代码 p.hash == hash &amp;&amp; ((k = p. key) == key || (key != null &amp;&amp; key.equals(k))), 判断hash值是否相等并且二者的key的值是否相等,使用==或者equals来进行判断，如果是想相同的话,就说明 Key 已经是存在的了,覆盖掉。   </p>
+<p>如果p是 TreeNode类型的话,就说明该哈希值冲突的个数已经大于8了，看到 e = ((TreeNode&lt;K,V&gt;)p).putTreeVal(this,tab,hash,key,value)这行代码，点进去看就可以,这里就有之前提到的说需要看TreeNode这个类的。</p>
+<p>for(int bigCount = 0;;++bigCount){} 中的代码,就是发生了put进来的key的哈希值是一样的,但是Key的值却不是一样。 e = p.next == null,如果p节点的next是Null的话,就是说明没有下一个节点,然后调用newNode来生成一个Node节点. bigCount &gt;= TREEIFY_THRESHOLD - 1 , 如果大于7的话,链表就会调用treeIfBin(tab,hash)这个方法转化为红黑树结构.</p>
+<p>可以看到putVal中的方法，仔细去阅读还是比较容易理解的.</p>
+<blockquote>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">&gt;<span class="function"><span class="keyword">final</span> V <span class="title">putVal</span><span class="params">(<span class="keyword">int</span> hash, K key, V value, <span class="keyword">boolean</span> onlyIfAbsent,</span></span></span><br><span class="line"><span class="function"><span class="params">              <span class="keyword">boolean</span> evict)</span> </span>&#123;</span><br><span class="line">   Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; p; <span class="keyword">int</span> n, i;</span><br><span class="line">   <span class="keyword">if</span> ((tab = table) == <span class="keyword">null</span> || (n = tab.length) == <span class="number">0</span>)</span><br><span class="line">       n = (tab = resize()).length;</span><br><span class="line">   <span class="keyword">if</span> ((p = tab[i = (n - <span class="number">1</span>) &amp; hash]) == <span class="keyword">null</span>)</span><br><span class="line">       tab[i] = newNode(hash, key, value, <span class="keyword">null</span>);</span><br><span class="line">   <span class="keyword">else</span> &#123;</span><br><span class="line">       Node&lt;K,V&gt; e; K k;</span><br><span class="line">       <span class="keyword">if</span> (p.hash == hash &amp;&amp;</span><br><span class="line">           ((k = p.key) == key || (key != <span class="keyword">null</span> &amp;&amp; key.equals(k))))</span><br><span class="line">           e = p;</span><br><span class="line">       <span class="keyword">else</span> <span class="keyword">if</span> (p <span class="keyword">instanceof</span> TreeNode)</span><br><span class="line">           e = ((TreeNode&lt;K,V&gt;)p).putTreeVal(<span class="keyword">this</span>, tab, hash, key, value);</span><br><span class="line">       <span class="keyword">else</span> &#123;</span><br><span class="line">           <span class="keyword">for</span> (<span class="keyword">int</span> binCount = <span class="number">0</span>; ; ++binCount) &#123;</span><br><span class="line">               <span class="keyword">if</span> ((e = p.next) == <span class="keyword">null</span>) &#123;</span><br><span class="line">                   p.next = newNode(hash, key, value, <span class="keyword">null</span>);</span><br><span class="line">                   <span class="keyword">if</span> (binCount &gt;= TREEIFY_THRESHOLD - <span class="number">1</span>) <span class="comment">// -1 for 1st</span></span><br><span class="line">                       treeifyBin(tab, hash);</span><br><span class="line">                   <span class="keyword">break</span>;</span><br><span class="line">               &#125;</span><br><span class="line">               <span class="keyword">if</span> (e.hash == hash &amp;&amp;</span><br><span class="line">                   ((k = e.key) == key || (key != <span class="keyword">null</span> &amp;&amp; key.equals(k))))</span><br><span class="line">                   <span class="keyword">break</span>;</span><br><span class="line">               p = e;</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;</span><br><span class="line">       <span class="keyword">if</span> (e != <span class="keyword">null</span>) &#123; <span class="comment">// existing mapping for key</span></span><br><span class="line">           V oldValue = e.value;</span><br><span class="line">           <span class="keyword">if</span> (!onlyIfAbsent || oldValue == <span class="keyword">null</span>)</span><br><span class="line">               e.value = value;</span><br><span class="line">           afterNodeAccess(e);</span><br><span class="line">           <span class="keyword">return</span> oldValue;</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br><span class="line">   ++modCount;</span><br><span class="line">   <span class="keyword">if</span> (++size &gt; threshold)</span><br><span class="line">       resize();</span><br><span class="line">   afterNodeInsertion(evict);</span><br><span class="line">   <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&gt;&#125;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<p><strong>resize() 方法讲解</strong></p>
+<p>这是HashMap中进行扩容的方法.</p>
+<p>int oldCap = (oldTab == null) ? 0 : oldTab.length;  拿出tab的长度,如果没有就是0(第一次初始化的时候,就是没有值1).</p>
+<p>threshold 这个值,是根据你传入进来的数值,比如第一次初始化的时候，你在构造函数中传入进来的值，就会调用返回生成值并且赋值给threshold这个全局变量。</p>
+<p>oldCap &gt; 0 , 看到 newThr = old &lt;&lt;&lt;1; 二倍扩容.</p>
+<p>oldThr &gt; 0 , 这个 newCap = oldThr 这个值取决于threshold，目前感觉像是第一次初始化并且构造函数有传入值才是有用的.</p>
+<p>否则就是使用默认的数值来进行初始化.大小确定完后,就将 newTab的值也会赋值给threshold.</p>
+<p>Node&lt;K,V&gt;[] newTab = (Node&lt;K,V&gt;[])new Node[newCap];</p>
+<p>table = newTable;</p>
+<p>for int j =0; j &lt; oldCap; ++j 中可以看出来,根据每个下标去进行迭代的，每个值有可能是 单个Node节点,也就是Node的next的值是null。 也有可能是 TreeNode类型的 。 也有可能是 Node下面的next还是有Node的。然后分别根据这三种情况,将老的数组中的值赋值给新扩容大小的数组中.</p>
+<blockquote>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">&gt;<span class="keyword">final</span> Node&lt;K,V&gt;[] resize() &#123;</span><br><span class="line">   Node&lt;K,V&gt;[] oldTab = table;</span><br><span class="line">   <span class="keyword">int</span> oldCap = (oldTab == <span class="keyword">null</span>) ? <span class="number">0</span> : oldTab.length;</span><br><span class="line">   <span class="keyword">int</span> oldThr = threshold;</span><br><span class="line">   <span class="keyword">int</span> newCap, newThr = <span class="number">0</span>;</span><br><span class="line">   <span class="keyword">if</span> (oldCap &gt; <span class="number">0</span>) &#123;</span><br><span class="line">       <span class="keyword">if</span> (oldCap &gt;= MAXIMUM_CAPACITY) &#123;</span><br><span class="line">           threshold = Integer.MAX_VALUE;</span><br><span class="line">           <span class="keyword">return</span> oldTab;</span><br><span class="line">       &#125;</span><br><span class="line">       <span class="keyword">else</span> <span class="keyword">if</span> ((newCap = oldCap &lt;&lt; <span class="number">1</span>) &lt; MAXIMUM_CAPACITY &amp;&amp;</span><br><span class="line">                oldCap &gt;= DEFAULT_INITIAL_CAPACITY)</span><br><span class="line">           newThr = oldThr &lt;&lt; <span class="number">1</span>; <span class="comment">// double threshold</span></span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">else</span> <span class="keyword">if</span> (oldThr &gt; <span class="number">0</span>) <span class="comment">// initial capacity was placed in threshold</span></span><br><span class="line">       newCap = oldThr;</span><br><span class="line">   <span class="keyword">else</span> &#123;               <span class="comment">// zero initial threshold signifies using defaults</span></span><br><span class="line">       newCap = DEFAULT_INITIAL_CAPACITY;</span><br><span class="line">       newThr = (<span class="keyword">int</span>)(DEFAULT_LOAD_FACTOR * DEFAULT_INITIAL_CAPACITY);</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">if</span> (newThr == <span class="number">0</span>) &#123;</span><br><span class="line">       <span class="keyword">float</span> ft = (<span class="keyword">float</span>)newCap * loadFactor;</span><br><span class="line">       newThr = (newCap &lt; MAXIMUM_CAPACITY &amp;&amp; ft &lt; (<span class="keyword">float</span>)MAXIMUM_CAPACITY ?</span><br><span class="line">                 (<span class="keyword">int</span>)ft : Integer.MAX_VALUE);</span><br><span class="line">   &#125;</span><br><span class="line">   threshold = newThr;</span><br><span class="line">   <span class="meta">@SuppressWarnings</span>(&#123;<span class="string">"rawtypes"</span>,<span class="string">"unchecked"</span>&#125;)</span><br><span class="line">   Node&lt;K,V&gt;[] newTab = (Node&lt;K,V&gt;[])<span class="keyword">new</span> Node[newCap];</span><br><span class="line">   table = newTab;</span><br><span class="line">   <span class="keyword">if</span> (oldTab != <span class="keyword">null</span>) &#123;</span><br><span class="line">       <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; oldCap; ++j) &#123;</span><br><span class="line">           Node&lt;K,V&gt; e;</span><br><span class="line">           <span class="keyword">if</span> ((e = oldTab[j]) != <span class="keyword">null</span>) &#123;</span><br><span class="line">               oldTab[j] = <span class="keyword">null</span>;</span><br><span class="line">               <span class="keyword">if</span> (e.next == <span class="keyword">null</span>)</span><br><span class="line">                   newTab[e.hash &amp; (newCap - <span class="number">1</span>)] = e;</span><br><span class="line">               <span class="keyword">else</span> <span class="keyword">if</span> (e <span class="keyword">instanceof</span> TreeNode)</span><br><span class="line">                   ((TreeNode&lt;K,V&gt;)e).split(<span class="keyword">this</span>, newTab, j, oldCap);</span><br><span class="line">               <span class="keyword">else</span> &#123; <span class="comment">// preserve order</span></span><br><span class="line">                   Node&lt;K,V&gt; loHead = <span class="keyword">null</span>, loTail = <span class="keyword">null</span>;</span><br><span class="line">                   Node&lt;K,V&gt; hiHead = <span class="keyword">null</span>, hiTail = <span class="keyword">null</span>;</span><br><span class="line">                   Node&lt;K,V&gt; next;</span><br><span class="line">                   <span class="keyword">do</span> &#123;</span><br><span class="line">                       next = e.next;</span><br><span class="line">                       <span class="keyword">if</span> ((e.hash &amp; oldCap) == <span class="number">0</span>) &#123;</span><br><span class="line">                           <span class="keyword">if</span> (loTail == <span class="keyword">null</span>)</span><br><span class="line">                               loHead = e;</span><br><span class="line">                           <span class="keyword">else</span></span><br><span class="line">                               loTail.next = e;</span><br><span class="line">                           loTail = e;</span><br><span class="line">                       &#125;</span><br><span class="line">                       <span class="keyword">else</span> &#123;</span><br><span class="line">                           <span class="keyword">if</span> (hiTail == <span class="keyword">null</span>)</span><br><span class="line">                               hiHead = e;</span><br><span class="line">                           <span class="keyword">else</span></span><br><span class="line">                               hiTail.next = e;</span><br><span class="line">                           hiTail = e;</span><br><span class="line">                       &#125;</span><br><span class="line">                   &#125; <span class="keyword">while</span> ((e = next) != <span class="keyword">null</span>);</span><br><span class="line">                   <span class="keyword">if</span> (loTail != <span class="keyword">null</span>) &#123;</span><br><span class="line">                       loTail.next = <span class="keyword">null</span>;</span><br><span class="line">                       newTab[j] = loHead;</span><br><span class="line">                   &#125;</span><br><span class="line">                   <span class="keyword">if</span> (hiTail != <span class="keyword">null</span>) &#123;</span><br><span class="line">                       hiTail.next = <span class="keyword">null</span>;</span><br><span class="line">                       newTab[j + oldCap] = hiHead;</span><br><span class="line">                   &#125;</span><br><span class="line">               &#125;</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">return</span> newTab;</span><br><span class="line">&gt;&#125;</span><br></pre></td></tr></table></figure>
+
+
+</blockquote>
+<p><strong>get方法讲解</strong></p>
+<p>调用hash()方法，这个在pul的方法中是有提到的.我们这里主要是看getNode方法,可以看到get方法中也有tab数组(这个数组才是存储数据的). if条件,tab不为null,并且长度也是大于0的,并且根据 tab[(n-1)&amp;hash]算出来的下表在数组中的值是不为null的.先判断,hash是否相等,key对应的值是否也相等,如果是的话，直接返回first节点,first节点是在if判断条件中进行赋值了的。如果不是的话,就拿取first节点的next值,如果是TreeNode类型的话,就说明这个哈希值已经冲突8次甚至更多,然后调用TreeNode的getTreeNode()来获取节点并且返回。还有一种就是没有转化TreeNode，还是使用单链表, while(e=e.next) 可以看出来,往下继续next，就是在迭代单链表,如果满足key值相同的话,就会返回。</p>
+<blockquote>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">&gt;<span class="function"><span class="keyword">public</span> V <span class="title">get</span><span class="params">(Object key)</span> </span>&#123; </span><br><span class="line">   Node&lt;K,V&gt; e;</span><br><span class="line">   <span class="keyword">return</span> (e = getNode(hash(key), key)) == <span class="keyword">null</span> ? <span class="keyword">null</span> : e.value;</span><br><span class="line">&gt;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注释译文: 返回指定键映射到的值，如果此映射不包含键的映射，则返回{@code null}。可以看到译文,如果根据Key映射到值,就返回值,如果没有映射到的话,就会返回Null.</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt;final Node&lt;K,V&gt; getNode(int hash, Object key) &#123;</span><br><span class="line">   Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; first, e; int n; K k;</span><br><span class="line">   if ((tab &#x3D; table) !&#x3D; null &amp;&amp; (n &#x3D; tab.length) &gt; 0 &amp;&amp;</span><br><span class="line">       (first &#x3D; tab[(n - 1) &amp; hash]) !&#x3D; null) &#123;</span><br><span class="line">       if (first.hash &#x3D;&#x3D; hash &amp;&amp; &#x2F;&#x2F; always check first node</span><br><span class="line">           ((k &#x3D; first.key) &#x3D;&#x3D; key || (key !&#x3D; null &amp;&amp; key.equals(k))))</span><br><span class="line">           return first;</span><br><span class="line">       if ((e &#x3D; first.next) !&#x3D; null) &#123;</span><br><span class="line">           if (first instanceof TreeNode)</span><br><span class="line">               return ((TreeNode&lt;K,V&gt;)first).getTreeNode(hash, key);</span><br><span class="line">           do &#123;</span><br><span class="line">               if (e.hash &#x3D;&#x3D; hash &amp;&amp;</span><br><span class="line">                   ((k &#x3D; e.key) &#x3D;&#x3D; key || (key !&#x3D; null &amp;&amp; key.equals(k))))</span><br><span class="line">                   return e;</span><br><span class="line">           &#125; while ((e &#x3D; e.next) !&#x3D; null);</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br><span class="line">   return null;</span><br><span class="line">&gt;&#125;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<hr>
+<p><strong>containKey 方法讲解</strong></p>
+<p>可以看出来判断是否包含一个key，是直接调用getNode()方法,然后根据判断是否等于null来进行返回。</p>
+<blockquote>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">&gt;<span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">containsKey</span><span class="params">(Object key)</span> </span>&#123;</span><br><span class="line">   <span class="keyword">return</span> getNode(hash(key), key) != <span class="keyword">null</span>;</span><br><span class="line">&gt;&#125;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<hr>
+<p>好啦,HashMap中put 和 get 理解明白即可,主要是 put 方法,这才是整个HashMap中的灵魂代码，也是必须了解的。</p>
+]]></content>
+      <categories>
+        <category>Java源码</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+        <tag>HashMap</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>关于我BaoYang</title>
+    <url>/2019/10/07/%E5%85%B3%E4%BA%8E%E6%88%91/</url>
+    <content><![CDATA[<p>这里用于记录个人学习和生活的博客;使用的是Github + Hexo 来搭建的，由于是第一次使用,在很多方面都不是很懂，后续会慢慢的来更新这些信息。</p>
+<p>最近犯了一个很严重的错误,让我严重的意识到一些态度的问题对于个人来说还是很重要的。如果不是这些事,也许我还是无法很快速的成长，也许给我现在的感触最深的几个地方就是.我为什么会有这种错误的出现?当出现这种错误后,又是因为我个人不能很好的处理掉乱七八糟的.</p>
+<p>2019-10-17  已经有好几天没有提交代码上github，提心吊胆的感觉也是让我觉得很难受。有些错误,我相信我自己以后是不会再出现的了.</p>
+<p>2019-10-22 坚持使用csdn来记录技术或者博客等,这里的博客希望更多的总结或者文章的汇总等.加油,给自己.</p>
+<p>个人 : BaoYang , Java爱好者,虽然平时也会捣鼓一些其他的东西,毕竟刚刚工作对一些新的东西有时候或者说是居多的时候,总是会充满一些好奇感忍不住去研究下它的好处或者使用啥的啊。</p>
+<p><a href="https://blog.csdn.net/by_yangge" target="_blank" rel="noopener">https://blog.csdn.net/by_yangge</a> csdn博客地址也是用于记录一些个人的学习东西或者遇见的错误记录等问题。关于写博客或者记录一下个人的状态等信息,我个人虽然也是刚刚开始,更多的时候,我也是希望我可以长期的坚持下来记录学习和博客的记载等. 也是看个人和 贵在坚持这点吧.</p>
+]]></content>
+      <categories>
+        <category>关于个人的</category>
+      </categories>
+      <tags>
+        <tag>关于我</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Spring源码阅读日记</title>
     <url>/2020/01/16/Spring%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB%E6%97%A5%E8%AE%B0/</url>
     <content><![CDATA[<h3 id=""><a href="#" class="headerlink" title=""></a></h3><h3 id="导入Spring"><a href="#导入Spring" class="headerlink" title="导入Spring"></a>导入Spring</h3><ol>
@@ -478,6 +495,205 @@
       <tags>
         <tag>Java</tag>
         <tag>Spring</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>深入了解JVM阅读笔记</title>
+    <url>/2020/04/18/%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3JVM%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/</url>
+    <content><![CDATA[<h3 id="深入理解JVM阅读笔记"><a href="#深入理解JVM阅读笔记" class="headerlink" title="深入理解JVM阅读笔记"></a>深入理解JVM阅读笔记</h3><ol>
+<li><p>个人认为学习JVM是对每个学习(深入)JAVA的人是一个必备的知识。</p>
+</li>
+<li><p>同时JVM里面的知识也不是一遍就可以学习好的，是要经过反复的阅读和自己的理解。肯定还要带有一定的项目实战经历(但是这个一般的情况都不是很容易遇见)。  </p>
+<hr>
+</li>
+</ol>
+<h3 id="Java内存区域笔记"><a href="#Java内存区域笔记" class="headerlink" title="Java内存区域笔记"></a>Java内存区域笔记</h3><ol>
+<li><p>程序计数器: </p>
+<p> 程序计数器是一块较小的内存,可以看成当前线程所执行的字节码的行号指示器.字节码解释器工作是通过改变计数器的值来选取吓一条需要执行的字节码,分支,循环,跳转,异常处理,线程恢复等基础功能都需要依赖这个计数器来完成.</p>
+<p>  如果线程正在执行的是一个JAVA方法,这个计数器记录的是正在执行的虚拟机字节码指令地址,如果执行的是Native方法,这个计数器的值就是空(Undefind).此内存区域是唯一一个在JAVA虚拟机规范中没有规定任    OutOfMemoryError情况的区域</p>
+</li>
+<li><p>Java虚拟机栈</p>
+<p>​        与程序计数器一样，Java虚拟机栈（Java Virtual Machine Stacks）也是线程私有的，它的生命周期与线程相同。虚拟机栈描述的是Java方法执行的内存模型：每个方法在执行的同时都会创建一个栈帧（Stack Frame)用于存储局部变量表、操作数栈、动态链接、方法出口等信息。每一个方法从调用直至执行完成的过程，就对应着一个栈帧在虚拟机栈中入栈到出栈的过程。</p>
+<p>​       局部变量表存放了编译可知的各种基本类型(boolean,byte,char,short,int,float,long,double),对象引用(reference类型,它不等同于对象本身，可能是一个指向对象起始地址的引用指针，也可能是指向一个代表对象的句柄或其他与此对象相关的位置）和returnAddress类型)    </p>
+<p>​       在JAVA虚拟机规范中,对这个区域的规定了二种异常情况,如果线程请求的栈深度大于虚拟机所允许的深度,将会跑出来StackOverflowError异常,如果虚拟机栈可以动态扩展,如果扩展的是无法申请到足够的内存,就会抛出OutOfMeneryError异常</p>
+</li>
+</ol>
+<p>   ​       虚拟机栈是Java执行方法的内存模型。每个方法被执行的时候，都会创建一个栈帧，当把栈帧压入栈，当方法正常返回或者抛出未捕获的异常时，栈帧就会出栈。</p>
+<p>   ​       栈帧:  栈帧存储方法的相关信息，包含局部变量数表，返回值，操作数栈，动态链接。</p>
+<p>   ​                  局部变量表:  包含了方法执行过程中的所有变量。局部变量数组所需要的空间在编译期间完成分配，在方法运行期间不会改变局部变量数组大小。</p>
+<p>   ​                  返回值: 如果有返回值的话,压入调用者栈帧中的操作数栈中，并且把PC的值指向 方法调用指令 后面的一条指令地址。</p>
+<p>   ​                  操作数栈:  操作变量的内存模型。操作数栈的最大深度在编译的时候已经确定（写入方法区Code属性的max_stacks项中）。操作数栈的元素可以是任意JAVA类型。32位数据占用栈空间为1，64位数据占用栈空间为6。方法刚开始执行的时候，栈是空的，当方法执行过程中，各种字节码指令往栈中存取数据。</p>
+<p>   ​                  动态链接:  每个栈帧都持有在运行常量池中该栈帧所属方法的引用，持有这个引用是为了支持方法调用过程的动态链接。</p>
+<ol start="3">
+<li><p>本地方法栈</p>
+<p>​       本地方法栈（Native Method Stack）与虚拟机栈所发挥的作用是非常相似的，它们之间的区别不过是虚拟机栈为虚拟机执行Java方法（也就是字节码）服务，而本地方法栈则为虚拟机使用到的Native方法服务。在虚拟机规范中对本地方法栈中方法使用的语言、使用方式与数据结构并没有强制规定，因此具体的虚拟机可以自由实现它。甚至有的虚拟机（譬如Sun HotSpot虚拟机）直接就把本地方法栈和虚拟机栈合二为一。与虚拟机栈一样，本地方法栈区域也会抛出StackOverflowError和OutOfMemoryError异常</p>
+<p>​      调用本地Native的内存模型</p>
+<p>​      线程独享</p>
+</li>
+<li><p>Java堆</p>
+<p>​    Java堆（Java Heap）是Java虚拟机所管理的内存中最大的一块.Java堆是被所有线程共享的一块内存区域.此内存区域的唯一目的就是存放对象实例,几乎所有的对象实例都在这里分配.所有的对象实例以及数组都要在堆上分配,但是随着JIT编译器的发展与逃逸分析技术逐渐成熟，栈上分配、标量替换优化技术将会导致一些微妙的变化发生，所有的对象都分配在堆上也渐渐变得不是那么“绝对”了`</p>
+<p>​    Java堆是垃圾收集器管理的主要区域，因此很多时候也被称做“GC堆。从内存回收的角度来看，由于现在收集器基本都采用分代收集算法，所以Java堆中还可以细分为：新生代和老年代；再细致一点的有Eden空间、From Survivor空间、To Survivor空间等。从内存分配的角度来看，线程共享的Java堆中可能划分出多个线程私有的分配缓冲区（Thread Local Allocation Buffer，TLAB）。不过无论如何划分，都与存放内容无关，无论哪个区域，存储的都仍然是对象实例，进一步划分的目的是为了更好地回收内存，或者更快地分配内存。</p>
+<p>​    当前主流的虚拟机都是按照可扩展来实现的(通过-Xmx 和 -Xms控制)。如果在堆中没有内存完成实例分配，堆中没有内存完成实例配置，并且堆也无法再扩展时，将会抛出来OurOfMemoryError异常。</p>
+</li>
+<li><p>方法区</p>
+<p>  方法区与Java堆一样,是各个线程共享的内存区域，它用于存储已被虚拟机加载的类信息，常量，静态变量，即时编译器后的代码等数据。虽然Java虚拟机规范把方法区描述为堆的一个逻辑部分，但是它却有一个别名叫做Non-Heap（非堆），目的应该是与Java堆区分开来。</p>
+<p>  多人都更愿意把方法区称为“永久代”（Permanent Generation），本质上两者并不等价，仅仅是因为HotSpot虚拟机的设计团队选择把GC分代收集扩展至方法区，或者说使用永久代来实现方法区而已，这样HotSpot的垃圾收集器可以像管理Java堆一样管理这部分内存。（Java8 中好像永久代换了名字）</p>
+<p>​    根据虚拟机规定，当方法区无法满足内存分配的需求时，将会抛出OutOfMemoryError异常。</p>
+</li>
+<li><p>运行时常量池</p>
+<p>​        运行时常量池（Runtime Constant Pool）是方法区的一部分。Class文件中除了有类的版本、字段、方法、接口等描述信息外，还有一项信息是常量池（Constant Pool Table），用于存放编译期生成的各种字面量和符号引用，这部分内容将在类加载后进入方法区的运行时常量池中存放。</p>
+<p>​        运行时常量池相对于Class文件常量池的另外一个重要特性时具备动态性，Java语言并不要求常量一定只有编译期才能产生，也就是非预置入Class文件中常量池的内容才能进入方法区运行时常量池，运行期间也可能将新的常量放入池中，这种特性被开发人员利用得比较多的便是String类的intern()方法。</p>
+<p>​        运行时常量池时方法区的一部分，自然受到方法区内存限制,当常量池无法再申请到内存时就会抛出OutOfMemeryError异常。</p>
+</li>
+<li><p>直接内存</p>
+<p>直接内存（Direct Memory）并不是虚拟机运行时数据区的一部分，也不是Java虚拟机规范中定义的内存区域。但是这部分内存也被频繁地使用，而且也可能导致OutOfMemoryError异常出现，所以我们放到这里一起讲解。</p>
+</li>
+</ol>
+<p>总结 :  对于Java内存区域的知识点大致是这样，但是每个点都是要深入进去了解的。这里是摘抄书籍的内容来做笔记。后期再看的时候，会添加上个人笔记。</p>
+<hr>
+<h3 id="类文件结构"><a href="#类文件结构" class="headerlink" title="类文件结构"></a>类文件结构</h3><ol>
+<li><p>Class类文件结构</p>
+<p>​     任何一个Class文件都对应着唯一一个类或接口的定义信息，但反过来说，类或接口并不一定都得定义在文件里（譬如类或接口也可以通过类加载器直接生成）。</p>
+<p>​     Class文件是一组以8位字节为基础单位的二进制流，各个数据项目严格按照顺序紧凑地排列在Class文件之中，中间没有添加任何分隔符，这使得整个Class文件中存储的内容几乎全部是程序运行的必要数据，没有空隙存在。</p>
+<p>​      这里我们就采用书中的代码,跟着来一步一步实现。</p>
+<p>​       进入到这个TestClass.java的目录下，执行javac TestClass.java 就会在同一级目录下生成出 TestClass.class文件，这里我是用 Sublime 打开的.class文件,也同样可以看到书中的效果，开头的cafe babe(至于这其中的故事可以去看原书籍).</p>
+<p>​        然后继续在刚刚的目录下,来执行 javap -verbose TestClass ，都可以看到效果。这里的内容对着原书籍上仔细的一一对看即可。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">package com.yang.basicjavatest.gjvm;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @Author: Mu_Yi</span><br><span class="line"> * @Date: 2020&#x2F;4&#x2F;18 14:27</span><br><span class="line"> * @Version 1.0</span><br><span class="line"> * @qq: 1411091515</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class TestClass &#123;</span><br><span class="line"></span><br><span class="line">    private int m;</span><br><span class="line"></span><br><span class="line">    public int inc()&#123;</span><br><span class="line"></span><br><span class="line">        return m + 1;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>cafe babe 0000 0034 0013 0a00 0400 0f09<br>0003 0010 0700 1107 0012 0100 016d 0100<br>0149 0100 063c 696e 6974 3e01 0003 2829<br>5601 0004 436f 6465 0100 0f4c 696e 654e<br>756d 6265 7254 6162 6c65 0100 0369 6e63<br>0100 0328 2949 0100 0a53 6f75 7263 6546<br>696c 6501 000e 5465 7374 436c 6173 732e<br>6a61 7661 0c00 0700 080c 0005 0006 0100<br>2563 6f6d 2f79 616e 672f 6261 7369 636a<br>6176 6174 6573 742f 676a 766d 2f54 6573<br>7443 6c61 7373 0100 106a 6176 612f 6c61<br>6e67 2f4f 626a 6563 7400 2100 0300 0400<br>0000 0100 0200 0500 0600 0000 0200 0100<br>0700 0800 0100 0900 0000 1d00 0100 0100<br>0000 052a b700 01b1 0000 0001 000a 0000<br>0006 0001 0000 0009 0001 000b 000c 0001<br>0009 0000 001f 0002 0001 0000 0007 2ab4<br>0002 0460 ac00 0000 0100 0a00 0000 0600<br>0100 0000 0f00 0100 0d00 0000 0200 0e</p>
+</blockquote>
+</li>
+</ol>
+<pre><code>javap -verbose TestClass.class 效果</code></pre><blockquote>
+<p>D:\Java_DaiMa\idea_github_self\basic-java-io\basic-java-test\src\main\java\com\yang\basicjavatest\gjvm&gt;javap -verbose TestClass.class<br>Classfile /D:/Java_DaiMa/idea_github_self/basic-java-io/basic-java-test/src/main/java/com/yang/basicjavatest/gjvm/TestClass.class<br>  Last modified 2020-4-18; size 303 bytes<br>  MD5 checksum b5c0b88622793ee9ace089dce2d2959d<br>  Compiled from “TestClass.java”<br>public class com.yang.basicjavatest.gjvm.TestClass<br>  minor version: 0<br>  major version: 52<br>  flags: ACC_PUBLIC, ACC_SUPER<br>Constant pool:<br>   #1 = Methodref          #4.#15         // java/lang/Object.”<init>“:()V<br>   #2 = Fieldref           #3.#16         // com/yang/basicjavatest/gjvm/TestClass.m:I<br>   #3 = Class              #17            // com/yang/basicjavatest/gjvm/TestClass<br>   #4 = Class              #18            // java/lang/Object<br>   #5 = Utf8               m<br>   #6 = Utf8               I<br>   #7 = Utf8               <init><br>   #8 = Utf8               ()V<br>   #9 = Utf8               Code<br>  #10 = Utf8               LineNumberTable<br>  #11 = Utf8               inc<br>  #12 = Utf8               ()I<br>  #13 = Utf8               SourceFile<br>  #14 = Utf8               TestClass.java<br>  #15 = NameAndType        #7:#8          // “<init>“:()V<br>  #16 = NameAndType        #5:#6          // m:I<br>  #17 = Utf8               com/yang/basicjavatest/gjvm/TestClass<br>  #18 = Utf8               java/lang/Object<br>{<br>  public com.yang.basicjavatest.gjvm.TestClass();<br>    descriptor: ()V<br>    flags: ACC_PUBLIC<br>    Code:<br>      stack=1, locals=1, args_size=1<br>         0: aload_0<br>         1: invokespecial #1                  // Method java/lang/Object.”<init>“:()V<br>         4: return<br>      LineNumberTable:<br>        line 9: 0</p>
+<p>  public int inc();<br>    descriptor: ()I<br>    flags: ACC_PUBLIC<br>    Code:<br>      stack=2, locals=1, args_size=1<br>         0: aload_0<br>         1: getfield      #2                  // Field m:I<br>         4: iconst_1<br>         5: iadd<br>         6: ireturn<br>      LineNumberTable:<br>        line 15: 0<br>}<br>SourceFile: “TestClass.java”</p>
+</blockquote>
+<ol start="2">
+<li><p>LineNumberTable 属性 </p>
+<p> LineNumberTable属性用于描述Java源码行号与字节码行号（字节码的偏移量）之间的对应关系。它并不是运行时必需的属性，但默认会生成到Class文件之中，可以在Javac中分别使用-g:none或-g:lines选项来取消或要求生成这项信息。如果选择不生成LineNumberTable属性，对程序运行产生的最主要的影响就是当抛出异常时，堆栈中将不会显示出错的行号，并且在调试程序的时候，也无法按照源码行来设置断点。     </p>
+</li>
+</ol>
+<ol start="3">
+<li><p>LocalVariableTable属性</p>
+<p>LocalVariableTable属性用于描述栈帧中局部变量表中的变量与Java源码中定义的变量之间的关系，它也不是运行时必需的属性，但默认会生成到Class文件之中，可以在Javac中分别使用-g:none或-g:vars选项来取消或要求生成这项信息。如果没有生成这项属性，最大的影响就是当其他人引用这个方法时，所有的参数名称都将会丢失，IDE将会使用诸如arg0、arg1之类的占位符代替原有的参数名，这对程序运行没有影响，但是会对代码编写带来较大不便，而且在调试期间无法根据参数名称从上下文中获得参数值。</p>
+</li>
+</ol>
+<ol start="4">
+<li><p>SourceFile属性</p>
+<p> SourceFile属性用于记录生成这个Class文件的源码文件名称。这个属性也是可选的，可以分别使用Javac的-g:none或-g:source选项来关闭或要求生成这项信息。在Java中，对于大多数的类来说，类名和文件名是一致的，但是有一些特殊情况（如内部类）例外。如果不生成这项属性，当抛出异常时，堆栈中将不会显示出错代码所属的文件名。这个属性是一个定长的属性。</p>
+</li>
+</ol>
+<ol start="5">
+<li><p>ConstantValue 属性</p>
+<p> ConstantValue属性的作用是通知虚拟机自动为静态变量赋值。只有被static关键字修饰的变量（类变量）才可以使用这项属性。类似“int x=123”和“static int x=123”这样的变量定义在Java程序中是非常常见的事情，但虚拟机对这两种变量赋值的方式和时刻都有所不同。对于非static类型的变量（也就是实例变量）的赋值是在实例构造器<init>方法中进行的；而对于类变量，则有两种方式可以选择：在类构造器<clinit>方法中或者使用ConstantValue属性。目前Sun Javac编译器的选择是：如果同时使用final和static来修饰一个变量（按照习惯，这里称“常量”更贴切），并且这个变量的数据类型是基本类型或者java.lang.String的话，就生成ConstantValue属性来进行初始化，如果这个变量没有被final修饰，或者并非基本类型及字符串，则将会选择在<clinit>方法中进行初始化。</p>
+</li>
+<li><p>InnerClasses 属性</p>
+<p> InnerClasses属性用于记录内部类与宿主类之间的关联。如果一个类中定义了内部类，那编译器将会为它以及它所包含的内部类生成InnerClasses属性。</p>
+</li>
+</ol>
+<p>   等等更多的属性就去具体的原书籍中查看</p>
+<hr>
+<ol start="2">
+<li>字节码指令也推荐在原书籍中查看。</li>
+</ol>
+<hr>
+<h3 id="类加载机制"><a href="#类加载机制" class="headerlink" title="类加载机制"></a>类加载机制</h3><ol>
+<li><p>类加载的时机 :  </p>
+<p>  类从被加载到虚拟机内存中开始,到卸载出内存为止，它的整个生命周期包括 : 加载(loading),验证(verification),准备(Preparation), 解析(resolution),初始化(init),使用(use) 和 卸载(unloading).</p>
+</li>
+<li><p>加载(类加载):</p>
+<ul>
+<li>通过一个类的全限定名来获取定义此类的二进制字节流</li>
+<li>将这个字节流所代表的静态存储结构转化为方法区的运行时数据。</li>
+<li>在内存中生成一个代表这个类的 java.lang.Class对象，作为方法区这个类的各种数据访问入口。</li>
+</ul>
+</li>
+<li><p>验证 :</p>
+<p>  验证是连接阶段的第一步,这一阶段的目的是为了确保Class文件的字节流中包含的信息符合当前虚拟机的要求，并且不会危害到虚拟机自身的安危。</p>
+<ul>
+<li>​    文件格式的检验 ： 这一阶段要验证字节流是否符合Class文件格式的规范，并且能被当前版本的虚拟机处理。</li>
+<li>元数据验证:  是对字节码描述的信息进行语义分析，以确保起描述的信息符合Java语言虚拟机的要求。</li>
+<li>字节码验证:  通过数据流和控制流分析，确保程序语义是合法的，符合逻辑的。</li>
+<li>符号引用验证: 最后一阶段的检验发生在虚拟机将符号引用转化为直接引用的时候。</li>
+</ul>
+</li>
+<li><p>准备 :  </p>
+<p>​    准备阶段是正式为类变量分配内存并设置类变变量初始化的阶段，这些变量所使用的内存都将在方法区中进行分配。这时候进行内存分配的仅包括类变量(被static修饰的变量)，而不包括实例变量，实例变量将会在对象实例化时随着对象一起分配在Java堆中。</p>
+</li>
+<li><p>解析 : </p>
+<ul>
+<li><p>​     类或接口的解析:   假设当前代码所处的类是D,如果要把一个从未解析的过的符号引用N解析为一个类或者接口C直接引用</p>
+<ol>
+<li><p>​     如果C不是一个数组类型，那虚拟机将会把代表N的全限定名传递给D的类加载器去加载这个类C。在加载过程中，由于元数据验证、字节码验证的需要，又可能触发其他相关类的加载动作，例如加载这个类的父类或实现的接口。一旦这个加载过程出现了任何异常，解析过程就宣告失败。</p>
+</li>
+<li><p>如果C是一个数组类型，并且数组的元素类型为对象，也就是N的描述符会是类似“[Ljava/lang/Integer”的形式，那将会按照第1点的规则加载数组元素类型。如果N的描述符如前面所假设的形式，需要加载的元素类型就是“java.lang.Integer”，接着由虚拟机生成一个代表此数组维度和元素的数组对象。</p>
+</li>
+<li><p>如果上面的步骤没有出现任何异常，那么C在虚拟机中实际上已经成为一个有效的类或接口了，但在解析完成之前还要进行符号引用验证，确认D是否具备对C的访问权限。如果发现不具备访问权限，将抛出java.lang.IllegalAccessError异常。</p>
+</li>
+</ol>
+</li>
+</ul>
+</li>
+</ol>
+<ul>
+<li><p>字段解析 : </p>
+<p>​      要解析一个未被解析过的字段符号引用，首先将会对字段表内class_index[插图]项中索引的CONSTANT_Class_info符号引用进行解析，也就是字段所属的类或接口的符号引用。如果在解析这个类或接口符号引用的过程中出现了任何异常，都会导致字段符号引用解析的失败。如果解析成功完成，那将这个字段所属的类或接口用C表示，虚拟机规范要求按照如下步骤对C进行后续字段的搜索。</p>
+<ol>
+<li>​        如果C本身就包含了简单名称和字段描述符都与目标相匹配的字段，则返回这个字段的直接引用，查找结束。</li>
+<li>否则，如果在C中实现了接口，将会按照继承关系从下往上递归搜索各个接口和它的父接口，如果接口中包含了简单名称和字段描述符都与目标相匹配的字段，则返回这个字段的直接引用，查找结束。</li>
+<li>否则，如果C不是java.lang.Object的话，将会按照继承关系从下往上递归搜索其父类，如果在父类中包含了简单名称和字段描述符都与目标相匹配的字段，则返回这个字段的直接引用，查找结束。</li>
+<li>否则，查找失败，抛出java.lang.NoSuchFieldError异常。</li>
+</ol>
+</li>
+<li><p>类方法解析 :</p>
+<p>​     类方法解析的第一个步骤与字段解析一样，也需要先解析出类方法表的class_index[插图]项中索引的方法所属的类或接口的符号引用，如果解析成功，我们依然用C表示这个类，接下来虚拟机将会按照如下步骤进行后续的类方法搜索。</p>
+<ol>
+<li><p>​      类方法和接口方法符号引用的常量类型定义是分开的，如果在类方法表中发现class_index中索引的C是个接口，那就直接抛出java.lang.IncompatibleClassChangeError异常。</p>
+</li>
+<li><p>如果通过了第1步，在类C中查找是否有简单名称和描述符都与目标相匹配的方法，如果有则返回这个方法的直接引用，查找结束。</p>
+</li>
+<li><p>否则，在类C的父类中递归查找是否有简单名称和描述符都与目标相匹配的方法，如果有则返回这个方法的直接引用，查找结束。</p>
+</li>
+<li><p>否则，在类C实现的接口列表及它们的父接口之中递归查找是否有简单名称和描述符都与目标相匹配的方法，如果存在匹配的方法，说明类C是一个抽象类，这时查找结束，抛出java.lang.AbstractMethodError异常。</p>
+</li>
+<li><p>否则，宣告方法查找失败，抛出java.lang.NoSuchMethodError。</p>
+</li>
+</ol>
+</li>
+</ul>
+<pre><code>最后，如果查找过程成功返回了直接引用，将会对这个方法进行权限验证，如果发现不具备对此方法的访问权限，将抛出java.lang.IllegalAccessError异常。</code></pre><ul>
+<li><p>接口方法解析: </p>
+<p> 接口方法也需要先解析出接口方法表的class_index项中索引的方法所属的类或接口的符号引用，如果解析成功，依然用C表示这个接口，接下来虚拟机将会按照如下步骤进行后续的接口方法搜索。</p>
+<ol>
+<li>​    与类方法解析不同，如果在接口方法表中发现class_index中的索引C是个类而不是接口，那就直接抛出java.lang.IncompatibleClassChangeError异常。</li>
+<li>否则，在接口C中查找是否有简单名称和描述符都与目标相匹配的方法，如果有则返回这个方法的直接引用，查找结束。</li>
+<li>否则，在接口C的父接口中递归查找，直到java.lang.Object类（查找范围会包括Object类）为止，看是否有简单名称和描述符都与目标相匹配的方法，如果有则返回这个方法的直接引用，查找结束。</li>
+<li>否则，宣告方法查找失败，抛出java.lang.NoSuchMethodError异常。</li>
+</ol>
+</li>
+</ul>
+<pre><code>​    由于接口中的所有方法默认都是public的，所以不存在访问权限的问题，因此接口方法的符号解析应当不会抛出java.lang.IllegalAccessError异常。</code></pre><ol start="6">
+<li><p>初始化 : </p>
+<p>​    类初始化阶段是类加载过程的最后一步，前面的类加载过程中。除了在加载阶段用户应用程序可以通过自定义类加载器参与之外，其余动作完全由虚拟机主导和控制。到了初始化阶段，才真正开始执行类中定义的Java程序代码（或者说是字节码）</p>
+</li>
+<li><p>类加载阶段:</p>
+<pre><code>类加载器虽然只用于实现类的加载动作，但它在JAVA程序中起到的作用却远远不限于类加载阶段。对于任意一个类，都需要由加载它的类加载器和这个类本身一同确立其在JAVA虚拟机中的唯一性，每一个类加载器，都拥有一个独立的类名称空间。比较两个类是否“相等”，只有在这两个类是由同一个类加载器加载的前提下才有意义，否则，即使这两个类来源于同一个Class文件，被同一个虚拟机加载，只要加载它们的类加载器不同，那这两个类就必定不相等。</code></pre><p>跟着书上的写了代码，结果也是书上的。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">package com.yang.basicjavatest.gjvm;</span><br><span class="line"></span><br><span class="line">import java.io.InputStream;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @Author: Mu_Yi</span><br><span class="line"> * @Date: 2020&#x2F;4&#x2F;18 15:35</span><br><span class="line"> * @Version 1.0</span><br><span class="line"> * @qq: 1411091515</span><br><span class="line"> *&#x2F;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">public class ClassLoaderTest &#123;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) throws Exception &#123;</span><br><span class="line"></span><br><span class="line">        ClassLoader classLoader &#x3D; new ClassLoader() &#123;</span><br><span class="line">            @Override</span><br><span class="line">            public Class&lt;?&gt; loadClass(String name) throws ClassNotFoundException &#123;</span><br><span class="line">               try&#123;</span><br><span class="line">                   String fileName &#x3D; name.substring(name.lastIndexOf(&quot;.&quot;) + 1 ) + &quot;.class&quot;;</span><br><span class="line">                   InputStream inputStream &#x3D; getClass().getResourceAsStream(fileName);</span><br><span class="line">                   if(inputStream &#x3D;&#x3D; null)&#123;</span><br><span class="line">                       return super.loadClass(name);</span><br><span class="line">                   &#125;</span><br><span class="line">                   byte [] b &#x3D; new byte[inputStream.available()];</span><br><span class="line">                   inputStream.read(b);</span><br><span class="line">                   return defineClass(name,b,0,b.length);</span><br><span class="line">               &#125;catch (Exception e)&#123;</span><br><span class="line">                   throw new ClassNotFoundException(name);</span><br><span class="line">               &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line">        Object instance &#x3D; classLoader.loadClass(&quot;com.yang.basicjavatest.gjvm.ClassLoaderTest&quot;).newInstance();</span><br><span class="line"></span><br><span class="line">        System.out.println(instance.getClass());</span><br><span class="line">        System.out.println(instance instanceof ClassLoaderTest);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ol>
+<hr>
+<p>后续会持续学习JVM方面的知识,也会持续更新这篇知识。</p>
+]]></content>
+      <categories>
+        <category>Java</category>
+        <category>JVM</category>
+      </categories>
+      <tags>
+        <tag>JVM</tag>
       </tags>
   </entry>
   <entry>
@@ -773,222 +989,6 @@ docker-engine
       </tags>
   </entry>
   <entry>
-    <title>关于我BaoYang</title>
-    <url>/2019/10/07/%E5%85%B3%E4%BA%8E%E6%88%91/</url>
-    <content><![CDATA[<p>这里用于记录个人学习和生活的博客;使用的是Github + Hexo 来搭建的，由于是第一次使用,在很多方面都不是很懂，后续会慢慢的来更新这些信息。</p>
-<p>最近犯了一个很严重的错误,让我严重的意识到一些态度的问题对于个人来说还是很重要的。如果不是这些事,也许我还是无法很快速的成长，也许给我现在的感触最深的几个地方就是.我为什么会有这种错误的出现?当出现这种错误后,又是因为我个人不能很好的处理掉乱七八糟的.</p>
-<p>2019-10-17  已经有好几天没有提交代码上github，提心吊胆的感觉也是让我觉得很难受。有些错误,我相信我自己以后是不会再出现的了.</p>
-<p>2019-10-22 坚持使用csdn来记录技术或者博客等,这里的博客希望更多的总结或者文章的汇总等.加油,给自己.</p>
-<p>个人 : BaoYang , Java爱好者,虽然平时也会捣鼓一些其他的东西,毕竟刚刚工作对一些新的东西有时候或者说是居多的时候,总是会充满一些好奇感忍不住去研究下它的好处或者使用啥的啊。</p>
-<p><a href="https://blog.csdn.net/by_yangge" target="_blank" rel="noopener">https://blog.csdn.net/by_yangge</a> csdn博客地址也是用于记录一些个人的学习东西或者遇见的错误记录等问题。关于写博客或者记录一下个人的状态等信息,我个人虽然也是刚刚开始,更多的时候,我也是希望我可以长期的坚持下来记录学习和博客的记载等. 也是看个人和 贵在坚持这点吧.</p>
-]]></content>
-      <categories>
-        <category>关于个人的</category>
-      </categories>
-      <tags>
-        <tag>关于我</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>深入了解JVM阅读笔记</title>
-    <url>/2020/04/18/%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3JVM%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/</url>
-    <content><![CDATA[<h3 id="深入理解JVM阅读笔记"><a href="#深入理解JVM阅读笔记" class="headerlink" title="深入理解JVM阅读笔记"></a>深入理解JVM阅读笔记</h3><ol>
-<li><p>个人认为学习JVM是对每个学习(深入)JAVA的人是一个必备的知识。</p>
-</li>
-<li><p>同时JVM里面的知识也不是一遍就可以学习好的，是要经过反复的阅读和自己的理解。肯定还要带有一定的项目实战经历(但是这个一般的情况都不是很容易遇见)。  </p>
-<hr>
-</li>
-</ol>
-<h3 id="Java内存区域笔记"><a href="#Java内存区域笔记" class="headerlink" title="Java内存区域笔记"></a>Java内存区域笔记</h3><ol>
-<li><p>程序计数器: </p>
-<p> 程序计数器是一块较小的内存,可以看成当前线程所执行的字节码的行号指示器.字节码解释器工作是通过改变计数器的值来选取吓一条需要执行的字节码,分支,循环,跳转,异常处理,线程恢复等基础功能都需要依赖这个计数器来完成.</p>
-<p>  如果线程正在执行的是一个JAVA方法,这个计数器记录的是正在执行的虚拟机字节码指令地址,如果执行的是Native方法,这个计数器的值就是空(Undefind).此内存区域是唯一一个在JAVA虚拟机规范中没有规定任    OutOfMemoryError情况的区域</p>
-</li>
-<li><p>Java虚拟机栈</p>
-<p>​        与程序计数器一样，Java虚拟机栈（Java Virtual Machine Stacks）也是线程私有的，它的生命周期与线程相同。虚拟机栈描述的是Java方法执行的内存模型：每个方法在执行的同时都会创建一个栈帧（Stack Frame)用于存储局部变量表、操作数栈、动态链接、方法出口等信息。每一个方法从调用直至执行完成的过程，就对应着一个栈帧在虚拟机栈中入栈到出栈的过程。</p>
-<p>​       局部变量表存放了编译可知的各种基本类型(boolean,byte,char,short,int,float,long,double),对象引用(reference类型,它不等同于对象本身，可能是一个指向对象起始地址的引用指针，也可能是指向一个代表对象的句柄或其他与此对象相关的位置）和returnAddress类型)    </p>
-<p>​       在JAVA虚拟机规范中,对这个区域的规定了二种异常情况,如果线程请求的栈深度大于虚拟机所允许的深度,将会跑出来StackOverflowError异常,如果虚拟机栈可以动态扩展,如果扩展的是无法申请到足够的内存,就会抛出OutOfMeneryError异常</p>
-</li>
-</ol>
-<p>   ​       虚拟机栈是Java执行方法的内存模型。每个方法被执行的时候，都会创建一个栈帧，当把栈帧压入栈，当方法正常返回或者抛出未捕获的异常时，栈帧就会出栈。</p>
-<p>   ​       栈帧:  栈帧存储方法的相关信息，包含局部变量数表，返回值，操作数栈，动态链接。</p>
-<p>   ​                  局部变量表:  包含了方法执行过程中的所有变量。局部变量数组所需要的空间在编译期间完成分配，在方法运行期间不会改变局部变量数组大小。</p>
-<p>   ​                  返回值: 如果有返回值的话,压入调用者栈帧中的操作数栈中，并且把PC的值指向 方法调用指令 后面的一条指令地址。</p>
-<p>   ​                  操作数栈:  操作变量的内存模型。操作数栈的最大深度在编译的时候已经确定（写入方法区Code属性的max_stacks项中）。操作数栈的元素可以是任意JAVA类型。32位数据占用栈空间为1，64位数据占用栈空间为6。方法刚开始执行的时候，栈是空的，当方法执行过程中，各种字节码指令往栈中存取数据。</p>
-<p>   ​                  动态链接:  每个栈帧都持有在运行常量池中该栈帧所属方法的引用，持有这个引用是为了支持方法调用过程的动态链接。</p>
-<ol start="3">
-<li><p>本地方法栈</p>
-<p>​       本地方法栈（Native Method Stack）与虚拟机栈所发挥的作用是非常相似的，它们之间的区别不过是虚拟机栈为虚拟机执行Java方法（也就是字节码）服务，而本地方法栈则为虚拟机使用到的Native方法服务。在虚拟机规范中对本地方法栈中方法使用的语言、使用方式与数据结构并没有强制规定，因此具体的虚拟机可以自由实现它。甚至有的虚拟机（譬如Sun HotSpot虚拟机）直接就把本地方法栈和虚拟机栈合二为一。与虚拟机栈一样，本地方法栈区域也会抛出StackOverflowError和OutOfMemoryError异常</p>
-<p>​      调用本地Native的内存模型</p>
-<p>​      线程独享</p>
-</li>
-<li><p>Java堆</p>
-<p>​    Java堆（Java Heap）是Java虚拟机所管理的内存中最大的一块.Java堆是被所有线程共享的一块内存区域.此内存区域的唯一目的就是存放对象实例,几乎所有的对象实例都在这里分配.所有的对象实例以及数组都要在堆上分配,但是随着JIT编译器的发展与逃逸分析技术逐渐成熟，栈上分配、标量替换优化技术将会导致一些微妙的变化发生，所有的对象都分配在堆上也渐渐变得不是那么“绝对”了`</p>
-<p>​    Java堆是垃圾收集器管理的主要区域，因此很多时候也被称做“GC堆。从内存回收的角度来看，由于现在收集器基本都采用分代收集算法，所以Java堆中还可以细分为：新生代和老年代；再细致一点的有Eden空间、From Survivor空间、To Survivor空间等。从内存分配的角度来看，线程共享的Java堆中可能划分出多个线程私有的分配缓冲区（Thread Local Allocation Buffer，TLAB）。不过无论如何划分，都与存放内容无关，无论哪个区域，存储的都仍然是对象实例，进一步划分的目的是为了更好地回收内存，或者更快地分配内存。</p>
-<p>​    当前主流的虚拟机都是按照可扩展来实现的(通过-Xmx 和 -Xms控制)。如果在堆中没有内存完成实例分配，堆中没有内存完成实例配置，并且堆也无法再扩展时，将会抛出来OurOfMemoryError异常。</p>
-</li>
-<li><p>方法区</p>
-<p>  方法区与Java堆一样,是各个线程共享的内存区域，它用于存储已被虚拟机加载的类信息，常量，静态变量，即时编译器后的代码等数据。虽然Java虚拟机规范把方法区描述为堆的一个逻辑部分，但是它却有一个别名叫做Non-Heap（非堆），目的应该是与Java堆区分开来。</p>
-<p>  多人都更愿意把方法区称为“永久代”（Permanent Generation），本质上两者并不等价，仅仅是因为HotSpot虚拟机的设计团队选择把GC分代收集扩展至方法区，或者说使用永久代来实现方法区而已，这样HotSpot的垃圾收集器可以像管理Java堆一样管理这部分内存。（Java8 中好像永久代换了名字）</p>
-<p>​    根据虚拟机规定，当方法区无法满足内存分配的需求时，将会抛出OutOfMemoryError异常。</p>
-</li>
-<li><p>运行时常量池</p>
-<p>​        运行时常量池（Runtime Constant Pool）是方法区的一部分。Class文件中除了有类的版本、字段、方法、接口等描述信息外，还有一项信息是常量池（Constant Pool Table），用于存放编译期生成的各种字面量和符号引用，这部分内容将在类加载后进入方法区的运行时常量池中存放。</p>
-<p>​        运行时常量池相对于Class文件常量池的另外一个重要特性时具备动态性，Java语言并不要求常量一定只有编译期才能产生，也就是非预置入Class文件中常量池的内容才能进入方法区运行时常量池，运行期间也可能将新的常量放入池中，这种特性被开发人员利用得比较多的便是String类的intern()方法。</p>
-<p>​        运行时常量池时方法区的一部分，自然受到方法区内存限制,当常量池无法再申请到内存时就会抛出OutOfMemeryError异常。</p>
-</li>
-<li><p>直接内存</p>
-<p>直接内存（Direct Memory）并不是虚拟机运行时数据区的一部分，也不是Java虚拟机规范中定义的内存区域。但是这部分内存也被频繁地使用，而且也可能导致OutOfMemoryError异常出现，所以我们放到这里一起讲解。</p>
-</li>
-</ol>
-<p>总结 :  对于Java内存区域的知识点大致是这样，但是每个点都是要深入进去了解的。这里是摘抄书籍的内容来做笔记。后期再看的时候，会添加上个人笔记。</p>
-<hr>
-<h3 id="类文件结构"><a href="#类文件结构" class="headerlink" title="类文件结构"></a>类文件结构</h3><ol>
-<li><p>Class类文件结构</p>
-<p>​     任何一个Class文件都对应着唯一一个类或接口的定义信息，但反过来说，类或接口并不一定都得定义在文件里（譬如类或接口也可以通过类加载器直接生成）。</p>
-<p>​     Class文件是一组以8位字节为基础单位的二进制流，各个数据项目严格按照顺序紧凑地排列在Class文件之中，中间没有添加任何分隔符，这使得整个Class文件中存储的内容几乎全部是程序运行的必要数据，没有空隙存在。</p>
-<p>​      这里我们就采用书中的代码,跟着来一步一步实现。</p>
-<p>​       进入到这个TestClass.java的目录下，执行javac TestClass.java 就会在同一级目录下生成出 TestClass.class文件，这里我是用 Sublime 打开的.class文件,也同样可以看到书中的效果，开头的cafe babe(至于这其中的故事可以去看原书籍).</p>
-<p>​        然后继续在刚刚的目录下,来执行 javap -verbose TestClass ，都可以看到效果。这里的内容对着原书籍上仔细的一一对看即可。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">package com.yang.basicjavatest.gjvm;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @Author: Mu_Yi</span><br><span class="line"> * @Date: 2020&#x2F;4&#x2F;18 14:27</span><br><span class="line"> * @Version 1.0</span><br><span class="line"> * @qq: 1411091515</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class TestClass &#123;</span><br><span class="line"></span><br><span class="line">    private int m;</span><br><span class="line"></span><br><span class="line">    public int inc()&#123;</span><br><span class="line"></span><br><span class="line">        return m + 1;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>cafe babe 0000 0034 0013 0a00 0400 0f09<br>0003 0010 0700 1107 0012 0100 016d 0100<br>0149 0100 063c 696e 6974 3e01 0003 2829<br>5601 0004 436f 6465 0100 0f4c 696e 654e<br>756d 6265 7254 6162 6c65 0100 0369 6e63<br>0100 0328 2949 0100 0a53 6f75 7263 6546<br>696c 6501 000e 5465 7374 436c 6173 732e<br>6a61 7661 0c00 0700 080c 0005 0006 0100<br>2563 6f6d 2f79 616e 672f 6261 7369 636a<br>6176 6174 6573 742f 676a 766d 2f54 6573<br>7443 6c61 7373 0100 106a 6176 612f 6c61<br>6e67 2f4f 626a 6563 7400 2100 0300 0400<br>0000 0100 0200 0500 0600 0000 0200 0100<br>0700 0800 0100 0900 0000 1d00 0100 0100<br>0000 052a b700 01b1 0000 0001 000a 0000<br>0006 0001 0000 0009 0001 000b 000c 0001<br>0009 0000 001f 0002 0001 0000 0007 2ab4<br>0002 0460 ac00 0000 0100 0a00 0000 0600<br>0100 0000 0f00 0100 0d00 0000 0200 0e</p>
-</blockquote>
-</li>
-</ol>
-<pre><code>javap -verbose TestClass.class 效果</code></pre><blockquote>
-<p>D:\Java_DaiMa\idea_github_self\basic-java-io\basic-java-test\src\main\java\com\yang\basicjavatest\gjvm&gt;javap -verbose TestClass.class<br>Classfile /D:/Java_DaiMa/idea_github_self/basic-java-io/basic-java-test/src/main/java/com/yang/basicjavatest/gjvm/TestClass.class<br>  Last modified 2020-4-18; size 303 bytes<br>  MD5 checksum b5c0b88622793ee9ace089dce2d2959d<br>  Compiled from “TestClass.java”<br>public class com.yang.basicjavatest.gjvm.TestClass<br>  minor version: 0<br>  major version: 52<br>  flags: ACC_PUBLIC, ACC_SUPER<br>Constant pool:<br>   #1 = Methodref          #4.#15         // java/lang/Object.”<init>“:()V<br>   #2 = Fieldref           #3.#16         // com/yang/basicjavatest/gjvm/TestClass.m:I<br>   #3 = Class              #17            // com/yang/basicjavatest/gjvm/TestClass<br>   #4 = Class              #18            // java/lang/Object<br>   #5 = Utf8               m<br>   #6 = Utf8               I<br>   #7 = Utf8               <init><br>   #8 = Utf8               ()V<br>   #9 = Utf8               Code<br>  #10 = Utf8               LineNumberTable<br>  #11 = Utf8               inc<br>  #12 = Utf8               ()I<br>  #13 = Utf8               SourceFile<br>  #14 = Utf8               TestClass.java<br>  #15 = NameAndType        #7:#8          // “<init>“:()V<br>  #16 = NameAndType        #5:#6          // m:I<br>  #17 = Utf8               com/yang/basicjavatest/gjvm/TestClass<br>  #18 = Utf8               java/lang/Object<br>{<br>  public com.yang.basicjavatest.gjvm.TestClass();<br>    descriptor: ()V<br>    flags: ACC_PUBLIC<br>    Code:<br>      stack=1, locals=1, args_size=1<br>         0: aload_0<br>         1: invokespecial #1                  // Method java/lang/Object.”<init>“:()V<br>         4: return<br>      LineNumberTable:<br>        line 9: 0</p>
-<p>  public int inc();<br>    descriptor: ()I<br>    flags: ACC_PUBLIC<br>    Code:<br>      stack=2, locals=1, args_size=1<br>         0: aload_0<br>         1: getfield      #2                  // Field m:I<br>         4: iconst_1<br>         5: iadd<br>         6: ireturn<br>      LineNumberTable:<br>        line 15: 0<br>}<br>SourceFile: “TestClass.java”</p>
-</blockquote>
-<ol start="2">
-<li><p>LineNumberTable 属性 </p>
-<p> LineNumberTable属性用于描述Java源码行号与字节码行号（字节码的偏移量）之间的对应关系。它并不是运行时必需的属性，但默认会生成到Class文件之中，可以在Javac中分别使用-g:none或-g:lines选项来取消或要求生成这项信息。如果选择不生成LineNumberTable属性，对程序运行产生的最主要的影响就是当抛出异常时，堆栈中将不会显示出错的行号，并且在调试程序的时候，也无法按照源码行来设置断点。     </p>
-</li>
-</ol>
-<ol start="3">
-<li><p>LocalVariableTable属性</p>
-<p>LocalVariableTable属性用于描述栈帧中局部变量表中的变量与Java源码中定义的变量之间的关系，它也不是运行时必需的属性，但默认会生成到Class文件之中，可以在Javac中分别使用-g:none或-g:vars选项来取消或要求生成这项信息。如果没有生成这项属性，最大的影响就是当其他人引用这个方法时，所有的参数名称都将会丢失，IDE将会使用诸如arg0、arg1之类的占位符代替原有的参数名，这对程序运行没有影响，但是会对代码编写带来较大不便，而且在调试期间无法根据参数名称从上下文中获得参数值。</p>
-</li>
-</ol>
-<ol start="4">
-<li><p>SourceFile属性</p>
-<p> SourceFile属性用于记录生成这个Class文件的源码文件名称。这个属性也是可选的，可以分别使用Javac的-g:none或-g:source选项来关闭或要求生成这项信息。在Java中，对于大多数的类来说，类名和文件名是一致的，但是有一些特殊情况（如内部类）例外。如果不生成这项属性，当抛出异常时，堆栈中将不会显示出错代码所属的文件名。这个属性是一个定长的属性。</p>
-</li>
-</ol>
-<ol start="5">
-<li><p>ConstantValue 属性</p>
-<p> ConstantValue属性的作用是通知虚拟机自动为静态变量赋值。只有被static关键字修饰的变量（类变量）才可以使用这项属性。类似“int x=123”和“static int x=123”这样的变量定义在Java程序中是非常常见的事情，但虚拟机对这两种变量赋值的方式和时刻都有所不同。对于非static类型的变量（也就是实例变量）的赋值是在实例构造器<init>方法中进行的；而对于类变量，则有两种方式可以选择：在类构造器<clinit>方法中或者使用ConstantValue属性。目前Sun Javac编译器的选择是：如果同时使用final和static来修饰一个变量（按照习惯，这里称“常量”更贴切），并且这个变量的数据类型是基本类型或者java.lang.String的话，就生成ConstantValue属性来进行初始化，如果这个变量没有被final修饰，或者并非基本类型及字符串，则将会选择在<clinit>方法中进行初始化。</p>
-</li>
-<li><p>InnerClasses 属性</p>
-<p> InnerClasses属性用于记录内部类与宿主类之间的关联。如果一个类中定义了内部类，那编译器将会为它以及它所包含的内部类生成InnerClasses属性。</p>
-</li>
-</ol>
-<p>   等等更多的属性就去具体的原书籍中查看</p>
-<hr>
-<ol start="2">
-<li>字节码指令也推荐在原书籍中查看。</li>
-</ol>
-<hr>
-<h3 id="类加载机制"><a href="#类加载机制" class="headerlink" title="类加载机制"></a>类加载机制</h3><ol>
-<li><p>类加载的时机 :  </p>
-<p>  类从被加载到虚拟机内存中开始,到卸载出内存为止，它的整个生命周期包括 : 加载(loading),验证(verification),准备(Preparation), 解析(resolution),初始化(init),使用(use) 和 卸载(unloading).</p>
-</li>
-<li><p>加载(类加载):</p>
-<ul>
-<li>通过一个类的全限定名来获取定义此类的二进制字节流</li>
-<li>将这个字节流所代表的静态存储结构转化为方法区的运行时数据。</li>
-<li>在内存中生成一个代表这个类的 java.lang.Class对象，作为方法区这个类的各种数据访问入口。</li>
-</ul>
-</li>
-<li><p>验证 :</p>
-<p>  验证是连接阶段的第一步,这一阶段的目的是为了确保Class文件的字节流中包含的信息符合当前虚拟机的要求，并且不会危害到虚拟机自身的安危。</p>
-<ul>
-<li>​    文件格式的检验 ： 这一阶段要验证字节流是否符合Class文件格式的规范，并且能被当前版本的虚拟机处理。</li>
-<li>元数据验证:  是对字节码描述的信息进行语义分析，以确保起描述的信息符合Java语言虚拟机的要求。</li>
-<li>字节码验证:  通过数据流和控制流分析，确保程序语义是合法的，符合逻辑的。</li>
-<li>符号引用验证: 最后一阶段的检验发生在虚拟机将符号引用转化为直接引用的时候。</li>
-</ul>
-</li>
-<li><p>准备 :  </p>
-<p>​    准备阶段是正式为类变量分配内存并设置类变变量初始化的阶段，这些变量所使用的内存都将在方法区中进行分配。这时候进行内存分配的仅包括类变量(被static修饰的变量)，而不包括实例变量，实例变量将会在对象实例化时随着对象一起分配在Java堆中。</p>
-</li>
-<li><p>解析 : </p>
-<ul>
-<li><p>​     类或接口的解析:   假设当前代码所处的类是D,如果要把一个从未解析的过的符号引用N解析为一个类或者接口C直接引用</p>
-<ol>
-<li><p>​     如果C不是一个数组类型，那虚拟机将会把代表N的全限定名传递给D的类加载器去加载这个类C。在加载过程中，由于元数据验证、字节码验证的需要，又可能触发其他相关类的加载动作，例如加载这个类的父类或实现的接口。一旦这个加载过程出现了任何异常，解析过程就宣告失败。</p>
-</li>
-<li><p>如果C是一个数组类型，并且数组的元素类型为对象，也就是N的描述符会是类似“[Ljava/lang/Integer”的形式，那将会按照第1点的规则加载数组元素类型。如果N的描述符如前面所假设的形式，需要加载的元素类型就是“java.lang.Integer”，接着由虚拟机生成一个代表此数组维度和元素的数组对象。</p>
-</li>
-<li><p>如果上面的步骤没有出现任何异常，那么C在虚拟机中实际上已经成为一个有效的类或接口了，但在解析完成之前还要进行符号引用验证，确认D是否具备对C的访问权限。如果发现不具备访问权限，将抛出java.lang.IllegalAccessError异常。</p>
-</li>
-</ol>
-</li>
-</ul>
-</li>
-</ol>
-<ul>
-<li><p>字段解析 : </p>
-<p>​      要解析一个未被解析过的字段符号引用，首先将会对字段表内class_index[插图]项中索引的CONSTANT_Class_info符号引用进行解析，也就是字段所属的类或接口的符号引用。如果在解析这个类或接口符号引用的过程中出现了任何异常，都会导致字段符号引用解析的失败。如果解析成功完成，那将这个字段所属的类或接口用C表示，虚拟机规范要求按照如下步骤对C进行后续字段的搜索。</p>
-<ol>
-<li>​        如果C本身就包含了简单名称和字段描述符都与目标相匹配的字段，则返回这个字段的直接引用，查找结束。</li>
-<li>否则，如果在C中实现了接口，将会按照继承关系从下往上递归搜索各个接口和它的父接口，如果接口中包含了简单名称和字段描述符都与目标相匹配的字段，则返回这个字段的直接引用，查找结束。</li>
-<li>否则，如果C不是java.lang.Object的话，将会按照继承关系从下往上递归搜索其父类，如果在父类中包含了简单名称和字段描述符都与目标相匹配的字段，则返回这个字段的直接引用，查找结束。</li>
-<li>否则，查找失败，抛出java.lang.NoSuchFieldError异常。</li>
-</ol>
-</li>
-<li><p>类方法解析 :</p>
-<p>​     类方法解析的第一个步骤与字段解析一样，也需要先解析出类方法表的class_index[插图]项中索引的方法所属的类或接口的符号引用，如果解析成功，我们依然用C表示这个类，接下来虚拟机将会按照如下步骤进行后续的类方法搜索。</p>
-<ol>
-<li><p>​      类方法和接口方法符号引用的常量类型定义是分开的，如果在类方法表中发现class_index中索引的C是个接口，那就直接抛出java.lang.IncompatibleClassChangeError异常。</p>
-</li>
-<li><p>如果通过了第1步，在类C中查找是否有简单名称和描述符都与目标相匹配的方法，如果有则返回这个方法的直接引用，查找结束。</p>
-</li>
-<li><p>否则，在类C的父类中递归查找是否有简单名称和描述符都与目标相匹配的方法，如果有则返回这个方法的直接引用，查找结束。</p>
-</li>
-<li><p>否则，在类C实现的接口列表及它们的父接口之中递归查找是否有简单名称和描述符都与目标相匹配的方法，如果存在匹配的方法，说明类C是一个抽象类，这时查找结束，抛出java.lang.AbstractMethodError异常。</p>
-</li>
-<li><p>否则，宣告方法查找失败，抛出java.lang.NoSuchMethodError。</p>
-</li>
-</ol>
-</li>
-</ul>
-<pre><code>最后，如果查找过程成功返回了直接引用，将会对这个方法进行权限验证，如果发现不具备对此方法的访问权限，将抛出java.lang.IllegalAccessError异常。</code></pre><ul>
-<li><p>接口方法解析: </p>
-<p> 接口方法也需要先解析出接口方法表的class_index项中索引的方法所属的类或接口的符号引用，如果解析成功，依然用C表示这个接口，接下来虚拟机将会按照如下步骤进行后续的接口方法搜索。</p>
-<ol>
-<li>​    与类方法解析不同，如果在接口方法表中发现class_index中的索引C是个类而不是接口，那就直接抛出java.lang.IncompatibleClassChangeError异常。</li>
-<li>否则，在接口C中查找是否有简单名称和描述符都与目标相匹配的方法，如果有则返回这个方法的直接引用，查找结束。</li>
-<li>否则，在接口C的父接口中递归查找，直到java.lang.Object类（查找范围会包括Object类）为止，看是否有简单名称和描述符都与目标相匹配的方法，如果有则返回这个方法的直接引用，查找结束。</li>
-<li>否则，宣告方法查找失败，抛出java.lang.NoSuchMethodError异常。</li>
-</ol>
-</li>
-</ul>
-<pre><code>​    由于接口中的所有方法默认都是public的，所以不存在访问权限的问题，因此接口方法的符号解析应当不会抛出java.lang.IllegalAccessError异常。</code></pre><ol start="6">
-<li><p>初始化 : </p>
-<p>​    类初始化阶段是类加载过程的最后一步，前面的类加载过程中。除了在加载阶段用户应用程序可以通过自定义类加载器参与之外，其余动作完全由虚拟机主导和控制。到了初始化阶段，才真正开始执行类中定义的Java程序代码（或者说是字节码）</p>
-</li>
-<li><p>类加载阶段:</p>
-<pre><code>类加载器虽然只用于实现类的加载动作，但它在JAVA程序中起到的作用却远远不限于类加载阶段。对于任意一个类，都需要由加载它的类加载器和这个类本身一同确立其在JAVA虚拟机中的唯一性，每一个类加载器，都拥有一个独立的类名称空间。比较两个类是否“相等”，只有在这两个类是由同一个类加载器加载的前提下才有意义，否则，即使这两个类来源于同一个Class文件，被同一个虚拟机加载，只要加载它们的类加载器不同，那这两个类就必定不相等。</code></pre><p>跟着书上的写了代码，结果也是书上的。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">package com.yang.basicjavatest.gjvm;</span><br><span class="line"></span><br><span class="line">import java.io.InputStream;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @Author: Mu_Yi</span><br><span class="line"> * @Date: 2020&#x2F;4&#x2F;18 15:35</span><br><span class="line"> * @Version 1.0</span><br><span class="line"> * @qq: 1411091515</span><br><span class="line"> *&#x2F;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">public class ClassLoaderTest &#123;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) throws Exception &#123;</span><br><span class="line"></span><br><span class="line">        ClassLoader classLoader &#x3D; new ClassLoader() &#123;</span><br><span class="line">            @Override</span><br><span class="line">            public Class&lt;?&gt; loadClass(String name) throws ClassNotFoundException &#123;</span><br><span class="line">               try&#123;</span><br><span class="line">                   String fileName &#x3D; name.substring(name.lastIndexOf(&quot;.&quot;) + 1 ) + &quot;.class&quot;;</span><br><span class="line">                   InputStream inputStream &#x3D; getClass().getResourceAsStream(fileName);</span><br><span class="line">                   if(inputStream &#x3D;&#x3D; null)&#123;</span><br><span class="line">                       return super.loadClass(name);</span><br><span class="line">                   &#125;</span><br><span class="line">                   byte [] b &#x3D; new byte[inputStream.available()];</span><br><span class="line">                   inputStream.read(b);</span><br><span class="line">                   return defineClass(name,b,0,b.length);</span><br><span class="line">               &#125;catch (Exception e)&#123;</span><br><span class="line">                   throw new ClassNotFoundException(name);</span><br><span class="line">               &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line">        Object instance &#x3D; classLoader.loadClass(&quot;com.yang.basicjavatest.gjvm.ClassLoaderTest&quot;).newInstance();</span><br><span class="line"></span><br><span class="line">        System.out.println(instance.getClass());</span><br><span class="line">        System.out.println(instance instanceof ClassLoaderTest);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-</li>
-</ol>
-<hr>
-<p>后续会持续学习JVM方面的知识,也会持续更新这篇知识。</p>
-]]></content>
-      <categories>
-        <category>Java</category>
-        <category>JVM</category>
-      </categories>
-      <tags>
-        <tag>JVM</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>ArrayDeque 源码阅读记录</title>
     <url>/2020/04/30/java_list/ArrayDeque_Source/</url>
     <content><![CDATA[<p>ArrayDeque 在我目前做的项目中,使用是比较少的,基本都没有地方用到。可能是我太low了,也可能是业务没有一定要用到队列的情况. 但是这不影响我们对其进行源码阅读。</p>
@@ -1061,6 +1061,21 @@ docker-engine
       </tags>
   </entry>
   <entry>
+    <title>Vector 源码阅读记录</title>
+    <url>/2020/04/29/java_list/Vector/</url>
+    <content><![CDATA[<p>Vector 的结构和对数据的添加和删除 与 <a href="https://github.com/baoyang23/source-notes/blob/master/java/jvm_aggregate/ArrayList_Source.md" target="_blank" rel="noopener">ArrayList</a> 是非常相似的. 可以点进去看看.</p>
+<p>具体的执行逻辑代码还是非常相似的. </p>
+<p>Vector 比起 ArrayList 是线程安全的原因是, Vector 在一些方法上是使用了 synchronized 来进行加锁,从而保证了线程安全问题。</p>
+]]></content>
+      <categories>
+        <category>Java集合源码</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+        <tag>Vector</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>HashMap 源码阅读记录</title>
     <url>/2020/05/22/java_list/HashMap_Source/</url>
     <content><![CDATA[<p>HashMap 这种Key,Value 的存储结构,是我们在写代码中经常使用到的.可以说使用是非常频繁的,不过现在使用JSONObject也是非常多的,二者都是实现了Map接口。</p>
@@ -1109,6 +1124,93 @@ docker-engine
       <tags>
         <tag>Java</tag>
         <tag>HashMap</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>LinkedList源码阅读记录</title>
+    <url>/2020/04/29/java_list/LinkedList_Source/</url>
+    <content><![CDATA[<p>虽然一般都是使用ArrayList集合比使用LinkedList集合要多,但是这并不妨碍我们对LinkedList的源码研究和学习</p>
+<h3 id="结构"><a href="#结构" class="headerlink" title="结构"></a>结构</h3><p>LinkedList 是一个双向链表的结构,这点可以直接看其内部内就可以非常明显的看出来. 静态私有的内部类,只提供一个构造函数.</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Node</span>&lt;<span class="title">E</span>&gt; </span>&#123;</span><br><span class="line">    E item;</span><br><span class="line">    Node&lt;E&gt; next;</span><br><span class="line">    Node&lt;E&gt; prev;</span><br><span class="line"></span><br><span class="line">    Node(Node&lt;E&gt; prev, E element, Node&lt;E&gt; next) &#123;</span><br><span class="line">        <span class="keyword">this</span>.item = element;</span><br><span class="line">        <span class="keyword">this</span>.next = next;</span><br><span class="line">        <span class="keyword">this</span>.prev = prev;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>然后我们看 LinkedList 自身的变量. size 肯定是记录这个链表的长度,不然到时候node.next.next….获取长度就很得不偿失了.  然后记录了一个头节点和尾节点，个人认为这是方便遍历。从头开始遍历就从first节点获取,从尾部开始遍历的话,就从last开始获取.</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">transient int size &#x3D; 0;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * Pointer to first node.</span><br><span class="line"> * Invariant: (first &#x3D;&#x3D; null &amp;&amp; last &#x3D;&#x3D; null) ||</span><br><span class="line"> *            (first.prev &#x3D;&#x3D; null &amp;&amp; first.item !&#x3D; null)</span><br><span class="line"> *&#x2F;</span><br><span class="line">transient Node&lt;E&gt; first;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * Pointer to last node.</span><br><span class="line"> * Invariant: (first &#x3D;&#x3D; null &amp;&amp; last &#x3D;&#x3D; null) ||</span><br><span class="line"> *            (last.next &#x3D;&#x3D; null &amp;&amp; last.item !&#x3D; null)</span><br><span class="line"> *&#x2F;</span><br><span class="line">transient Node&lt;E&gt; last;</span><br></pre></td></tr></table></figure>
+
+
+
+<hr>
+<h3 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h3><ul>
+<li><p>add 方法</p>
+<p>add方法调用一个linkLast方法,然后就返回true了. 也就是说add(E e)就是默认从尾部开始插入元素进去.</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">add</span><span class="params">(E e)</span> </span>&#123;</span><br><span class="line">    linkLast(e);</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Links e as last element.</span></span><br><span class="line"><span class="comment">       翻译 : 链接e作为最后一个元素。</span></span><br><span class="line"><span class="comment">       先对last赋值给 Node&lt;E&gt; l , 然后调用new Node&lt;&gt;(l,e,null);传入进去的上个节点,也就是l,上次保存的尾部节点,也就是从倒数第一变为了倒数二,这样理解。然后此时的newNode就是尾节点了,然后赋值给last,因为last每次记录的都是尾节点.</span></span><br><span class="line"><span class="comment">       if else 中是对之前的尾节点进行判断,如果是null的话,说明此时就是添加的第一个元素,first也赋值给newNode,否则的话,l.next 和 尾节点进行关联。</span></span><br><span class="line"><span class="comment">       size 长度加一</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">linkLast</span><span class="params">(E e)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">final</span> Node&lt;E&gt; l = last;</span><br><span class="line">        <span class="keyword">final</span> Node&lt;E&gt; newNode = <span class="keyword">new</span> Node&lt;&gt;(l, e, <span class="keyword">null</span>);</span><br><span class="line">        last = newNode;</span><br><span class="line">        <span class="keyword">if</span> (l == <span class="keyword">null</span>)</span><br><span class="line">            first = newNode;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            l.next = newNode;</span><br><span class="line">        size++;</span><br><span class="line">        modCount++;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ul>
+<p>  根据下标添加 add(int index,E  element)</p>
+  <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">	1: 检查传入进来的下标是否越界了,如果下标越界的话,就会抛出 下标越界的异常</span></span><br><span class="line"><span class="comment">	2: 根据传入进来的下标值,判断是否和 size 相等,如果是相等的话,就说明是尾部插入,就不需要挨个迭代去获取对应的下标值对应的节点.满足条件,就会调用上面说到的 linkLast方法</span></span><br><span class="line"><span class="comment">	3: 不满足条件2的话,就会走lineBefore()方法,其中也调用到了.传入下标调用node方法.node会返回对应下标的值,根据返回的节点和当前的值调用lienkBefore方法.</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> index, E element)</span> </span>&#123;</span><br><span class="line">    checkPositionIndex(index);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (index == size)</span><br><span class="line">        linkLast(element);</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        linkBefore(element, node(index));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">checkPositionIndex</span><span class="params">(<span class="keyword">int</span> index)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (!isPositionIndex(index))</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IndexOutOfBoundsException(outOfBoundsMsg(index));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"> <span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">isPositionIndex</span><span class="params">(<span class="keyword">int</span> index)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> index &gt;= <span class="number">0</span> &amp;&amp; index &lt;= size;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">	size &gt;&gt; 1 ; 是对 size 进行去半, 比如 6 &gt;&gt; 1 是 3， 5 &gt;&gt; 1 是2</span></span><br><span class="line"><span class="comment">	如果小于一半的话,就会从first节点开始遍历,也就是从头节点开始遍历,否则就是从尾节点开始遍历.</span></span><br><span class="line"><span class="comment">	这个方法可以看到,从头开始遍历的话,就是调用的next,如果尾部遍历的话,调用的就是prev。找到对应下标的节点并且返回回去.</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function">Node&lt;E&gt; <span class="title">node</span><span class="params">(<span class="keyword">int</span> index)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// assert isElementIndex(index);</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (index &lt; (size &gt;&gt; <span class="number">1</span>)) &#123;</span><br><span class="line">            Node&lt;E&gt; x = first;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; index; i++)</span><br><span class="line">                x = x.next;</span><br><span class="line">            <span class="keyword">return</span> x;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            Node&lt;E&gt; x = last;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = size - <span class="number">1</span>; i &gt; index; i--)</span><br><span class="line">                x = x.prev;</span><br><span class="line">            <span class="keyword">return</span> x;</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">	获取节点的上个节点赋值给pred，其实类似于pred这种,都是用于变量替换创建出来的.</span></span><br><span class="line"><span class="comment">	上一个节点,当前值e,succ节点来new一个新的节点出来.</span></span><br><span class="line"><span class="comment">	succ.prev 指向当前new出来的节点</span></span><br><span class="line"><span class="comment">	对pred判断是否是null,如果是null的话,就说明是第一个值,否则就是赋值上pred个节点的next</span></span><br><span class="line"><span class="comment">	,size ++ 就是对长度 ++ </span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">linkBefore</span><span class="params">(E e, Node&lt;E&gt; succ)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// assert succ != null;</span></span><br><span class="line">        <span class="keyword">final</span> Node&lt;E&gt; pred = succ.prev;</span><br><span class="line">        <span class="keyword">final</span> Node&lt;E&gt; newNode = <span class="keyword">new</span> Node&lt;&gt;(pred, e, succ);</span><br><span class="line">        succ.prev = newNode;</span><br><span class="line">        <span class="keyword">if</span> (pred == <span class="keyword">null</span>)</span><br><span class="line">            first = newNode;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            pred.next = newNode;</span><br><span class="line">        size++;</span><br><span class="line">        modCount++;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>   头插入 和 尾插入</p>
+<p>   头插入，将值插入到头部</p>
+  <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addFirst</span><span class="params">(E e)</span> </span>&#123;</span><br><span class="line">    linkFirst(e);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">	先将first 赋值给 f ,  根据传入进来的值e 和 下一个节点f(前一个头节点),new一个新的newNode节点出来,first指向newNode.如果f是null的话就说明是初始化,如果不是null的话,f的上一个节点指向newNode,刚刚程序newNode出来的.就完成了头节点的插入</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">linkFirst</span><span class="params">(E e)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">final</span> Node&lt;E&gt; f = first;</span><br><span class="line">        <span class="keyword">final</span> Node&lt;E&gt; newNode = <span class="keyword">new</span> Node&lt;&gt;(<span class="keyword">null</span>, e, f);</span><br><span class="line">        first = newNode;</span><br><span class="line">        <span class="keyword">if</span> (f == <span class="keyword">null</span>)</span><br><span class="line">            last = newNode;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            f.prev = newNode;</span><br><span class="line">        size++;</span><br><span class="line">        modCount++;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>  尾节点插入;与头节点相似，也是利用变量last来实现尾部插入.</p>
+  <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public void addLast(E e) &#123;</span><br><span class="line">    linkLast(e);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">void linkLast(E e) &#123;</span><br><span class="line">        final Node&lt;E&gt; l &#x3D; last;</span><br><span class="line">        final Node&lt;E&gt; newNode &#x3D; new Node&lt;&gt;(l, e, null);</span><br><span class="line">        last &#x3D; newNode;</span><br><span class="line">        if (l &#x3D;&#x3D; null)</span><br><span class="line">            first &#x3D; newNode;</span><br><span class="line">        else</span><br><span class="line">            l.next &#x3D; newNode;</span><br><span class="line">        size++;</span><br><span class="line">        modCount++;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>get 方法,获取值方法</p>
+<p>根据下标来获取出值 ,然后调用node方法获取出节点,node.item就是我们需要的值,然后对其进行返回即可.</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public E get(int index) &#123;</span><br><span class="line">    checkElementIndex(index);</span><br><span class="line">    return node(index).item;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 如果输入index是小于0和大于size的话,就会爆出下标越界的错误.</span><br><span class="line">private void checkElementIndex(int index) &#123;</span><br><span class="line">        if (!isElementIndex(index))</span><br><span class="line">            throw new IndexOutOfBoundsException(outOfBoundsMsg(index));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p>​       </p>
+<p>getFirst / getLast     可以看到first和 last都是直接从定义的变量中获取出对应的值</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> E <span class="title">getFirst</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> Node&lt;E&gt; f = first;</span><br><span class="line">    <span class="keyword">if</span> (f == <span class="keyword">null</span>)</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> NoSuchElementException();</span><br><span class="line">    <span class="keyword">return</span> f.item;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> E <span class="title">getLast</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">final</span> Node&lt;E&gt; l = last;</span><br><span class="line">        <span class="keyword">if</span> (l == <span class="keyword">null</span>)</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> NoSuchElementException();</span><br><span class="line">        <span class="keyword">return</span> l.item;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>​    peek 方法;使用first节点,如果是null的话就会返回null，否则就是f.item. 这里是没有删除first元素,poll是弹出元素并且删除.</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public E peek() &#123;</span><br><span class="line">    final Node&lt;E&gt; f &#x3D; first;</span><br><span class="line">    return (f &#x3D;&#x3D; null) ? null : f.item;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>​    poll 方法 :  这里主要看unlinkFirst方法.</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> E <span class="title">poll</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> Node&lt;E&gt; f = first;</span><br><span class="line">    <span class="keyword">return</span> (f == <span class="keyword">null</span>) ? <span class="keyword">null</span> : unlinkFirst(f);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">   取出 f 的item,节点对应的值和 f的next个节点,如果下个节点是null的话,就说明是没有值的,如果不为null的话，说将next的上一个节点prev指向null,因为头节点的prev和尾节点的next都是null来进行区分。</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> E <span class="title">unlinkFirst</span><span class="params">(Node&lt;E&gt; f)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// assert f == first &amp;&amp; f != null;</span></span><br><span class="line">        <span class="keyword">final</span> E element = f.item;</span><br><span class="line">        <span class="keyword">final</span> Node&lt;E&gt; next = f.next;</span><br><span class="line">        f.item = <span class="keyword">null</span>;</span><br><span class="line">        f.next = <span class="keyword">null</span>; <span class="comment">// help GC</span></span><br><span class="line">        first = next;</span><br><span class="line">        <span class="keyword">if</span> (next == <span class="keyword">null</span>)</span><br><span class="line">            last = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            next.prev = <span class="keyword">null</span>;</span><br><span class="line">        size--;</span><br><span class="line">        modCount++;</span><br><span class="line">        <span class="keyword">return</span> element;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>​    offer 等方法都是内部调用了add / addFirst / addLast等方法.</p>
+<ul>
+<li><p>remove 方法</p>
+<p>根据下标进来remove方法, node(index) 也是在上面进行讲到的,就是根据下标获取对应的node节点信息.</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> E <span class="title">remove</span><span class="params">(<span class="keyword">int</span> index)</span> </span>&#123;</span><br><span class="line">    checkElementIndex(index);</span><br><span class="line">    <span class="keyword">return</span> unlink(node(index));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">	这里获取出节点的 next 和 prev方法.</span></span><br><span class="line"><span class="comment">	该节点的上一个节点(prev)的next需要指向指向该节点的下个节点(next),该节点的下一个节点和prev的操作是相反的,因为这样的话,就删除了该节点,并且上一个节点和下一个节点关联起来了.	</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"> <span class="function">E <span class="title">unlink</span><span class="params">(Node&lt;E&gt; x)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// assert x != null;</span></span><br><span class="line">        <span class="keyword">final</span> E element = x.item;</span><br><span class="line">        <span class="keyword">final</span> Node&lt;E&gt; next = x.next;</span><br><span class="line">        <span class="keyword">final</span> Node&lt;E&gt; prev = x.prev;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (prev == <span class="keyword">null</span>) &#123;</span><br><span class="line">            first = next;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            prev.next = next;</span><br><span class="line">            x.prev = <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (next == <span class="keyword">null</span>) &#123;</span><br><span class="line">            last = prev;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            next.prev = prev;</span><br><span class="line">            x.next = <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        x.item = <span class="keyword">null</span>;</span><br><span class="line">        size--;</span><br><span class="line">        modCount++;</span><br><span class="line">        <span class="keyword">return</span> element;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ul>
+<p>  remove(Object o) 根据值来进行删除.这个可以看出来，如果有二个相同节点的值,调用一次这个方法是只可以删除一个,而不是二个.</p>
+  <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public boolean remove(Object o) &#123;</span><br><span class="line">    if (o &#x3D;&#x3D; null) &#123;</span><br><span class="line">        for (Node&lt;E&gt; x &#x3D; first; x !&#x3D; null; x &#x3D; x.next) &#123;</span><br><span class="line">            if (x.item &#x3D;&#x3D; null) &#123;</span><br><span class="line">                unlink(x);</span><br><span class="line">                return true;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        for (Node&lt;E&gt; x &#x3D; first; x !&#x3D; null; x &#x3D; x.next) &#123;</span><br><span class="line">            if (o.equals(x.item)) &#123;</span><br><span class="line">                unlink(x);</span><br><span class="line">                return true;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    return false;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<hr>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p> 好啦,今天的知识内容就更新到这里,虽然文字描述到很难理解,但是主要去理解 Node 节点的 双向指向,并且每次添加节点和删除添加，都是靠Node的prev和next来进行指向. 所以说LinkedList是删除快，查询慢的原因。</p>
+]]></content>
+      <categories>
+        <category>Java集合源码</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+        <tag>LinkedList</tag>
       </tags>
   </entry>
   <entry>
@@ -1215,108 +1317,6 @@ docker-engine
       <tags>
         <tag>Java</tag>
         <tag>PriorityQueue</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>LinkedList源码阅读记录</title>
-    <url>/2020/04/29/java_list/LinkedList_Source/</url>
-    <content><![CDATA[<p>虽然一般都是使用ArrayList集合比使用LinkedList集合要多,但是这并不妨碍我们对LinkedList的源码研究和学习</p>
-<h3 id="结构"><a href="#结构" class="headerlink" title="结构"></a>结构</h3><p>LinkedList 是一个双向链表的结构,这点可以直接看其内部内就可以非常明显的看出来. 静态私有的内部类,只提供一个构造函数.</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Node</span>&lt;<span class="title">E</span>&gt; </span>&#123;</span><br><span class="line">    E item;</span><br><span class="line">    Node&lt;E&gt; next;</span><br><span class="line">    Node&lt;E&gt; prev;</span><br><span class="line"></span><br><span class="line">    Node(Node&lt;E&gt; prev, E element, Node&lt;E&gt; next) &#123;</span><br><span class="line">        <span class="keyword">this</span>.item = element;</span><br><span class="line">        <span class="keyword">this</span>.next = next;</span><br><span class="line">        <span class="keyword">this</span>.prev = prev;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<p>然后我们看 LinkedList 自身的变量. size 肯定是记录这个链表的长度,不然到时候node.next.next….获取长度就很得不偿失了.  然后记录了一个头节点和尾节点，个人认为这是方便遍历。从头开始遍历就从first节点获取,从尾部开始遍历的话,就从last开始获取.</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">transient int size &#x3D; 0;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * Pointer to first node.</span><br><span class="line"> * Invariant: (first &#x3D;&#x3D; null &amp;&amp; last &#x3D;&#x3D; null) ||</span><br><span class="line"> *            (first.prev &#x3D;&#x3D; null &amp;&amp; first.item !&#x3D; null)</span><br><span class="line"> *&#x2F;</span><br><span class="line">transient Node&lt;E&gt; first;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * Pointer to last node.</span><br><span class="line"> * Invariant: (first &#x3D;&#x3D; null &amp;&amp; last &#x3D;&#x3D; null) ||</span><br><span class="line"> *            (last.next &#x3D;&#x3D; null &amp;&amp; last.item !&#x3D; null)</span><br><span class="line"> *&#x2F;</span><br><span class="line">transient Node&lt;E&gt; last;</span><br></pre></td></tr></table></figure>
-
-
-
-<hr>
-<h3 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h3><ul>
-<li><p>add 方法</p>
-<p>add方法调用一个linkLast方法,然后就返回true了. 也就是说add(E e)就是默认从尾部开始插入元素进去.</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">add</span><span class="params">(E e)</span> </span>&#123;</span><br><span class="line">    linkLast(e);</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Links e as last element.</span></span><br><span class="line"><span class="comment">       翻译 : 链接e作为最后一个元素。</span></span><br><span class="line"><span class="comment">       先对last赋值给 Node&lt;E&gt; l , 然后调用new Node&lt;&gt;(l,e,null);传入进去的上个节点,也就是l,上次保存的尾部节点,也就是从倒数第一变为了倒数二,这样理解。然后此时的newNode就是尾节点了,然后赋值给last,因为last每次记录的都是尾节点.</span></span><br><span class="line"><span class="comment">       if else 中是对之前的尾节点进行判断,如果是null的话,说明此时就是添加的第一个元素,first也赋值给newNode,否则的话,l.next 和 尾节点进行关联。</span></span><br><span class="line"><span class="comment">       size 长度加一</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">linkLast</span><span class="params">(E e)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">final</span> Node&lt;E&gt; l = last;</span><br><span class="line">        <span class="keyword">final</span> Node&lt;E&gt; newNode = <span class="keyword">new</span> Node&lt;&gt;(l, e, <span class="keyword">null</span>);</span><br><span class="line">        last = newNode;</span><br><span class="line">        <span class="keyword">if</span> (l == <span class="keyword">null</span>)</span><br><span class="line">            first = newNode;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            l.next = newNode;</span><br><span class="line">        size++;</span><br><span class="line">        modCount++;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-
-
-</li>
-</ul>
-<p>  根据下标添加 add(int index,E  element)</p>
-  <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">	1: 检查传入进来的下标是否越界了,如果下标越界的话,就会抛出 下标越界的异常</span></span><br><span class="line"><span class="comment">	2: 根据传入进来的下标值,判断是否和 size 相等,如果是相等的话,就说明是尾部插入,就不需要挨个迭代去获取对应的下标值对应的节点.满足条件,就会调用上面说到的 linkLast方法</span></span><br><span class="line"><span class="comment">	3: 不满足条件2的话,就会走lineBefore()方法,其中也调用到了.传入下标调用node方法.node会返回对应下标的值,根据返回的节点和当前的值调用lienkBefore方法.</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> index, E element)</span> </span>&#123;</span><br><span class="line">    checkPositionIndex(index);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (index == size)</span><br><span class="line">        linkLast(element);</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        linkBefore(element, node(index));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">checkPositionIndex</span><span class="params">(<span class="keyword">int</span> index)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (!isPositionIndex(index))</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IndexOutOfBoundsException(outOfBoundsMsg(index));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"> <span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">isPositionIndex</span><span class="params">(<span class="keyword">int</span> index)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> index &gt;= <span class="number">0</span> &amp;&amp; index &lt;= size;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">	size &gt;&gt; 1 ; 是对 size 进行去半, 比如 6 &gt;&gt; 1 是 3， 5 &gt;&gt; 1 是2</span></span><br><span class="line"><span class="comment">	如果小于一半的话,就会从first节点开始遍历,也就是从头节点开始遍历,否则就是从尾节点开始遍历.</span></span><br><span class="line"><span class="comment">	这个方法可以看到,从头开始遍历的话,就是调用的next,如果尾部遍历的话,调用的就是prev。找到对应下标的节点并且返回回去.</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function">Node&lt;E&gt; <span class="title">node</span><span class="params">(<span class="keyword">int</span> index)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// assert isElementIndex(index);</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (index &lt; (size &gt;&gt; <span class="number">1</span>)) &#123;</span><br><span class="line">            Node&lt;E&gt; x = first;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; index; i++)</span><br><span class="line">                x = x.next;</span><br><span class="line">            <span class="keyword">return</span> x;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            Node&lt;E&gt; x = last;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = size - <span class="number">1</span>; i &gt; index; i--)</span><br><span class="line">                x = x.prev;</span><br><span class="line">            <span class="keyword">return</span> x;</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">	获取节点的上个节点赋值给pred，其实类似于pred这种,都是用于变量替换创建出来的.</span></span><br><span class="line"><span class="comment">	上一个节点,当前值e,succ节点来new一个新的节点出来.</span></span><br><span class="line"><span class="comment">	succ.prev 指向当前new出来的节点</span></span><br><span class="line"><span class="comment">	对pred判断是否是null,如果是null的话,就说明是第一个值,否则就是赋值上pred个节点的next</span></span><br><span class="line"><span class="comment">	,size ++ 就是对长度 ++ </span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">linkBefore</span><span class="params">(E e, Node&lt;E&gt; succ)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// assert succ != null;</span></span><br><span class="line">        <span class="keyword">final</span> Node&lt;E&gt; pred = succ.prev;</span><br><span class="line">        <span class="keyword">final</span> Node&lt;E&gt; newNode = <span class="keyword">new</span> Node&lt;&gt;(pred, e, succ);</span><br><span class="line">        succ.prev = newNode;</span><br><span class="line">        <span class="keyword">if</span> (pred == <span class="keyword">null</span>)</span><br><span class="line">            first = newNode;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            pred.next = newNode;</span><br><span class="line">        size++;</span><br><span class="line">        modCount++;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<p>   头插入 和 尾插入</p>
-<p>   头插入，将值插入到头部</p>
-  <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addFirst</span><span class="params">(E e)</span> </span>&#123;</span><br><span class="line">    linkFirst(e);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">	先将first 赋值给 f ,  根据传入进来的值e 和 下一个节点f(前一个头节点),new一个新的newNode节点出来,first指向newNode.如果f是null的话就说明是初始化,如果不是null的话,f的上一个节点指向newNode,刚刚程序newNode出来的.就完成了头节点的插入</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">linkFirst</span><span class="params">(E e)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">final</span> Node&lt;E&gt; f = first;</span><br><span class="line">        <span class="keyword">final</span> Node&lt;E&gt; newNode = <span class="keyword">new</span> Node&lt;&gt;(<span class="keyword">null</span>, e, f);</span><br><span class="line">        first = newNode;</span><br><span class="line">        <span class="keyword">if</span> (f == <span class="keyword">null</span>)</span><br><span class="line">            last = newNode;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            f.prev = newNode;</span><br><span class="line">        size++;</span><br><span class="line">        modCount++;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<p>  尾节点插入;与头节点相似，也是利用变量last来实现尾部插入.</p>
-  <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public void addLast(E e) &#123;</span><br><span class="line">    linkLast(e);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">void linkLast(E e) &#123;</span><br><span class="line">        final Node&lt;E&gt; l &#x3D; last;</span><br><span class="line">        final Node&lt;E&gt; newNode &#x3D; new Node&lt;&gt;(l, e, null);</span><br><span class="line">        last &#x3D; newNode;</span><br><span class="line">        if (l &#x3D;&#x3D; null)</span><br><span class="line">            first &#x3D; newNode;</span><br><span class="line">        else</span><br><span class="line">            l.next &#x3D; newNode;</span><br><span class="line">        size++;</span><br><span class="line">        modCount++;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><p>get 方法,获取值方法</p>
-<p>根据下标来获取出值 ,然后调用node方法获取出节点,node.item就是我们需要的值,然后对其进行返回即可.</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public E get(int index) &#123;</span><br><span class="line">    checkElementIndex(index);</span><br><span class="line">    return node(index).item;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 如果输入index是小于0和大于size的话,就会爆出下标越界的错误.</span><br><span class="line">private void checkElementIndex(int index) &#123;</span><br><span class="line">        if (!isElementIndex(index))</span><br><span class="line">            throw new IndexOutOfBoundsException(outOfBoundsMsg(index));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-</li>
-</ul>
-<p>​       </p>
-<p>getFirst / getLast     可以看到first和 last都是直接从定义的变量中获取出对应的值</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> E <span class="title">getFirst</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> Node&lt;E&gt; f = first;</span><br><span class="line">    <span class="keyword">if</span> (f == <span class="keyword">null</span>)</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> NoSuchElementException();</span><br><span class="line">    <span class="keyword">return</span> f.item;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> E <span class="title">getLast</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">final</span> Node&lt;E&gt; l = last;</span><br><span class="line">        <span class="keyword">if</span> (l == <span class="keyword">null</span>)</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> NoSuchElementException();</span><br><span class="line">        <span class="keyword">return</span> l.item;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<p>​    peek 方法;使用first节点,如果是null的话就会返回null，否则就是f.item. 这里是没有删除first元素,poll是弹出元素并且删除.</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public E peek() &#123;</span><br><span class="line">    final Node&lt;E&gt; f &#x3D; first;</span><br><span class="line">    return (f &#x3D;&#x3D; null) ? null : f.item;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<p>​    poll 方法 :  这里主要看unlinkFirst方法.</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> E <span class="title">poll</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> Node&lt;E&gt; f = first;</span><br><span class="line">    <span class="keyword">return</span> (f == <span class="keyword">null</span>) ? <span class="keyword">null</span> : unlinkFirst(f);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">   取出 f 的item,节点对应的值和 f的next个节点,如果下个节点是null的话,就说明是没有值的,如果不为null的话，说将next的上一个节点prev指向null,因为头节点的prev和尾节点的next都是null来进行区分。</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> E <span class="title">unlinkFirst</span><span class="params">(Node&lt;E&gt; f)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// assert f == first &amp;&amp; f != null;</span></span><br><span class="line">        <span class="keyword">final</span> E element = f.item;</span><br><span class="line">        <span class="keyword">final</span> Node&lt;E&gt; next = f.next;</span><br><span class="line">        f.item = <span class="keyword">null</span>;</span><br><span class="line">        f.next = <span class="keyword">null</span>; <span class="comment">// help GC</span></span><br><span class="line">        first = next;</span><br><span class="line">        <span class="keyword">if</span> (next == <span class="keyword">null</span>)</span><br><span class="line">            last = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            next.prev = <span class="keyword">null</span>;</span><br><span class="line">        size--;</span><br><span class="line">        modCount++;</span><br><span class="line">        <span class="keyword">return</span> element;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<p>​    offer 等方法都是内部调用了add / addFirst / addLast等方法.</p>
-<ul>
-<li><p>remove 方法</p>
-<p>根据下标进来remove方法, node(index) 也是在上面进行讲到的,就是根据下标获取对应的node节点信息.</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> E <span class="title">remove</span><span class="params">(<span class="keyword">int</span> index)</span> </span>&#123;</span><br><span class="line">    checkElementIndex(index);</span><br><span class="line">    <span class="keyword">return</span> unlink(node(index));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">	这里获取出节点的 next 和 prev方法.</span></span><br><span class="line"><span class="comment">	该节点的上一个节点(prev)的next需要指向指向该节点的下个节点(next),该节点的下一个节点和prev的操作是相反的,因为这样的话,就删除了该节点,并且上一个节点和下一个节点关联起来了.	</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"> <span class="function">E <span class="title">unlink</span><span class="params">(Node&lt;E&gt; x)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// assert x != null;</span></span><br><span class="line">        <span class="keyword">final</span> E element = x.item;</span><br><span class="line">        <span class="keyword">final</span> Node&lt;E&gt; next = x.next;</span><br><span class="line">        <span class="keyword">final</span> Node&lt;E&gt; prev = x.prev;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (prev == <span class="keyword">null</span>) &#123;</span><br><span class="line">            first = next;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            prev.next = next;</span><br><span class="line">            x.prev = <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (next == <span class="keyword">null</span>) &#123;</span><br><span class="line">            last = prev;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            next.prev = prev;</span><br><span class="line">            x.next = <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        x.item = <span class="keyword">null</span>;</span><br><span class="line">        size--;</span><br><span class="line">        modCount++;</span><br><span class="line">        <span class="keyword">return</span> element;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-</li>
-</ul>
-<p>  remove(Object o) 根据值来进行删除.这个可以看出来，如果有二个相同节点的值,调用一次这个方法是只可以删除一个,而不是二个.</p>
-  <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public boolean remove(Object o) &#123;</span><br><span class="line">    if (o &#x3D;&#x3D; null) &#123;</span><br><span class="line">        for (Node&lt;E&gt; x &#x3D; first; x !&#x3D; null; x &#x3D; x.next) &#123;</span><br><span class="line">            if (x.item &#x3D;&#x3D; null) &#123;</span><br><span class="line">                unlink(x);</span><br><span class="line">                return true;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        for (Node&lt;E&gt; x &#x3D; first; x !&#x3D; null; x &#x3D; x.next) &#123;</span><br><span class="line">            if (o.equals(x.item)) &#123;</span><br><span class="line">                unlink(x);</span><br><span class="line">                return true;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    return false;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<hr>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p> 好啦,今天的知识内容就更新到这里,虽然文字描述到很难理解,但是主要去理解 Node 节点的 双向指向,并且每次添加节点和删除添加，都是靠Node的prev和next来进行指向. 所以说LinkedList是删除快，查询慢的原因。</p>
-]]></content>
-      <categories>
-        <category>Java集合源码</category>
-      </categories>
-      <tags>
-        <tag>Java</tag>
-        <tag>LinkedList</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Vector 源码阅读记录</title>
-    <url>/2020/04/29/java_list/Vector/</url>
-    <content><![CDATA[<p>Vector 的结构和对数据的添加和删除 与 <a href="https://github.com/baoyang23/source-notes/blob/master/java/jvm_aggregate/ArrayList_Source.md" target="_blank" rel="noopener">ArrayList</a> 是非常相似的. 可以点进去看看.</p>
-<p>具体的执行逻辑代码还是非常相似的. </p>
-<p>Vector 比起 ArrayList 是线程安全的原因是, Vector 在一些方法上是使用了 synchronized 来进行加锁,从而保证了线程安全问题。</p>
-]]></content>
-      <categories>
-        <category>Java集合源码</category>
-      </categories>
-      <tags>
-        <tag>Java</tag>
-        <tag>Vector</tag>
       </tags>
   </entry>
 </search>
