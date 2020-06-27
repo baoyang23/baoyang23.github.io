@@ -285,6 +285,458 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/23/docker%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="鲍洋">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/timg.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="鲍洋记录">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/04/23/docker%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="url">docker学习笔记</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-04-23T22:47:50+08:00">
+                2020-04-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/docker/" itemprop="url" rel="index">
+                    <span itemprop="name">docker</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="docker"><a href="#docker" class="headerlink" title="docker"></a>docker</h3><blockquote>
+<p><strong>Docker</strong> 是个好东西，所以你得学习。 进公司是一直都有使用docker来发布项目的,之前对docker也是有多多少少的学习。最近想学习一下k8s，所以也顺路安装一下docker.</p>
+</blockquote>
+<hr>
+<h3 id="Docker-安装"><a href="#Docker-安装" class="headerlink" title="Docker 安装"></a>Docker 安装</h3><blockquote>
+<p>这里笔者安装的环境就是 VM 上跑的 Centos 来进行安装的</p>
+</blockquote>
+<ol>
+<li><p>卸载旧版本</p>
+<p>[root@localhost ~]# sudo yum remove docker \</p>
+<blockquote>
+<pre><code>docker-client \
+docker-client-latest \
+docker-common \
+docker-latest \
+docker-latest-logrotate \
+docker-logrotate \
+docker-engine
+已加载插件：fastestmirror
+参数 docker 没有匹配
+参数 docker-client 没有匹配
+参数 docker-client-latest 没有匹配
+参数 docker-common 没有匹配
+参数 docker-latest 没有匹配
+参数 docker-latest-logrotate 没有匹配
+参数 docker-logrotate 没有匹配
+参数 docker-engine 没有匹配
+不删除任何软件包</code></pre></blockquote>
+</li>
+<li><p>安装所需要的依赖包</p>
+<blockquote>
+<p><strong>sudo</strong> <strong>yum install</strong> -y yum-utils <br> device-mapper-persistent-data <br> lvm2</p>
+</blockquote>
+</li>
+<li><p>设置稳定的仓库</p>
+<blockquote>
+<p><strong>sudo</strong> yum-config-manager <br>  –add-repo <br>  https:<strong>//</strong>download.docker.com<strong>/</strong>linux<strong>/</strong>centos<strong>/</strong>docker-ce.repo</p>
+</blockquote>
+</li>
+<li><p>安装最新的Docker Engine-Community</p>
+<blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt;sudo yum install docker-ce docker-ce-cli containerd.io</span><br></pre></td></tr></table></figure>
+</blockquote>
+</li>
+</ol>
+<hr>
+<p> 感觉 正常的安装 docker 还是很慢的</p>
+<p>Step 1 : 安装必要的一些系统工具</p>
+<figure class="highlight docker"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo yum install -y yum-utils device-mapper-persistent-data lvm2</span><br></pre></td></tr></table></figure>
+
+
+
+<p>Step 2 : 添加软件信息</p>
+<figure class="highlight docker"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo yum-config-manager --<span class="keyword">add</span><span class="bash">-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p>Step 3 :  更新并且安装 docker-ce</p>
+<figure class="highlight docker"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo yum makecache fast</span><br></pre></td></tr></table></figure>
+
+
+
+<p>Step 4 : 开启Docker服务</p>
+<figure class="highlight docker"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo service docker start</span><br></pre></td></tr></table></figure>
+
+
+
+<p>Step 5 (非必要),配置加速</p>
+<p>/etc/docker/daemon.json (如果没有这个文件的话,就去创建一个)</p>
+<p>{</p>
+<p>“registry-mirrors”: [“<a href="http://hub-mirror.c.163.com&quot;]">http://hub-mirror.c.163.com&quot;]</a></p>
+<p>}</p>
+<p>Step 6 重启指令</p>
+<p>   systemctl daemon-reload</p>
+<p>   systemctl restart docker</p>
+<hr>
+<p>现在VM上安装一台Centos 7 , 安装好docker , 然后使用克隆来克隆一台即可。最好的镜像加速也要配置下.</p>
+<p>Linux : Centos 7</p>
+<table>
+<thead>
+<tr>
+<th>主机名</th>
+<th>ip</th>
+<th><strong>kubelet</strong>/<strong>kubeadm</strong>/<strong>kubectl</strong></th>
+<th>flannel version</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>master</td>
+<td>192.168.247.131</td>
+<td>V1.14.2</td>
+<td>V0.11.0</td>
+<td>主节点</td>
+</tr>
+<tr>
+<td>node</td>
+<td>192.168.247.132</td>
+<td>V1.14.2</td>
+<td>V0.11.0</td>
+<td>node节点</td>
+</tr>
+</tbody></table>
+<h3 id="主机名"><a href="#主机名" class="headerlink" title="主机名"></a>主机名</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hostnamectl set-hostname master</span><br><span class="line">hostnamectl set-hostname node</span><br></pre></td></tr></table></figure>
+
+
+
+<p> 修改/etc/hosts ; 即可</p>
+<p> [root@localhost ~]# cat /etc/hosts<br>127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4<br>::1         localhost localhost.localdomain localhost6 localhost6.localdomain6<br>192.168.247.131 master<br>192.168.247.132 node</p>
+<hr>
+<p>零时禁用Swap : </p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">swapoff -a</span><br></pre></td></tr></table></figure>
+
+
+
+<p>永久禁用:</p>
+<p>  sed -i.bak ‘/swap/s/^/#/‘ /etc/fstab</p>
+<hr>
+<p>内核参数修改 :</p>
+<p>   零时修改 :</p>
+<p>​        sysctl net.bridge.bridge-nf-call-iptables=1</p>
+<p>​       sysctl net.bridge.bridge-nf-call-ip6tables=1</p>
+<p>   永久修改 :</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">cat &lt;&lt;EOF &gt;  /etc/sysctl.d/k8s.conf</span><br><span class="line">net.bridge.bridge-nf-call-ip6tables = 1</span><br><span class="line">net.bridge.bridge-nf-call-iptables = 1</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+
+<p>   sysctl -p /etc/sysctl.d/k8s.conf</p>
+<p>Notes  :  如果遇见了下面这个错误</p>
+<p>sysctl: cannot stat /proc/sys/net/bridge/bridge-nf-call-iptables: No such file or directory<br>sysctl: cannot stat /proc/sys/net/bridge/bridge-nf-call-ip6tables: No such file or directory</p>
+<p>执行 modprobe br_netfilter 即可.</p>
+<hr>
+<p>修改 Cgroup Driver  –&gt; 修改daemon.json</p>
+<p> 在 /etc/docker/daemon.json中新加</p>
+<p>“exec-opts”: [“native.cgroupdriver=systemd”</p>
+<p>[root@localhost ~]# cat /etc/docker/daemon.json<br>{<br>  “registry-mirrors”: [“<a href="http://hub-mirror.c.163.com&quot;]">http://hub-mirror.c.163.com&quot;]</a>,<br>  “exec-opts”: [“native.cgroupdriver=systemd”]<br>}</p>
+<p>这样的效果即可.</p>
+<p>配置了后记得重启下docker即可</p>
+<hr>
+<p>设置 k8s 源</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">cat &lt;&lt;EOF &gt; /etc/yum.repos.d/kubernetes.repo</span><br><span class="line">[kubernetes]</span><br><span class="line">name=Kubernetes</span><br><span class="line">baseurl=https://mirrors.aliyun.com/kubernetes/yum/repos/kubernetes-el7-x86_64/</span><br><span class="line">enabled=1</span><br><span class="line">gpgcheck=1</span><br><span class="line">repo_gpgcheck=1</span><br><span class="line">gpgkey=https://mirrors.aliyun.com/kubernetes/yum/doc/yum-key.gpg https://mirrors.aliyun.com/kubernetes/yum/doc/rpm-package-key.gpg</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+
+
+
+<blockquote>
+<ol>
+<li>[] 中括号中的是repository id，唯一，用来标识不同仓库</li>
+<li>name 仓库名称，自定义</li>
+<li>baseurl 仓库地址</li>
+<li>enable 是否启用该仓库，默认为1表示启用</li>
+<li>gpgcheck 是否验证从该仓库获得程序包的合法性，1为验证</li>
+<li>repo_gpgcheck 是否验证元数据的合法性 元数据就是程序包列表，1为验证</li>
+<li>gpgkey=URL 数字签名的公钥文件所在位置，如果gpgcheck值为1，此处就需要指定gpgkey文件的位置，如果gpgcheck值为0就不需要此项了</li>
+</ol>
+</blockquote>
+<p>更新下缓存 :</p>
+<p> yum clean all</p>
+<p> yum -y makecache</p>
+<hr>
+<h3 id="Master节点安装"><a href="#Master节点安装" class="headerlink" title="Master节点安装"></a>Master节点安装</h3><p> 如果不指定的话,那么就默认是安装最新的</p>
+<figure class="highlight docker"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install -y kubelet-<span class="number">1.14</span>.<span class="number">2</span> kubeadm-<span class="number">1.14</span>.<span class="number">2</span> kubectl-<span class="number">1.14</span>.<span class="number">2</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p>启动kubelet 并且设置为开机自动启动</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl <span class="built_in">enable</span> kubelet &amp;&amp; systemctl start kubelet</span><br></pre></td></tr></table></figure>
+
+
+
+<p>kubelet命令补全</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">"source &lt;(kubectl completion bash)"</span> &gt;&gt; ~/.bash_profile</span><br><span class="line"><span class="built_in">source</span> .bash_profile</span><br></pre></td></tr></table></figure>
+
+
+
+<hr>
+<h3 id="下载镜像"><a href="#下载镜像" class="headerlink" title="下载镜像"></a>下载镜像</h3><p>vi image.sh</p>
+<p> 往 sh 脚本里面写入 下面的内容</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">url=registry.cn-hangzhou.aliyuncs.com/google_containers</span><br><span class="line">version=v1.14.2</span><br><span class="line">images=(`kubeadm config images list --kubernetes-version=<span class="variable">$version</span>|awk -F <span class="string">'/'</span> <span class="string">'&#123;print $2&#125;'</span>`)</span><br><span class="line"><span class="keyword">for</span> imagename <span class="keyword">in</span> <span class="variable">$&#123;images[@]&#125;</span> ; <span class="keyword">do</span></span><br><span class="line">  docker pull <span class="variable">$url</span>/<span class="variable">$imagename</span></span><br><span class="line">  docker tag <span class="variable">$url</span>/<span class="variable">$imagename</span> k8s.gcr.io/<span class="variable">$imagename</span></span><br><span class="line">  docker rmi -f <span class="variable">$url</span>/<span class="variable">$imagename</span></span><br><span class="line"><span class="keyword">done</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p>给权限 chmod u+x image.sh</p>
+<p>启动 ./image.sh</p>
+<hr>
+<h3 id="初始化-Master"><a href="#初始化-Master" class="headerlink" title="初始化 Master"></a>初始化 Master</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubeadm init --apiserver-advertise-address 192.168.247.131 --pod-network-cidr=10.244.0.0/16</span><br></pre></td></tr></table></figure>
+
+<p> 这里启动ok了后会有 node加入节点的信息</p>
+<p>加载环境变量</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">"export KUBECONFIG=/etc/kubernetes/admin.conf"</span> &gt;&gt; ~/.bash_profile</span><br><span class="line"><span class="built_in">source</span> .bash_profile</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p <span class="variable">$HOME</span>/.kube</span><br><span class="line">cp -i /etc/kubernetes/admin.conf <span class="variable">$HOME</span>/.kube/config</span><br><span class="line">chown $(id -u):$(id -g) <span class="variable">$HOME</span>/.kube/config</span><br></pre></td></tr></table></figure>
+
+
+
+<hr>
+<p>安装pod 网络</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml</span><br></pre></td></tr></table></figure>
+
+<p>如果 kube-flannel.yml 访问不了的话，就创建一个,然后copy进去</p>
+<h2 id="root-localhost-cat-kube-flannel-yml"><a href="#root-localhost-cat-kube-flannel-yml" class="headerlink" title="[root@localhost ~]# cat kube-flannel.yml "></a>[root@localhost ~]# cat kube-flannel.yml </h2><p>apiVersion: policy/v1beta1<br>kind: PodSecurityPolicy<br>metadata:<br>  name: psp.flannel.unprivileged<br>  annotations:<br>    seccomp.security.alpha.kubernetes.io/allowedProfileNames: docker/default<br>    seccomp.security.alpha.kubernetes.io/defaultProfileName: docker/default<br>    apparmor.security.beta.kubernetes.io/allowedProfileNames: runtime/default<br>    apparmor.security.beta.kubernetes.io/defaultProfileName: runtime/default<br>spec:<br>  privileged: false<br>  volumes:<br>    - configMap<br>    - secret<br>    - emptyDir<br>    - hostPath<br>  allowedHostPaths:<br>    - pathPrefix: “/etc/cni/net.d”<br>    - pathPrefix: “/etc/kube-flannel”<br>    - pathPrefix: “/run/flannel”<br>  readOnlyRootFilesystem: false</p>
+<h1 id="Users-and-groups"><a href="#Users-and-groups" class="headerlink" title="Users and groups"></a>Users and groups</h1><p>  runAsUser:<br>    rule: RunAsAny<br>  supplementalGroups:<br>    rule: RunAsAny<br>  fsGroup:<br>    rule: RunAsAny</p>
+<h1 id="Privilege-Escalation"><a href="#Privilege-Escalation" class="headerlink" title="Privilege Escalation"></a>Privilege Escalation</h1><p>  allowPrivilegeEscalation: false<br>  defaultAllowPrivilegeEscalation: false</p>
+<h1 id="Capabilities"><a href="#Capabilities" class="headerlink" title="Capabilities"></a>Capabilities</h1><p>  allowedCapabilities: [‘NET_ADMIN’]<br>  defaultAddCapabilities: []<br>  requiredDropCapabilities: []</p>
+<h1 id="Host-namespaces"><a href="#Host-namespaces" class="headerlink" title="Host namespaces"></a>Host namespaces</h1><p>  hostPID: false<br>  hostIPC: false<br>  hostNetwork: true<br>  hostPorts:</p>
+<ul>
+<li>min: 0<br>max: 65535<h1 id="SELinux"><a href="#SELinux" class="headerlink" title="SELinux"></a>SELinux</h1>seLinux:<h1 id="SELinux-is-unused-in-CaaSP"><a href="#SELinux-is-unused-in-CaaSP" class="headerlink" title="SELinux is unused in CaaSP"></a>SELinux is unused in CaaSP</h1>rule: ‘RunAsAny’</li>
+</ul>
+<hr>
+<p>kind: ClusterRole<br>apiVersion: rbac.authorization.k8s.io/v1beta1<br>metadata:<br>  name: flannel<br>rules:</p>
+<ul>
+<li>apiGroups: [‘extensions’]<br>resources: [‘podsecuritypolicies’]<br>verbs: [‘use’]<br>resourceNames: [‘psp.flannel.unprivileged’]</li>
+<li>apiGroups:<ul>
+<li>“”<br>resources:</li>
+<li>pods<br>verbs:</li>
+<li>get</li>
+</ul>
+</li>
+<li>apiGroups:<ul>
+<li>“”<br>resources:</li>
+<li>nodes<br>verbs:</li>
+<li>list</li>
+<li>watch</li>
+</ul>
+</li>
+<li>apiGroups:<ul>
+<li>“”<br>resources:</li>
+<li>nodes/status<br>verbs:</li>
+<li>patch</li>
+</ul>
+</li>
+</ul>
+<hr>
+<p>kind: ClusterRoleBinding<br>apiVersion: rbac.authorization.k8s.io/v1beta1<br>metadata:<br>  name: flannel<br>roleRef:<br>  apiGroup: rbac.authorization.k8s.io<br>  kind: ClusterRole<br>  name: flannel<br>subjects:</p>
+<ul>
+<li>kind: ServiceAccount<br>name: flannel<br>namespace: kube-system</li>
+</ul>
+<hr>
+<p>apiVersion: v1<br>kind: ServiceAccount<br>metadata:<br>  name: flannel<br>  namespace: kube-system</p>
+<hr>
+<p>kind: ConfigMap<br>apiVersion: v1<br>metadata:<br>  name: kube-flannel-cfg<br>  namespace: kube-system<br>  labels:<br>    tier: node<br>    app: flannel<br>data:<br>  cni-conf.json: |<br>    {<br>      “name”: “cbr0”,<br>      “cniVersion”: “0.3.1”,<br>      “plugins”: [<br>        {<br>          “type”: “flannel”,<br>          “delegate”: {<br>            “hairpinMode”: true,<br>            “isDefaultGateway”: true<br>          }<br>        },<br>        {<br>          “type”: “portmap”,<br>          “capabilities”: {<br>            “portMappings”: true<br>          }<br>        }<br>      ]<br>    }<br>  net-conf.json: |<br>    {<br>      “Network”: “10.244.0.0/16”,<br>      “Backend”: {<br>        “Type”: “vxlan”<br>      }<br>    }</p>
+<hr>
+<p>apiVersion: apps/v1<br>kind: DaemonSet<br>metadata:<br>  name: kube-flannel-ds-amd64<br>  namespace: kube-system<br>  labels:<br>    tier: node<br>    app: flannel<br>spec:<br>  selector:<br>    matchLabels:<br>      app: flannel<br>  template:<br>    metadata:<br>      labels:<br>        tier: node<br>        app: flannel<br>    spec:<br>      affinity:<br>        nodeAffinity:<br>          requiredDuringSchedulingIgnoredDuringExecution:<br>            nodeSelectorTerms:<br>              - matchExpressions:<br>                  - key: kubernetes.io/os<br>                    operator: In<br>                    values:<br>                      - linux<br>                  - key: kubernetes.io/arch<br>                    operator: In<br>                    values:<br>                      - amd64<br>      hostNetwork: true<br>      tolerations:<br>      - operator: Exists<br>        effect: NoSchedule<br>      serviceAccountName: flannel<br>      initContainers:<br>      - name: install-cni<br>        image: quay.io/coreos/flannel:v0.12.0-amd64<br>        command:<br>        - cp<br>        args:<br>        - -f<br>        - /etc/kube-flannel/cni-conf.json<br>        - /etc/cni/net.d/10-flannel.conflist<br>        volumeMounts:<br>        - name: cni<br>          mountPath: /etc/cni/net.d<br>        - name: flannel-cfg<br>          mountPath: /etc/kube-flannel/<br>      containers:<br>      - name: kube-flannel<br>        image: quay.io/coreos/flannel:v0.12.0-amd64<br>        command:<br>        - /opt/bin/flanneld<br>        args:<br>        - –ip-masq<br>        - –kube-subnet-mgr<br>        resources:<br>          requests:<br>            cpu: “100m”<br>            memory: “50Mi”<br>          limits:<br>            cpu: “100m”<br>            memory: “50Mi”<br>        securityContext:<br>          privileged: false<br>          capabilities:<br>            add: [“NET_ADMIN”]<br>        env:<br>        - name: POD_NAME<br>          valueFrom:<br>            fieldRef:<br>              fieldPath: metadata.name<br>        - name: POD_NAMESPACE<br>          valueFrom:<br>            fieldRef:<br>              fieldPath: metadata.namespace<br>        volumeMounts:<br>        - name: run<br>          mountPath: /run/flannel<br>        - name: flannel-cfg<br>          mountPath: /etc/kube-flannel/<br>      volumes:<br>        - name: run<br>          hostPath:<br>            path: /run/flannel<br>        - name: cni<br>          hostPath:<br>            path: /etc/cni/net.d<br>        - name: flannel-cfg<br>          configMap:<br>            name: kube-flannel-cfg</p>
+<hr>
+<p>apiVersion: apps/v1<br>kind: DaemonSet<br>metadata:<br>  name: kube-flannel-ds-arm64<br>  namespace: kube-system<br>  labels:<br>    tier: node<br>    app: flannel<br>spec:<br>  selector:<br>    matchLabels:<br>      app: flannel<br>  template:<br>    metadata:<br>      labels:<br>        tier: node<br>        app: flannel<br>    spec:<br>      affinity:<br>        nodeAffinity:<br>          requiredDuringSchedulingIgnoredDuringExecution:<br>            nodeSelectorTerms:<br>              - matchExpressions:<br>                  - key: kubernetes.io/os<br>                    operator: In<br>                    values:<br>                      - linux<br>                  - key: kubernetes.io/arch<br>                    operator: In<br>                    values:<br>                      - arm64<br>      hostNetwork: true<br>      tolerations:<br>      - operator: Exists<br>        effect: NoSchedule<br>      serviceAccountName: flannel<br>      initContainers:<br>      - name: install-cni<br>        image: quay.io/coreos/flannel:v0.12.0-arm64<br>        command:<br>        - cp<br>        args:<br>        - -f<br>        - /etc/kube-flannel/cni-conf.json<br>        - /etc/cni/net.d/10-flannel.conflist<br>        volumeMounts:<br>        - name: cni<br>          mountPath: /etc/cni/net.d<br>        - name: flannel-cfg<br>          mountPath: /etc/kube-flannel/<br>      containers:<br>      - name: kube-flannel<br>        image: quay.io/coreos/flannel:v0.12.0-arm64<br>        command:<br>        - /opt/bin/flanneld<br>        args:<br>        - –ip-masq<br>        - –kube-subnet-mgr<br>        resources:<br>          requests:<br>            cpu: “100m”<br>            memory: “50Mi”<br>          limits:<br>            cpu: “100m”<br>            memory: “50Mi”<br>        securityContext:<br>          privileged: false<br>          capabilities:<br>             add: [“NET_ADMIN”]<br>        env:<br>        - name: POD_NAME<br>          valueFrom:<br>            fieldRef:<br>              fieldPath: metadata.name<br>        - name: POD_NAMESPACE<br>          valueFrom:<br>            fieldRef:<br>              fieldPath: metadata.namespace<br>        volumeMounts:<br>        - name: run<br>          mountPath: /run/flannel<br>        - name: flannel-cfg<br>          mountPath: /etc/kube-flannel/<br>      volumes:<br>        - name: run<br>          hostPath:<br>            path: /run/flannel<br>        - name: cni<br>          hostPath:<br>            path: /etc/cni/net.d<br>        - name: flannel-cfg<br>          configMap:<br>            name: kube-flannel-cfg</p>
+<hr>
+<p>apiVersion: apps/v1<br>kind: DaemonSet<br>metadata:<br>  name: kube-flannel-ds-arm<br>  namespace: kube-system<br>  labels:<br>    tier: node<br>    app: flannel<br>spec:<br>  selector:<br>    matchLabels:<br>      app: flannel<br>  template:<br>    metadata:<br>      labels:<br>        tier: node<br>        app: flannel<br>    spec:<br>      affinity:<br>        nodeAffinity:<br>          requiredDuringSchedulingIgnoredDuringExecution:<br>            nodeSelectorTerms:<br>              - matchExpressions:<br>                  - key: kubernetes.io/os<br>                    operator: In<br>                    values:<br>                      - linux<br>                  - key: kubernetes.io/arch<br>                    operator: In<br>                    values:<br>                      - arm<br>      hostNetwork: true<br>      tolerations:<br>      - operator: Exists<br>        effect: NoSchedule<br>      serviceAccountName: flannel<br>      initContainers:<br>      - name: install-cni<br>        image: quay.io/coreos/flannel:v0.12.0-arm<br>        command:<br>        - cp<br>        args:<br>        - -f<br>        - /etc/kube-flannel/cni-conf.json<br>        - /etc/cni/net.d/10-flannel.conflist<br>        volumeMounts:<br>        - name: cni<br>          mountPath: /etc/cni/net.d<br>        - name: flannel-cfg<br>          mountPath: /etc/kube-flannel/<br>      containers:<br>      - name: kube-flannel<br>        image: quay.io/coreos/flannel:v0.12.0-arm<br>        command:<br>        - /opt/bin/flanneld<br>        args:<br>        - –ip-masq<br>        - –kube-subnet-mgr<br>        resources:<br>          requests:<br>            cpu: “100m”<br>            memory: “50Mi”<br>          limits:<br>            cpu: “100m”<br>            memory: “50Mi”<br>        securityContext:<br>          privileged: false<br>          capabilities:<br>             add: [“NET_ADMIN”]<br>        env:<br>        - name: POD_NAME<br>          valueFrom:<br>            fieldRef:<br>              fieldPath: metadata.name<br>        - name: POD_NAMESPACE<br>          valueFrom:<br>            fieldRef:<br>              fieldPath: metadata.namespace<br>        volumeMounts:<br>        - name: run<br>          mountPath: /run/flannel<br>        - name: flannel-cfg<br>          mountPath: /etc/kube-flannel/<br>      volumes:<br>        - name: run<br>          hostPath:<br>            path: /run/flannel<br>        - name: cni<br>          hostPath:<br>            path: /etc/cni/net.d<br>        - name: flannel-cfg<br>          configMap:<br>            name: kube-flannel-cfg</p>
+<hr>
+<p>apiVersion: apps/v1<br>kind: DaemonSet<br>metadata:<br>  name: kube-flannel-ds-ppc64le<br>  namespace: kube-system<br>  labels:<br>    tier: node<br>    app: flannel<br>spec:<br>  selector:<br>    matchLabels:<br>      app: flannel<br>  template:<br>    metadata:<br>      labels:<br>        tier: node<br>        app: flannel<br>    spec:<br>      affinity:<br>        nodeAffinity:<br>          requiredDuringSchedulingIgnoredDuringExecution:<br>            nodeSelectorTerms:<br>              - matchExpressions:<br>                  - key: kubernetes.io/os<br>                    operator: In<br>                    values:<br>                      - linux<br>                  - key: kubernetes.io/arch<br>                    operator: In<br>                    values:<br>                      - ppc64le<br>      hostNetwork: true<br>      tolerations:<br>      - operator: Exists<br>        effect: NoSchedule<br>      serviceAccountName: flannel<br>      initContainers:<br>      - name: install-cni<br>        image: quay.io/coreos/flannel:v0.12.0-ppc64le<br>        command:<br>        - cp<br>        args:<br>        - -f<br>        - /etc/kube-flannel/cni-conf.json<br>        - /etc/cni/net.d/10-flannel.conflist<br>        volumeMounts:<br>        - name: cni<br>          mountPath: /etc/cni/net.d<br>        - name: flannel-cfg<br>          mountPath: /etc/kube-flannel/<br>      containers:<br>      - name: kube-flannel<br>        image: quay.io/coreos/flannel:v0.12.0-ppc64le<br>        command:<br>        - /opt/bin/flanneld<br>        args:<br>        - –ip-masq<br>        - –kube-subnet-mgr<br>        resources:<br>          requests:<br>            cpu: “100m”<br>            memory: “50Mi”<br>          limits:<br>            cpu: “100m”<br>            memory: “50Mi”<br>        securityContext:<br>          privileged: false<br>          capabilities:<br>             add: [“NET_ADMIN”]<br>        env:<br>        - name: POD_NAME<br>          valueFrom:<br>            fieldRef:<br>              fieldPath: metadata.name<br>        - name: POD_NAMESPACE<br>          valueFrom:<br>            fieldRef:<br>              fieldPath: metadata.namespace<br>        volumeMounts:<br>        - name: run<br>          mountPath: /run/flannel<br>        - name: flannel-cfg<br>          mountPath: /etc/kube-flannel/<br>      volumes:<br>        - name: run<br>          hostPath:<br>            path: /run/flannel<br>        - name: cni<br>          hostPath:<br>            path: /etc/cni/net.d<br>        - name: flannel-cfg<br>          configMap:<br>            name: kube-flannel-cfg</p>
+<hr>
+<p>apiVersion: apps/v1<br>kind: DaemonSet<br>metadata:<br>  name: kube-flannel-ds-s390x<br>  namespace: kube-system<br>  labels:<br>    tier: node<br>    app: flannel<br>spec:<br>  selector:<br>    matchLabels:<br>      app: flannel<br>  template:<br>    metadata:<br>      labels:<br>        tier: node<br>        app: flannel<br>    spec:<br>      affinity:<br>        nodeAffinity:<br>          requiredDuringSchedulingIgnoredDuringExecution:<br>            nodeSelectorTerms:<br>              - matchExpressions:<br>                  - key: kubernetes.io/os<br>                    operator: In<br>                    values:<br>                      - linux<br>                  - key: kubernetes.io/arch<br>                    operator: In<br>                    values:<br>                      - s390x<br>            hostNetwork: true<br>            tolerations:<br>            - operator: Exists<br>                effect: NoSchedule<br>            serviceAccountName: flannel<br>            initContainers:<br>            - name: install-cni<br>                image: quay.io/coreos/flannel:v0.12.0-s390x<br>                command:<br>                - cp<br>                args:<br>                - -f<br>                - /etc/kube-flannel/cni-conf.json<br>                - /etc/cni/net.d/10-flannel.conflist<br>                volumeMounts:<br>                - name: cni<br>                    mountPath: /etc/cni/net.d<br>                - name: flannel-cfg<br>                    mountPath: /etc/kube-flannel/<br>            containers:<br>            - name: kube-flannel<br>                image: quay.io/coreos/flannel:v0.12.0-s390x<br>                command:<br>                - /opt/bin/flanneld<br>                args:<br>                - –ip-masq<br>                - –kube-subnet-mgr<br>                resources:<br>                    requests:<br>                        cpu: “100m”<br>                        memory: “50Mi”<br>                    limits:<br>                        cpu: “100m”<br>                        memory: “50Mi”<br>                securityContext:<br>                    privileged: false<br>                    capabilities:<br>                          add: [“NET_ADMIN”]<br>                env:<br>                - name: POD_NAME<br>                    valueFrom:<br>                        fieldRef:<br>                            fieldPath: metadata.name<br>                - name: POD_NAMESPACE<br>                    valueFrom:<br>                        fieldRef:<br>                            fieldPath: metadata.namespace<br>                volumeMounts:<br>                - name: run<br>                    mountPath: /run/flannel<br>                - name: flannel-cfg<br>                    mountPath: /etc/kube-flannel/<br>            volumes:<br>                - name: run<br>                    hostPath:<br>                        path: /run/flannel<br>                - name: cni<br>                    hostPath:<br>                        path: /etc/cni/net.d<br>                - name: flannel-cfg<br>                    configMap:<br>                        name: kube-flannel-cfg</p>
+<p>然后执行 kubectl apply -f kube-flannel.yml 即可</p>
+<hr>
+<p>Node 节点执行加入的指令即可</p>
+<p>安装 K8s 过程中如果出现错误的话.</p>
+<blockquote>
+<p>error execution phase preflight: [preflight] Some fatal errors occurred:<br>[ERROR ImagePull]: failed to pull image k8s.gcr.io/kube-apiserver:v1.18.0: output: Error response from daemon: Get <a href="https://k8s.gcr.io/v2/" target="_blank" rel="noopener">https://k8s.gcr.io/v2/</a>: net/http: request canceled while waiting for connection (Client.Timeout exceeded while awaiting headers)<br>, error: exit status 1<br>   [ERROR ImagePull]: failed to pull image k8s.gcr.io/kube-controller-manager:v1.18.0: output: Error response from daemon: Get <a href="https://k8s.gcr.io/v2/" target="_blank" rel="noopener">https://k8s.gcr.io/v2/</a>: net/http: request canceled while waiting for connection (Client.Timeout exceeded while awaiting headers)<br>, error: exit status 1<br>   [ERROR ImagePull]: failed to pull image k8s.gcr.io/kube-scheduler:v1.18.0: output: Error response from daemon: Get <a href="https://k8s.gcr.io/v2/" target="_blank" rel="noopener">https://k8s.gcr.io/v2/</a>: net/http: request canceled while waiting for connection (Client.Timeout exceeded while awaiting headers)<br>, error: exit status 1<br>   [ERROR ImagePull]: failed to pull image k8s.gcr.io/kube-proxy:v1.18.0: output: Error response from daemon: Get <a href="https://k8s.gcr.io/v2/" target="_blank" rel="noopener">https://k8s.gcr.io/v2/</a>: net/http: request canceled while waiting for connection (Client.Timeout exceeded while awaiting headers)<br>, error: exit status 1<br>   [ERROR ImagePull]: failed to pull image k8s.gcr.io/pause:3.2: output: Error response from daemon: Get <a href="https://k8s.gcr.io/v2/" target="_blank" rel="noopener">https://k8s.gcr.io/v2/</a>: net/http: request canceled while waiting for connection (Client.Timeout exceeded while awaiting headers)<br>, error: exit status 1<br>   [ERROR ImagePull]: failed to pull image k8s.gcr.io/etcd:3.4.3-0: output: Error response from daemon: Get <a href="https://k8s.gcr.io/v2/" target="_blank" rel="noopener">https://k8s.gcr.io/v2/</a>: net/http: request canceled while waiting for connection (Client.Timeout exceeded while awaiting headers)<br>, error: exit status 1<br>   [ERROR ImagePull]: failed to pull image k8s.gcr.io/coredns:1.6.7: output: Error response from daemon: Get <a href="https://k8s.gcr.io/v2/" target="_blank" rel="noopener">https://k8s.gcr.io/v2/</a>: net/http: request canceled while waiting for connection (Client.Timeout exceeded while awaiting headers)<br>, error: exit status 1docker tag docker.io/mirrorgooglecontainers/kube-apiserver:v1.14.0</p>
+</blockquote>
+<p>Helm 安装</p>
+<blockquote>
+<p>这里的v2.14.1 版本是可以选择的</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt;curl -O https:&#x2F;&#x2F;get.helm.sh&#x2F;helm-v2.14.1-linux-amd64.tar.gz</span><br></pre></td></tr></table></figure>
+
+
+</blockquote>
+<p>Helm 卸载 tiller 操作</p>
+<blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt;kubectl get -n kube-system secrets,sa,clusterrolebinding -o name|grep tiller|xargs kubectl -n kube-system delete</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt;kubectl get all -n kube-system -l app&#x3D;helm -o name|xargs kubectl delete -n kube-system</span><br></pre></td></tr></table></figure>
+</blockquote>
+<p><code>https://www.cnblogs.com/jackluo/p/10345266.html</code> 参考地址</p>
+<p>低版本Helm 的 tiller 处理方法</p>
+<p><code>helm init --upgrade --tiller-image cnych/tiller:v2.10.0</code></p>
+<blockquote>
+<p><a href="https://www.jianshu.com/p/f43f07361398https://www.jianshu.com/p/f43f07361398" target="_blank" rel="noopener">https://www.jianshu.com/p/f43f07361398https://www.jianshu.com/p/f43f07361398</a> 参考地址</p>
+</blockquote>
+<p>错误:</p>
+<blockquote>
+<p>[root@node1 ~]# helm install stable/nginx-ingress -n nginx-ingress –namespace kube-system  -f ingress-nginx.yaml<br>Error: release nginx-ingress failed: namespaces “kube-system” is forbidden: User “system:serviceaccount:kube-system:default” cannot get resource “namespaces” in API group “” in the namespace “kube-system”<br>[root@node1 ~]# </p>
+</blockquote>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/19/redis%E7%BC%93%E5%AD%98/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1497,7 +1949,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-count">15</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -1508,7 +1960,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-count">11</span>
                   <span class="site-state-item-name">categories</span>
                 </a>
               </div>
@@ -1519,7 +1971,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-count">17</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>
