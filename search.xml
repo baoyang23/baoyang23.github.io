@@ -97,6 +97,87 @@
       </tags>
   </entry>
   <entry>
+    <title>Spring自定义(三)</title>
+    <url>/2020/07/02/spring/Spring_Custom/</url>
+    <content><![CDATA[<h4 id="题记"><a href="#题记" class="headerlink" title="题记"></a>题记</h4><p>​        前面讲到了这么多的什么BeanPostProcessor,事件什么的. 如果不写几下代码这里怕是很难弄清楚是个怎么回事. 所以只有看到代码跑,就大致可以看到其效果还是很明显的.</p>
+<h4 id="BeanDefinitionRegistryPostProcessor"><a href="#BeanDefinitionRegistryPostProcessor" class="headerlink" title="BeanDefinitionRegistryPostProcessor"></a>BeanDefinitionRegistryPostProcessor</h4><p>​     先写一个类简单实现下  BeanDefinitionRegistryPostProcessor  这个接口 :</p>
+<p>​     运行后的结果是可以很明显的看到我们的打印数据输出结果的.</p>
+<p>​     程序是怎么运行到这个地方来的呢？</p>
+<p>org.springframework.context.support.PostProcessorRegistrationDelegate#invokeBeanFactoryPostProcessors(org.springframework.beans.factory.config.ConfigurableListableBeanFactory, java.util.List&lt;org.springframework.beans.factory.config.BeanFactoryPostProcessor&gt;) 走到这个方法的</p>
+<p>beanFactory.getBeanNamesForType(BeanDefinitionRegistryPostProcessor.class…..),从这个类中获取出来的postProcessorNames,就有包含我们的自己定义的一个.</p>
+<p>由于我们自己扩展的这个类,是没有实现 PriorityOrdered/Ordered的,所以就放到最后来处理了.</p>
+<p>也就是在这个方法,while (reiterate) { …  invokeBeanDefinitionRegistryPostProcessors(currentRegistryProcessors, registry);}</p>
+<p>走的这个方法的时候,才会去走到我们定义的类。</p>
+<p>那是因为这个地方 Spring是有处理顺序的。 先处理 PriorityOrdered.class ,  再处理 Ordered.class , 最后处理既没有PriorityOrdered,也没有Ordered的.</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">GavinYangRegistryPostProcessor</span> <span class="keyword">implements</span> <span class="title">BeanDefinitionRegistryPostProcessor</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">GavinYangRegistryPostProcessor</span><span class="params">()</span></span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"GavinYangRegistryPostProcessor 构造方法执行"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">postProcessBeanDefinitionRegistry</span><span class="params">(BeanDefinitionRegistry registry)</span> <span class="keyword">throws</span> BeansException </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"调用到 GavinYangRegistryPostProcessor#postProcessBeanDefinitionRegistry方法"</span>);</span><br><span class="line">        String[] beanDefinitionNames = registry.getBeanDefinitionNames();</span><br><span class="line">        String bdNamesString = Arrays.toString(beanDefinitionNames);</span><br><span class="line">        System.out.println(<span class="string">"GavinYangRegistryPostProcessor 类中"</span> + bdNamesString);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">postProcessBeanFactory</span><span class="params">(ConfigurableListableBeanFactory beanFactory)</span> <span class="keyword">throws</span> BeansException </span>&#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="BeanFactoryPostProcessor"><a href="#BeanFactoryPostProcessor" class="headerlink" title="BeanFactoryPostProcessor"></a>BeanFactoryPostProcessor</h4><p>​    简单实现一下 BeanFactoryPostProcessor  这个接口来看一下效果.</p>
+<p>​    先写一个类 : 然后实现一下这个接口 BeanFactoryPostProcessor ,  我们这里就获取下beanFactory中的所有beanDefinitionNames的数组, 然后打印出来看下效果.  打印结果也是贴在下面的.  接着我们看下其源码是一个怎么样的走向.</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">GavinYangBeanFactoryPostProcessor</span> <span class="keyword">implements</span> <span class="title">BeanFactoryPostProcessor</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">postProcessBeanFactory</span><span class="params">(ConfigurableListableBeanFactory beanFactory)</span> <span class="keyword">throws</span> BeansException </span>&#123;</span><br><span class="line">        String[] beanDefinitionNames = beanFactory.getBeanDefinitionNames();</span><br><span class="line">        System.out.println(Arrays.toString(beanDefinitionNames));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//[org.springframework.context.annotation.internalConfigurationAnnotationProcessor, org.springframework.context.annotation.internalAutowiredAnnotationProcessor, org.springframework.context.annotation.internalCommonAnnotationProcessor, org.springframework.context.event.internalEventListenerProcessor, org.springframework.context.event.internalEventListenerFactory, yangBeanOne, gavinYangBeanFactoryPostProcessor, yangBeanPostProcessor, gavinYangLifeImpl]</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p>直接看这个类的这个方法，我这里只截取了一部分代码,也就是和 BeanFactoryPostProcessor 有关的代码. </p>
+<p>和它没关系的代码,这里就没有去截取了.</p>
+<p>org.springframework.context.support.PostProcessorRegistrationDelegate#invokeBeanFactoryPostProcessors(org.springframework.beans.factory.config.ConfigurableListableBeanFactory, java.util.List&lt;org.springframework.beans.factory.config.BeanFactoryPostProcessor&gt;) .</p>
+<p>看源码看是如何调用到这个方法的,还是比较好理解。先是根据 BeanFactoryPostProcessor.class获取出beanName的集合,然后老规矩进行一些特定的排序,当然我这里什么都没做,也就是最后处理哦。</p>
+<p>然后跟到invokeBeanFactoryPostProcessors(nonOrderedPostProcessors, beanFactory);这个方法里面,可以看到它迭代这个集合的元素,当然了,我们只需要关注我们自己定义的哪个就可以了,然后就会走其postProcessBeanFactory方法,也就是走到了我们定义的类的这个方法上来了.</p>
+<p>OK啦。大致流程就是这个样子的,还是比较好理解的.</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Do not initialize FactoryBeans here: We need to leave all regular beans</span></span><br><span class="line"><span class="comment">// uninitialized to let the bean factory post-processors apply to them!</span></span><br><span class="line"><span class="comment">// 这个地方获取出来的数组里面的值,就有我们想看到的.</span></span><br><span class="line"><span class="comment">//org.springframework.context.annotation.internalConfigurationAnnotationProcessor</span></span><br><span class="line"><span class="comment">//org.springframework.context.event.internalEventListenerProcessor</span></span><br><span class="line"><span class="comment">//gavinYangBeanFactoryPostProcessor</span></span><br><span class="line"><span class="comment">//当看到第三个是不是非常的熟悉.没错,这就是我们自己定义的.</span></span><br><span class="line">String[] postProcessorNames =</span><br><span class="line">      beanFactory.getBeanNamesForType(BeanFactoryPostProcessor<span class="class">.<span class="keyword">class</span>, <span class="title">true</span>, <span class="title">false</span>)</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Separate between BeanFactoryPostProcessors that implement PriorityOrdered,</span></span><br><span class="line"><span class="comment">// Ordered, and the rest.</span></span><br><span class="line">List&lt;BeanFactoryPostProcessor&gt; priorityOrderedPostProcessors = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">List&lt;String&gt; orderedPostProcessorNames = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">List&lt;String&gt; nonOrderedPostProcessorNames = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line"><span class="comment">// 然后先经过一轮排序,就可以看到 我们自己定义的就放入到了nonOrderedPostProcessorNames这个集合中,</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="keyword">for</span> (String ppName : postProcessorNames) &#123;</span><br><span class="line">   <span class="keyword">if</span> (processedBeans.contains(ppName)) &#123;</span><br><span class="line">      <span class="comment">// skip - already processed in first phase above</span></span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">else</span> <span class="keyword">if</span> (beanFactory.isTypeMatch(ppName, PriorityOrdered<span class="class">.<span class="keyword">class</span>)) </span>&#123;</span><br><span class="line">      priorityOrderedPostProcessors.add(beanFactory.getBean(ppName, BeanFactoryPostProcessor<span class="class">.<span class="keyword">class</span>))</span>;</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">else</span> <span class="keyword">if</span> (beanFactory.isTypeMatch(ppName, Ordered<span class="class">.<span class="keyword">class</span>)) </span>&#123;</span><br><span class="line">      orderedPostProcessorNames.add(ppName);</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">else</span> &#123;</span><br><span class="line">      nonOrderedPostProcessorNames.add(ppName);</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// First, invoke the BeanFactoryPostProcessors that implement PriorityOrdered.</span></span><br><span class="line">sortPostProcessors(priorityOrderedPostProcessors, beanFactory);</span><br><span class="line">invokeBeanFactoryPostProcessors(priorityOrderedPostProcessors, beanFactory);</span><br><span class="line"></span><br><span class="line"><span class="comment">// Next, invoke the BeanFactoryPostProcessors that implement Ordered.</span></span><br><span class="line">List&lt;BeanFactoryPostProcessor&gt; orderedPostProcessors = <span class="keyword">new</span> ArrayList&lt;&gt;(orderedPostProcessorNames.size());</span><br><span class="line"><span class="keyword">for</span> (String postProcessorName : orderedPostProcessorNames) &#123;</span><br><span class="line">   orderedPostProcessors.add(beanFactory.getBean(postProcessorName, BeanFactoryPostProcessor<span class="class">.<span class="keyword">class</span>))</span>;</span><br><span class="line">&#125;</span><br><span class="line">sortPostProcessors(orderedPostProcessors, beanFactory);</span><br><span class="line">invokeBeanFactoryPostProcessors(orderedPostProcessors, beanFactory);</span><br><span class="line"></span><br><span class="line"><span class="comment">// Finally, invoke all other BeanFactoryPostProcessors.</span></span><br><span class="line">List&lt;BeanFactoryPostProcessor&gt; nonOrderedPostProcessors = <span class="keyword">new</span> ArrayList&lt;&gt;(nonOrderedPostProcessorNames.size());</span><br><span class="line"><span class="keyword">for</span> (String postProcessorName : nonOrderedPostProcessorNames) &#123;</span><br><span class="line">   nonOrderedPostProcessors.add(beanFactory.getBean(postProcessorName, BeanFactoryPostProcessor<span class="class">.<span class="keyword">class</span>))</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 然后我们直接看到处理nonOrderedPostProcessors这个集合的方法,</span></span><br><span class="line"><span class="comment">//因为这个方法也会走到我们自己定义的类中去</span></span><br><span class="line"><span class="comment">//方法里面对nonOrderedPostProcessors进行迭代,然后一次调用其postProcessBeanFactory方法,同时也传入了beanFactory到里面去.</span></span><br><span class="line">invokeBeanFactoryPostProcessors(nonOrderedPostProcessors, beanFactory);</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="BeanPostProcessor"><a href="#BeanPostProcessor" class="headerlink" title="BeanPostProcessor"></a>BeanPostProcessor</h4><p>我们先写一个 Bean. 然后可以里面写一个属性,方便标识.</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">YangBeanOne</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 无参构造函数</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">YangBeanOne</span><span class="params">()</span></span>&#123;</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">"YangBeanOne无参数构造函数"</span>);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setName</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>然后我们自定义一个BeanPostProcessor,其实现了BeanPostProcessor接口.</p>
+<p>可以看到的是,我们在if中做了beanName的判断,如果是的话,那么我们就会强转,然后给name字段赋值上GavinYang的值.</p>
+<p>我们给断点打到 if这里，然后看进来的堆栈信息,发现其是在初始化bean中,然后调用beanPostProcessor的postProcessAfterInitialization的方法才会走到这里,也就是在doCreateBean这个方法里面.</p>
+<p>然后这个 YangBeanPostProcessor 是什么时候给添加到 beanFactory中去的呢？</p>
+<p>org.springframework.context.support.PostProcessorRegistrationDelegate#registerBeanPostProcessors(org.springframework.beans.factory.config.ConfigurableListableBeanFactory, org.springframework.context.support.AbstractApplicationContext)在这个方法打上断点,然后你会发现其get出来的postProcessorNames数组,就有我们的这个YangBeanPostProcessor，然后走registerBeanPostProcessors方法的时候,就会给添加到beanFactory中去.</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">YangBeanPostProcessor</span> <span class="keyword">implements</span> <span class="title">BeanPostProcessor</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">postProcessBeforeInitialization</span><span class="params">(Object bean, String beanName)</span> <span class="keyword">throws</span> BeansException </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> bean;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">postProcessAfterInitialization</span><span class="params">(Object bean, String beanName)</span> <span class="keyword">throws</span> BeansException </span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(<span class="string">"yangBeanOne"</span>.equalsIgnoreCase(beanName))&#123;</span><br><span class="line">            ((YangBeanOne) bean).setName(<span class="string">"GavinYang"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> bean;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>启动类 :</p>
+<p>这就打印出来的结果就可以看到的是GavinYang,也就是说我们初始化这个bean之后,然后给其name属性赋值上了GavinYang这个值.</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SpringStartMain</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        AnnotationConfigApplicationContext context = <span class="keyword">new</span> AnnotationConfigApplicationContext(<span class="string">"com.iyang.spring"</span>);</span><br><span class="line">        YangBeanOne yangBeanOne = context.getBean(YangBeanOne<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">        System.out.println(yangBeanOne.getName());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="Lifecycle-扩展"><a href="#Lifecycle-扩展" class="headerlink" title="Lifecycle 扩展"></a>Lifecycle 扩展</h4><p>Lifecycle 扩展要比起 BeanPostProcessor要好理解得多,因为你只用去实现这个接口(SmartLifecycle),然后在org.springframework.context.support.AbstractApplicationContext#finishRefresh到这个方法的时候,就会去调用实现这个接口的对用的方法.</p>
+<p>这里我们自己写一个类,然后实现 SmartLifecycle 接口即可。</p>
+<p>可以看到下面的打印参数.还是很清楚的明白.</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">GavinYangLifeImpl</span> <span class="keyword">implements</span> <span class="title">SmartLifecycle</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getPhase</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> Integer.MAX_VALUE;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">start</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"调用到了GavinYangLifeImpl.start()方法"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">stop</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isRunning</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//YangBeanOne无参数构造函数</span></span><br><span class="line"><span class="comment">//调用到了GavinYangLifeImpl.start()方法</span></span><br><span class="line"><span class="comment">//GavinYang</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p>然后我们再看下源码,为什么要实现 SmartLifecycle 这个接口呢？</p>
+<p>org.springframework.context.support.DefaultLifecycleProcessor</p>
+<p>这里我们先看到 phases ,也就是最底下的代码, 这个集合是有值的情况下先排序,然后再迭代,然后调用到 start()方法, 这个start方法是不是在我们的实现类中可以看到,是不是非常的熟悉感觉.</p>
+<p>然后我们在看下,怎么样让这个集合能有值呢？</p>
+<p>phases.put(phase, group); 可以看到 put方法这里, autoStartupOnly 是false 或者bean是SmartLifecycle的子类,并且其isAutoStartup方法的是true. 点到SmartLifecycle源码中去看,可以发现这个方法默认是返回的true.</p>
+<p>接着在调用getPhase方法, 该方法也就是判断.最最关键的phases集合来了,先从里面get出数据,然后判断数据是不是null,如果是null的话,就先new一个Group出来,然后调用phases的put方法,也就是放入到这个集合中去了</p>
+<p>所以这里就是我们为什么要实现 SmartLifecycle 这个接口,就会有启动的效果了的原因.</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Internal helpers</span></span><br><span class="line"><span class="comment">// 传入进来的  autoStartupOnly 参数是true.</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">startBeans</span><span class="params">(<span class="keyword">boolean</span> autoStartupOnly)</span> </span>&#123;</span><br><span class="line">   Map&lt;String, Lifecycle&gt; lifecycleBeans = getLifecycleBeans();</span><br><span class="line">   Map&lt;Integer, LifecycleGroup&gt; phases = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">   lifecycleBeans.forEach((beanName, bean) -&gt; &#123;</span><br><span class="line">      <span class="keyword">if</span> (!autoStartupOnly || (bean <span class="keyword">instanceof</span> SmartLifecycle &amp;&amp; ((SmartLifecycle) bean).isAutoStartup())) &#123;</span><br><span class="line">         <span class="keyword">int</span> phase = getPhase(bean);</span><br><span class="line">         LifecycleGroup group = phases.get(phase);</span><br><span class="line">         <span class="keyword">if</span> (group == <span class="keyword">null</span>) &#123;</span><br><span class="line">            group = <span class="keyword">new</span> LifecycleGroup(phase, <span class="keyword">this</span>.timeoutPerShutdownPhase, lifecycleBeans, autoStartupOnly);</span><br><span class="line">            phases.put(phase, group);</span><br><span class="line">         &#125;</span><br><span class="line">         group.add(beanName, bean);</span><br><span class="line">      &#125;</span><br><span class="line">   &#125;);</span><br><span class="line">   <span class="keyword">if</span> (!phases.isEmpty()) &#123;</span><br><span class="line">      List&lt;Integer&gt; keys = <span class="keyword">new</span> ArrayList&lt;&gt;(phases.keySet());</span><br><span class="line">      Collections.sort(keys);</span><br><span class="line">      <span class="keyword">for</span> (Integer key : keys) &#123;</span><br><span class="line">         phases.get(key).start();</span><br><span class="line">      &#125;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>  可以看到我们基于接口扩展的,还是很好理解的。 跟着源码中的初始化一些类,看哪个类是怎么写的，然后我们跟着写一个。 前提是,你要弄得明白 Spring 这个执行过程的.  不然你跟着写,不是很明白的话,就可能不是很容易看明白或者看懂你这个效果的.</p>
+]]></content>
+      <categories>
+        <category>Spring</category>
+      </categories>
+      <tags>
+        <tag>Spring</tag>
+        <tag>Java源码</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Java反射学习</title>
     <url>/2020/07/01/java_reflect_1/</url>
     <content><![CDATA[<h4 id="题记"><a href="#题记" class="headerlink" title="题记"></a>题记</h4><p>​     最近在看Spring源码的时候, 可以看到在加载类等的时候,都是大量使用的反射。估摸着MyBatis这种框架,其内部也是会大量的使用反射。所以看得出来反射在第三方的框架中使用是非常多的,于是说学习反射技术是很有必要的，不论是你写代码造轮子还是去理解第三方框架的底层实现.</p>
@@ -213,6 +294,45 @@
       </tags>
   </entry>
   <entry>
+    <title>ThreadLocal源码阅读</title>
+    <url>/2020/06/20/ThreadLocal_source/</url>
+    <content><![CDATA[<h2 id="ThreadLocal源码阅读"><a href="#ThreadLocal源码阅读" class="headerlink" title="ThreadLocal源码阅读"></a>ThreadLocal源码阅读</h2><p>ThreadLocal 是来这个公司有过使用一次的感受,所以就学习阅读下源码。  其实Thread 这个里面,就有一个 Map(这里是用ThreadLocal内部类中实现的) , 里面的key就是 ThreadLocal, value 就是存储的值,所以一个Thread是有多个 ThreadLocal。 </p>
+<hr>
+<h4 id="参数"><a href="#参数" class="headerlink" title="参数"></a>参数</h4><p>  参数部分</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> threadLocalHashCode = nextHashCode();</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * The next hash code to be given out. Updated atomically. Starts at</span></span><br><span class="line"><span class="comment"> * zero.</span></span><br><span class="line"><span class="comment">   AtomicInteger 是一个线程安全的,实现原理是采用了cas.	</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> AtomicInteger nextHashCode =</span><br><span class="line">    <span class="keyword">new</span> AtomicInteger();</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h4><p> set 赋值</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*	首先获取当前线程.</span></span><br><span class="line"><span class="comment">	调用 getMap 方法, 直接调用 t.trheadLocals来获取 ThreadLocalMap。(ThreadLocalMap这里是ThreadLocal内部自己实现的类)</span></span><br><span class="line"><span class="comment">	如果map不是null的话,就进行set值,这里可以看到 set 的key是this,也就是ThreadLocal它自己.</span></span><br><span class="line"><span class="comment">	否则就是调用createMap方法,走这个方法是可以确认 currentThread中的threadLocals的值是null,所以直接new了一个进行赋值即可.</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">set</span><span class="params">(T value)</span> </span>&#123;</span><br><span class="line">    Thread t = Thread.currentThread();</span><br><span class="line">    ThreadLocalMap map = getMap(t);</span><br><span class="line">    <span class="keyword">if</span> (map != <span class="keyword">null</span>)</span><br><span class="line">        map.set(<span class="keyword">this</span>, value);</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        createMap(t, value);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">ThreadLocalMap <span class="title">getMap</span><span class="params">(Thread t)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> t.threadLocals;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">createMap</span><span class="params">(Thread t, T firstValue)</span> </span>&#123;</span><br><span class="line">        t.threadLocals = <span class="keyword">new</span> ThreadLocalMap(<span class="keyword">this</span>, firstValue);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="Get-方法"><a href="#Get-方法" class="headerlink" title="Get 方法"></a>Get 方法</h4><p> get 方法,获取值.</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">	这里可以看到,获取ThreadLocalMap,如果ThreadLocalMap的是null的话,就会走setInitialValue方法。</span></span><br><span class="line"><span class="comment">	如果有值的话,就会进行获取值并且返回.</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> T <span class="title">get</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    Thread t = Thread.currentThread();</span><br><span class="line">    ThreadLocalMap map = getMap(t);</span><br><span class="line">    <span class="keyword">if</span> (map != <span class="keyword">null</span>) &#123;</span><br><span class="line">        ThreadLocalMap.Entry e = map.getEntry(<span class="keyword">this</span>);</span><br><span class="line">        <span class="keyword">if</span> (e != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="meta">@SuppressWarnings</span>(<span class="string">"unchecked"</span>)</span><br><span class="line">            T result = (T)e.value;</span><br><span class="line">            <span class="keyword">return</span> result;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> setInitialValue();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">	如果获取出来的ThreadLocalMap 不是null的话,就会进行set,这个时候set进去的值,value就是null了.</span></span><br><span class="line"><span class="comment">	如果获取出来是nulld</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> T <span class="title">setInitialValue</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        T value = initialValue();</span><br><span class="line">        Thread t = Thread.currentThread();</span><br><span class="line">        ThreadLocalMap map = getMap(t);</span><br><span class="line">        <span class="keyword">if</span> (map != <span class="keyword">null</span>)</span><br><span class="line">            map.set(<span class="keyword">this</span>, value);</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            createMap(t, value);</span><br><span class="line">        <span class="keyword">return</span> value;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">protected</span> T <span class="title">initialValue</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="remove-方法"><a href="#remove-方法" class="headerlink" title="remove 方法"></a>remove 方法</h4><p>remove 方法就是获取map,如果map不是null的话,就调用m.remove(this)，根据当前this来删除.</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">remove</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    ThreadLocalMap m = getMap(Thread.currentThread());</span><br><span class="line">    <span class="keyword">if</span> (m != <span class="keyword">null</span>)</span><br><span class="line">        m.remove(<span class="keyword">this</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<hr>
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p> ThreadLocal里面的方法也比较少,还是比较好理解的。只要弄清楚ThreadLocal和Thread是怎么在存储的,就很好的理解了。</p>
+<p>注意 : 使用ThreadLocal一定要进行remove,否则容易出现内存泄漏，从而导致内存溢出。</p>
+]]></content>
+      <categories>
+        <category>ThreadLocal</category>
+      </categories>
+      <tags>
+        <tag>java源码</tag>
+        <tag>Java锁</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>ReentrantLock源码阅读</title>
     <url>/2020/06/20/ReentrantLock_source/</url>
     <content><![CDATA[<h2 id="ReentrantLock-源码阅读"><a href="#ReentrantLock-源码阅读" class="headerlink" title="ReentrantLock 源码阅读"></a>ReentrantLock 源码阅读</h2><h4 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h4><p>​        ReetrantLock 效果是和 synchronized 是一样的,只不过 synchronized 是内置锁,ReetrantLock是语法级别的锁, 相对于而言是比synchronized灵活性高些. 不过从我目前公司写代码角度来看,都是直接使用 synchronized . 但是不妨碍我们来看 ReetrantLock 里面的代码实现.</p>
@@ -260,45 +380,6 @@
 公平锁和非公平锁的获取锁方式不一样,但是释放方式是一样的. 公平锁获取锁的时候,如果有线程持有了的话,那么其他的会被挂起并且进入等待队列. 而非公平锁,直接获取锁,就是抢占式.</code></pre>]]></content>
       <categories>
         <category>ReentrantLock</category>
-      </categories>
-      <tags>
-        <tag>java源码</tag>
-        <tag>Java锁</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>ThreadLocal源码阅读</title>
-    <url>/2020/06/20/ThreadLocal_source/</url>
-    <content><![CDATA[<h2 id="ThreadLocal源码阅读"><a href="#ThreadLocal源码阅读" class="headerlink" title="ThreadLocal源码阅读"></a>ThreadLocal源码阅读</h2><p>ThreadLocal 是来这个公司有过使用一次的感受,所以就学习阅读下源码。  其实Thread 这个里面,就有一个 Map(这里是用ThreadLocal内部类中实现的) , 里面的key就是 ThreadLocal, value 就是存储的值,所以一个Thread是有多个 ThreadLocal。 </p>
-<hr>
-<h4 id="参数"><a href="#参数" class="headerlink" title="参数"></a>参数</h4><p>  参数部分</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> threadLocalHashCode = nextHashCode();</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * The next hash code to be given out. Updated atomically. Starts at</span></span><br><span class="line"><span class="comment"> * zero.</span></span><br><span class="line"><span class="comment">   AtomicInteger 是一个线程安全的,实现原理是采用了cas.	</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> AtomicInteger nextHashCode =</span><br><span class="line">    <span class="keyword">new</span> AtomicInteger();</span><br></pre></td></tr></table></figure>
-
-
-
-<h4 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h4><p> set 赋值</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*	首先获取当前线程.</span></span><br><span class="line"><span class="comment">	调用 getMap 方法, 直接调用 t.trheadLocals来获取 ThreadLocalMap。(ThreadLocalMap这里是ThreadLocal内部自己实现的类)</span></span><br><span class="line"><span class="comment">	如果map不是null的话,就进行set值,这里可以看到 set 的key是this,也就是ThreadLocal它自己.</span></span><br><span class="line"><span class="comment">	否则就是调用createMap方法,走这个方法是可以确认 currentThread中的threadLocals的值是null,所以直接new了一个进行赋值即可.</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">set</span><span class="params">(T value)</span> </span>&#123;</span><br><span class="line">    Thread t = Thread.currentThread();</span><br><span class="line">    ThreadLocalMap map = getMap(t);</span><br><span class="line">    <span class="keyword">if</span> (map != <span class="keyword">null</span>)</span><br><span class="line">        map.set(<span class="keyword">this</span>, value);</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        createMap(t, value);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">ThreadLocalMap <span class="title">getMap</span><span class="params">(Thread t)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> t.threadLocals;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">createMap</span><span class="params">(Thread t, T firstValue)</span> </span>&#123;</span><br><span class="line">        t.threadLocals = <span class="keyword">new</span> ThreadLocalMap(<span class="keyword">this</span>, firstValue);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h4 id="Get-方法"><a href="#Get-方法" class="headerlink" title="Get 方法"></a>Get 方法</h4><p> get 方法,获取值.</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">	这里可以看到,获取ThreadLocalMap,如果ThreadLocalMap的是null的话,就会走setInitialValue方法。</span></span><br><span class="line"><span class="comment">	如果有值的话,就会进行获取值并且返回.</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> T <span class="title">get</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    Thread t = Thread.currentThread();</span><br><span class="line">    ThreadLocalMap map = getMap(t);</span><br><span class="line">    <span class="keyword">if</span> (map != <span class="keyword">null</span>) &#123;</span><br><span class="line">        ThreadLocalMap.Entry e = map.getEntry(<span class="keyword">this</span>);</span><br><span class="line">        <span class="keyword">if</span> (e != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="meta">@SuppressWarnings</span>(<span class="string">"unchecked"</span>)</span><br><span class="line">            T result = (T)e.value;</span><br><span class="line">            <span class="keyword">return</span> result;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> setInitialValue();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">	如果获取出来的ThreadLocalMap 不是null的话,就会进行set,这个时候set进去的值,value就是null了.</span></span><br><span class="line"><span class="comment">	如果获取出来是nulld</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> T <span class="title">setInitialValue</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        T value = initialValue();</span><br><span class="line">        Thread t = Thread.currentThread();</span><br><span class="line">        ThreadLocalMap map = getMap(t);</span><br><span class="line">        <span class="keyword">if</span> (map != <span class="keyword">null</span>)</span><br><span class="line">            map.set(<span class="keyword">this</span>, value);</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            createMap(t, value);</span><br><span class="line">        <span class="keyword">return</span> value;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">protected</span> T <span class="title">initialValue</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h4 id="remove-方法"><a href="#remove-方法" class="headerlink" title="remove 方法"></a>remove 方法</h4><p>remove 方法就是获取map,如果map不是null的话,就调用m.remove(this)，根据当前this来删除.</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">remove</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    ThreadLocalMap m = getMap(Thread.currentThread());</span><br><span class="line">    <span class="keyword">if</span> (m != <span class="keyword">null</span>)</span><br><span class="line">        m.remove(<span class="keyword">this</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-
-
-<hr>
-<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p> ThreadLocal里面的方法也比较少,还是比较好理解的。只要弄清楚ThreadLocal和Thread是怎么在存储的,就很好的理解了。</p>
-<p>注意 : 使用ThreadLocal一定要进行remove,否则容易出现内存泄漏，从而导致内存溢出。</p>
-]]></content>
-      <categories>
-        <category>ThreadLocal</category>
       </categories>
       <tags>
         <tag>java源码</tag>
@@ -619,21 +700,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Vector 源码阅读记录</title>
-    <url>/2020/04/29/java_list/Vector/</url>
-    <content><![CDATA[<p>Vector 的结构和对数据的添加和删除 与 <a href="https://github.com/baoyang23/source-notes/blob/master/java/jvm_aggregate/ArrayList_Source.md" target="_blank" rel="noopener">ArrayList</a> 是非常相似的. 可以点进去看看.</p>
-<p>具体的执行逻辑代码还是非常相似的. </p>
-<p>Vector 比起 ArrayList 是线程安全的原因是, Vector 在一些方法上是使用了 synchronized 来进行加锁,从而保证了线程安全问题。</p>
-]]></content>
-      <categories>
-        <category>Java集合源码</category>
-      </categories>
-      <tags>
-        <tag>Java</tag>
-        <tag>Vector</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>LinkedList源码阅读记录</title>
     <url>/2020/04/29/java_list/LinkedList_Source/</url>
     <content><![CDATA[<p>虽然一般都是使用ArrayList集合比使用LinkedList集合要多,但是这并不妨碍我们对LinkedList的源码研究和学习</p>
@@ -718,6 +784,21 @@
       <tags>
         <tag>Java</tag>
         <tag>LinkedList</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Vector 源码阅读记录</title>
+    <url>/2020/04/29/java_list/Vector/</url>
+    <content><![CDATA[<p>Vector 的结构和对数据的添加和删除 与 <a href="https://github.com/baoyang23/source-notes/blob/master/java/jvm_aggregate/ArrayList_Source.md" target="_blank" rel="noopener">ArrayList</a> 是非常相似的. 可以点进去看看.</p>
+<p>具体的执行逻辑代码还是非常相似的. </p>
+<p>Vector 比起 ArrayList 是线程安全的原因是, Vector 在一些方法上是使用了 synchronized 来进行加锁,从而保证了线程安全问题。</p>
+]]></content>
+      <categories>
+        <category>Java集合源码</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+        <tag>Vector</tag>
       </tags>
   </entry>
   <entry>
