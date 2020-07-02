@@ -285,6 +285,234 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.lwfby.cn/2020/07/01/java_reflect_1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="鲍洋">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/timg.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="鲍洋记录">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/07/01/java_reflect_1/" itemprop="url">Java反射学习</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-07-01T22:47:50+08:00">
+                2020-07-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java%E6%BA%90%E7%A0%81/" itemprop="url" rel="index">
+                    <span itemprop="name">Java源码</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h4 id="题记"><a href="#题记" class="headerlink" title="题记"></a>题记</h4><p>​     最近在看Spring源码的时候, 可以看到在加载类等的时候,都是大量使用的反射。估摸着MyBatis这种框架,其内部也是会大量的使用反射。所以看得出来反射在第三方的框架中使用是非常多的,于是说学习反射技术是很有必要的，不论是你写代码造轮子还是去理解第三方框架的底层实现.</p>
+<p>​    话不多bb,直接上代码看看是个什么操作.</p>
+<h4 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h4><p>我们这里写一个简单的pojo类,也就是我们经常使用的.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">User</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Integer id;</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">	<span class="keyword">public</span> String age;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">User</span><span class="params">()</span></span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">User</span><span class="params">(Integer id, String name)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.id = id;</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Integer <span class="title">getId</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> id;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setId</span><span class="params">(Integer id)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.id = id;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> name;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setName</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">say</span><span class="params">()</span></span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"User说"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>然后接着在写一个启动的Main类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserClazzMain</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        User u = <span class="keyword">new</span> User();</span><br><span class="line">        <span class="comment">// 获取类的所有的构造方法</span></span><br><span class="line">        Constructor&lt;?&gt;[] constructors = u.getClass().getConstructors();</span><br><span class="line">        System.out.println(Arrays.asList(constructors).toString());</span><br><span class="line">        <span class="comment">// 根据传入进去的参数类型,获取出类的构造方法.</span></span><br><span class="line">        Constructor&lt;? extends User&gt; constructor = u.getClass().getConstructor(Integer<span class="class">.<span class="keyword">class</span>, <span class="title">String</span>.<span class="title">class</span>)</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 打印结果:[public com.iyang.bootbasicio.pojo.User(), public com.iyang.bootbasicio.pojo.User(java.lang.Integer,java.lang.String)],</span></span><br><span class="line"><span class="comment">//可以看到这是一个获取类的构造方法的.</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p>调用反射获取方法:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserClazzMain</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        User u = <span class="keyword">new</span> User();</span><br><span class="line">        <span class="comment">// 可以看到获取出来的全部方法,不仅仅包含我们写的,还有Object中的notify等方法.</span></span><br><span class="line">        Method[] methods = u.getClass().getMethods();</span><br><span class="line">        System.out.println(Arrays.asList(methods).toString());</span><br><span class="line">        <span class="comment">// 根据方法的名字来过去我们特定的方法.</span></span><br><span class="line">        Method method = u.getClass().getMethod(<span class="string">"say"</span>);</span><br><span class="line">        System.out.println(method.toString());</span><br><span class="line">        </span><br><span class="line">        <span class="comment">//getDeclaredMethods方法仅仅只获取除了我们这个类里面的方法,并没有获取全部的方法(也就是不包括Object的).</span></span><br><span class="line">        Method[] declaredMethods = u.getClass().getDeclaredMethods();</span><br><span class="line">        System.out.println(Arrays.asList(declaredMethods).toString());</span><br><span class="line">        <span class="comment">// 这里依然是获取我们自己写的方法</span></span><br><span class="line">        Method say = u.getClass().getDeclaredMethod(<span class="string">"say"</span>);</span><br><span class="line">        System.out.println(say.toString());</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 这样我们就可以调用了user的say方法</span></span><br><span class="line">        Method say = u.getClass().getDeclaredMethod(<span class="string">"say"</span>);</span><br><span class="line">        say.invoke(u);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">[<span class="keyword">public</span> <span class="keyword">void</span> com.iyang.bootbasicio.pojo.User.setId(java.lang.Integer), <span class="keyword">public</span> <span class="keyword">void</span> com.iyang.bootbasicio.pojo.User.say(), <span class="keyword">public</span> java.lang.String com.iyang.bootbasicio.pojo.User.getName(), <span class="keyword">public</span> <span class="keyword">void</span> com.iyang.bootbasicio.pojo.User.setName(java.lang.String), <span class="keyword">public</span> java.lang.Integer com.iyang.bootbasicio.pojo.User.getId(), <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> java.lang.Object.wait(<span class="keyword">long</span>,<span class="keyword">int</span>) <span class="keyword">throws</span> java.lang.InterruptedException, <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">native</span> <span class="keyword">void</span> java.lang.Object.wait(<span class="keyword">long</span>) <span class="keyword">throws</span> java.lang.InterruptedException, <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> java.lang.Object.wait() <span class="keyword">throws</span> java.lang.InterruptedException, <span class="keyword">public</span> <span class="keyword">boolean</span> java.lang.Object.equals(java.lang.Object), <span class="keyword">public</span> java.lang.String java.lang.Object.toString(), <span class="keyword">public</span> <span class="keyword">native</span> <span class="keyword">int</span> java.lang.Object.hashCode(), <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">native</span> java.lang.Class java.lang.Object.getClass(), <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">native</span> <span class="keyword">void</span> java.lang.Object.notify(), <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">native</span> <span class="keyword">void</span> java.lang.Object.notifyAll()]</span><br><span class="line">----------------------------</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> com.iyang.bootbasicio.pojo.User.say()</span><br></pre></td></tr></table></figure>
+
+
+
+<p> 调用获取字段：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserClazzMain</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        User u = <span class="keyword">new</span> User();</span><br><span class="line">        <span class="comment">//获取全部的字段,是public修饰的字段,private修饰的是获取不到的.</span></span><br><span class="line">        Field[] fields = u.getClass().getFields();</span><br><span class="line">        System.out.println(Arrays.asList(fields).toString());</span><br><span class="line">        <span class="comment">//获取字段,私有的不能获取,会抛出异常,只能获取public修饰的字段.</span></span><br><span class="line">        Field field = u.getClass().getField(<span class="string">"age"</span>);</span><br><span class="line">        System.out.println(field.toString());</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 获取全部的字段,private修饰的也是可以获取出来的</span></span><br><span class="line">        Field[] declaredFields = u.getClass().getDeclaredFields();</span><br><span class="line">        System.out.println(Arrays.asList(declaredFields).toString());</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 根据字段的名字获取字段,不管什么修饰的,都是可以获取出来的.</span></span><br><span class="line">        Field name = u.getClass().getDeclaredField(<span class="string">"name"</span>);</span><br><span class="line">        System.out.println(name.toString());</span><br><span class="line">       &#125;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>获取注解:</p>
+<p>我们先定义二个注解, 然后记得加在User类上. GavinYang 和 PeterWong 这二个注解是可以加在类上的, GavinYangFiledAnno是加在字段上面的.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Documented</span></span><br><span class="line"><span class="meta">@Retention</span>(RetentionPolicy.RUNTIME)</span><br><span class="line"><span class="meta">@Target</span>(&#123;ElementType.TYPE&#125;)</span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> GavinYang &#123;</span><br><span class="line"></span><br><span class="line">    <span class="function">String <span class="title">lwf</span><span class="params">()</span> <span class="keyword">default</span> "lwf"</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Documented</span></span><br><span class="line"><span class="meta">@Retention</span>(RetentionPolicy.RUNTIME)</span><br><span class="line"><span class="meta">@Target</span>(&#123;ElementType.TYPE&#125;)</span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> PeterWong &#123;</span><br><span class="line"></span><br><span class="line">    <span class="function">String <span class="title">name</span><span class="params">()</span> <span class="keyword">default</span> "peterWong"</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Documented</span></span><br><span class="line"><span class="meta">@Retention</span>(RetentionPolicy.RUNTIME)</span><br><span class="line"><span class="meta">@Target</span>(&#123;ElementType.FIELD&#125;)</span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> GavinYangFiledAnno &#123;</span><br><span class="line">    <span class="function">String <span class="title">desc</span><span class="params">()</span> <span class="keyword">default</span> ""</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">    <span class="comment">// 从结果来看,获取注解还是蛮顺利的</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        User u = <span class="keyword">new</span> User();</span><br><span class="line">        <span class="comment">// 获取这个类上面的注解</span></span><br><span class="line">        Annotation[] annotations = u.getClass().getAnnotations();</span><br><span class="line">        System.out.println(Arrays.asList(annotations).toString());</span><br><span class="line">        <span class="comment">// 根据注解名字获取,可以看到返回的也直接是注解的Obejct了</span></span><br><span class="line">        GavinYang gavinYang = u.getClass().getAnnotation(GavinYang<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">        System.out.println(gavinYang.toString());</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 获取字段上面使用的注解.</span></span><br><span class="line">        Field field = u.getClass().getDeclaredField(<span class="string">"name"</span>);</span><br><span class="line">        Annotation[] fieldAnnotations = field.getAnnotations();</span><br><span class="line">        System.out.println(Arrays.asList(fieldAnnotations).toString());</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">      </span><br><span class="line">[<span class="meta">@com</span>.iyang.bootbasicio.pojo.GavinYang(lwf=baoyang), <span class="meta">@com</span>.iyang.bootbasicio.pojo.PeterWong(name=gavinyang)]</span><br><span class="line"><span class="meta">@com</span>.iyang.bootbasicio.pojo.GavinYang(lwf=baoyang)     </span><br><span class="line">[<span class="meta">@com</span>.iyang.bootbasicio.pojo.GavinYangFiledAnno(desc=秒啊)]</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="小站一下"><a href="#小站一下" class="headerlink" title="小站一下"></a>小站一下</h4><p>UserService 无参构造方法 User说使用依赖注入完成一个简单的注入</p>
+<p>认一下Spring写一个差不多的注入注解. 在写一个虚假的 UserService,当然了,我们这里先不使用扫描,就使用简单的UserServcie去操作即可.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Documented</span></span><br><span class="line"><span class="meta">@Retention</span>(RetentionPolicy.RUNTIME)</span><br><span class="line"><span class="meta">@Target</span>(&#123;ElementType.FIELD&#125;)</span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> GavinYangAutowired &#123;</span><br><span class="line"></span><br><span class="line">    <span class="function">String <span class="title">alias</span><span class="params">()</span> <span class="keyword">default</span> ""</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserService</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GavinYangAutowired</span></span><br><span class="line">    <span class="keyword">private</span> User user;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">UserService</span><span class="params">()</span></span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"UserService 无参构造方法"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">hello</span><span class="params">()</span></span>&#123;</span><br><span class="line">        user.say();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>UserClassMain 类来启动发车 , 这里看结果是可以成功的启动 UserService 并且也是用hello方法来调用user的say,都是成功. 但是真实的框架复杂程度不是这几行就可以ok了的. 这只是一个简单易学的demo.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserClazzMain</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        UserService u  = <span class="keyword">new</span> UserService();</span><br><span class="line">        Field[] fields = u.getClass().getDeclaredFields();</span><br><span class="line">        <span class="keyword">for</span>(Field f : fields)&#123;</span><br><span class="line">            GavinYangAutowired autowired = f.getDeclaredAnnotation(GavinYangAutowired<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">            <span class="keyword">if</span>(autowired != <span class="keyword">null</span>)&#123;</span><br><span class="line">                Class&lt;?&gt; fType = f.getType();</span><br><span class="line">                Constructor&lt;?&gt; typeConstructor = fType.getConstructor();</span><br><span class="line">                Object instance = typeConstructor.newInstance();</span><br><span class="line"></span><br><span class="line">                f.setAccessible(<span class="keyword">true</span>);</span><br><span class="line">                f.set(u,instance);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        u.hello();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// UserService 无参构造方法</span></span><br><span class="line"><span class="comment">// User说</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>可以看到反射的功能还是蛮强大的, 但是项目里面一般是CRUD,目前也没有什么特别的地方看到使用反射的情况比较多.就是最近一直看Spring源码中,是可以看到有大量使用反射的情况.</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://www.lwfby.cn/2020/06/28/spring/Spring_Refresh/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -493,234 +721,6 @@
 <h4 id="refresh-resetCommonCaches"><a href="#refresh-resetCommonCaches" class="headerlink" title="refresh.resetCommonCaches()"></a>refresh.resetCommonCaches()</h4><p>可以看到这个方法才是真正的清除各种集合缓存啥的操作. 是在finally代码快中,也就是说是必须要执行的代码</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Reset Spring's common reflection metadata caches, in particular the</span></span><br><span class="line"><span class="comment"> * &#123;<span class="doctag">@link</span> ReflectionUtils&#125;, &#123;<span class="doctag">@link</span> AnnotationUtils&#125;, &#123;<span class="doctag">@link</span> ResolvableType&#125;</span></span><br><span class="line"><span class="comment"> * and &#123;<span class="doctag">@link</span> CachedIntrospectionResults&#125; caches.</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@since</span> 4.2</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@see</span> ReflectionUtils#clearCache()</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@see</span> AnnotationUtils#clearCache()</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@see</span> ResolvableType#clearCache()</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@see</span> CachedIntrospectionResults#clearClassLoader(ClassLoader)</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">resetCommonCaches</span><span class="params">()</span> </span>&#123;</span><br><span class="line">   ReflectionUtils.clearCache();</span><br><span class="line">   AnnotationUtils.clearCache();</span><br><span class="line">   ResolvableType.clearCache();</span><br><span class="line">   CachedIntrospectionResults.clearClassLoader(getClassLoader());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.lwfby.cn/2020/07/01/java_reflect_1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="鲍洋">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/timg.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="鲍洋记录">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/07/01/java_reflect_1/" itemprop="url">Java反射学习</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-07-01T22:47:50+08:00">
-                2020-07-01
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java%E6%BA%90%E7%A0%81/" itemprop="url" rel="index">
-                    <span itemprop="name">Java源码</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Words count in article&#58;</span>
-                
-                <span title="Words count in article">
-                  
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Reading time &asymp;</span>
-                
-                <span title="Reading time">
-                  
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h4 id="题记"><a href="#题记" class="headerlink" title="题记"></a>题记</h4><p>​     最近在看Spring源码的时候, 可以看到在加载类等的时候,都是大量使用的反射。估摸着MyBatis这种框架,其内部也是会大量的使用反射。所以看得出来反射在第三方的框架中使用是非常多的,于是说学习反射技术是很有必要的，不论是你写代码造轮子还是去理解第三方框架的底层实现.</p>
-<p>​    话不多bb,直接上代码看看是个什么操作.</p>
-<h4 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h4><p>我们这里写一个简单的pojo类,也就是我们经常使用的.</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">User</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Integer id;</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">	<span class="keyword">public</span> String age;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">User</span><span class="params">()</span></span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">User</span><span class="params">(Integer id, String name)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.id = id;</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Integer <span class="title">getId</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> id;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setId</span><span class="params">(Integer id)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.id = id;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> name;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setName</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">say</span><span class="params">()</span></span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"User说"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<p>然后接着在写一个启动的Main类</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserClazzMain</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        User u = <span class="keyword">new</span> User();</span><br><span class="line">        <span class="comment">// 获取类的所有的构造方法</span></span><br><span class="line">        Constructor&lt;?&gt;[] constructors = u.getClass().getConstructors();</span><br><span class="line">        System.out.println(Arrays.asList(constructors).toString());</span><br><span class="line">        <span class="comment">// 根据传入进去的参数类型,获取出类的构造方法.</span></span><br><span class="line">        Constructor&lt;? extends User&gt; constructor = u.getClass().getConstructor(Integer<span class="class">.<span class="keyword">class</span>, <span class="title">String</span>.<span class="title">class</span>)</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 打印结果:[public com.iyang.bootbasicio.pojo.User(), public com.iyang.bootbasicio.pojo.User(java.lang.Integer,java.lang.String)],</span></span><br><span class="line"><span class="comment">//可以看到这是一个获取类的构造方法的.</span></span><br></pre></td></tr></table></figure>
-
-
-
-<p>调用反射获取方法:</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserClazzMain</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        User u = <span class="keyword">new</span> User();</span><br><span class="line">        <span class="comment">// 可以看到获取出来的全部方法,不仅仅包含我们写的,还有Object中的notify等方法.</span></span><br><span class="line">        Method[] methods = u.getClass().getMethods();</span><br><span class="line">        System.out.println(Arrays.asList(methods).toString());</span><br><span class="line">        <span class="comment">// 根据方法的名字来过去我们特定的方法.</span></span><br><span class="line">        Method method = u.getClass().getMethod(<span class="string">"say"</span>);</span><br><span class="line">        System.out.println(method.toString());</span><br><span class="line">        </span><br><span class="line">        <span class="comment">//getDeclaredMethods方法仅仅只获取除了我们这个类里面的方法,并没有获取全部的方法(也就是不包括Object的).</span></span><br><span class="line">        Method[] declaredMethods = u.getClass().getDeclaredMethods();</span><br><span class="line">        System.out.println(Arrays.asList(declaredMethods).toString());</span><br><span class="line">        <span class="comment">// 这里依然是获取我们自己写的方法</span></span><br><span class="line">        Method say = u.getClass().getDeclaredMethod(<span class="string">"say"</span>);</span><br><span class="line">        System.out.println(say.toString());</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 这样我们就可以调用了user的say方法</span></span><br><span class="line">        Method say = u.getClass().getDeclaredMethod(<span class="string">"say"</span>);</span><br><span class="line">        say.invoke(u);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">[<span class="keyword">public</span> <span class="keyword">void</span> com.iyang.bootbasicio.pojo.User.setId(java.lang.Integer), <span class="keyword">public</span> <span class="keyword">void</span> com.iyang.bootbasicio.pojo.User.say(), <span class="keyword">public</span> java.lang.String com.iyang.bootbasicio.pojo.User.getName(), <span class="keyword">public</span> <span class="keyword">void</span> com.iyang.bootbasicio.pojo.User.setName(java.lang.String), <span class="keyword">public</span> java.lang.Integer com.iyang.bootbasicio.pojo.User.getId(), <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> java.lang.Object.wait(<span class="keyword">long</span>,<span class="keyword">int</span>) <span class="keyword">throws</span> java.lang.InterruptedException, <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">native</span> <span class="keyword">void</span> java.lang.Object.wait(<span class="keyword">long</span>) <span class="keyword">throws</span> java.lang.InterruptedException, <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> java.lang.Object.wait() <span class="keyword">throws</span> java.lang.InterruptedException, <span class="keyword">public</span> <span class="keyword">boolean</span> java.lang.Object.equals(java.lang.Object), <span class="keyword">public</span> java.lang.String java.lang.Object.toString(), <span class="keyword">public</span> <span class="keyword">native</span> <span class="keyword">int</span> java.lang.Object.hashCode(), <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">native</span> java.lang.Class java.lang.Object.getClass(), <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">native</span> <span class="keyword">void</span> java.lang.Object.notify(), <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">native</span> <span class="keyword">void</span> java.lang.Object.notifyAll()]</span><br><span class="line">----------------------------</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> com.iyang.bootbasicio.pojo.User.say()</span><br></pre></td></tr></table></figure>
-
-
-
-<p> 调用获取字段：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserClazzMain</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        User u = <span class="keyword">new</span> User();</span><br><span class="line">        <span class="comment">//获取全部的字段,是public修饰的字段,private修饰的是获取不到的.</span></span><br><span class="line">        Field[] fields = u.getClass().getFields();</span><br><span class="line">        System.out.println(Arrays.asList(fields).toString());</span><br><span class="line">        <span class="comment">//获取字段,私有的不能获取,会抛出异常,只能获取public修饰的字段.</span></span><br><span class="line">        Field field = u.getClass().getField(<span class="string">"age"</span>);</span><br><span class="line">        System.out.println(field.toString());</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 获取全部的字段,private修饰的也是可以获取出来的</span></span><br><span class="line">        Field[] declaredFields = u.getClass().getDeclaredFields();</span><br><span class="line">        System.out.println(Arrays.asList(declaredFields).toString());</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 根据字段的名字获取字段,不管什么修饰的,都是可以获取出来的.</span></span><br><span class="line">        Field name = u.getClass().getDeclaredField(<span class="string">"name"</span>);</span><br><span class="line">        System.out.println(name.toString());</span><br><span class="line">       &#125;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<p>获取注解:</p>
-<p>我们先定义二个注解, 然后记得加在User类上. GavinYang 和 PeterWong 这二个注解是可以加在类上的, GavinYangFiledAnno是加在字段上面的.</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Documented</span></span><br><span class="line"><span class="meta">@Retention</span>(RetentionPolicy.RUNTIME)</span><br><span class="line"><span class="meta">@Target</span>(&#123;ElementType.TYPE&#125;)</span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> GavinYang &#123;</span><br><span class="line"></span><br><span class="line">    <span class="function">String <span class="title">lwf</span><span class="params">()</span> <span class="keyword">default</span> "lwf"</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Documented</span></span><br><span class="line"><span class="meta">@Retention</span>(RetentionPolicy.RUNTIME)</span><br><span class="line"><span class="meta">@Target</span>(&#123;ElementType.TYPE&#125;)</span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> PeterWong &#123;</span><br><span class="line"></span><br><span class="line">    <span class="function">String <span class="title">name</span><span class="params">()</span> <span class="keyword">default</span> "peterWong"</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Documented</span></span><br><span class="line"><span class="meta">@Retention</span>(RetentionPolicy.RUNTIME)</span><br><span class="line"><span class="meta">@Target</span>(&#123;ElementType.FIELD&#125;)</span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> GavinYangFiledAnno &#123;</span><br><span class="line">    <span class="function">String <span class="title">desc</span><span class="params">()</span> <span class="keyword">default</span> ""</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">    <span class="comment">// 从结果来看,获取注解还是蛮顺利的</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        User u = <span class="keyword">new</span> User();</span><br><span class="line">        <span class="comment">// 获取这个类上面的注解</span></span><br><span class="line">        Annotation[] annotations = u.getClass().getAnnotations();</span><br><span class="line">        System.out.println(Arrays.asList(annotations).toString());</span><br><span class="line">        <span class="comment">// 根据注解名字获取,可以看到返回的也直接是注解的Obejct了</span></span><br><span class="line">        GavinYang gavinYang = u.getClass().getAnnotation(GavinYang<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">        System.out.println(gavinYang.toString());</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 获取字段上面使用的注解.</span></span><br><span class="line">        Field field = u.getClass().getDeclaredField(<span class="string">"name"</span>);</span><br><span class="line">        Annotation[] fieldAnnotations = field.getAnnotations();</span><br><span class="line">        System.out.println(Arrays.asList(fieldAnnotations).toString());</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">      </span><br><span class="line">[<span class="meta">@com</span>.iyang.bootbasicio.pojo.GavinYang(lwf=baoyang), <span class="meta">@com</span>.iyang.bootbasicio.pojo.PeterWong(name=gavinyang)]</span><br><span class="line"><span class="meta">@com</span>.iyang.bootbasicio.pojo.GavinYang(lwf=baoyang)     </span><br><span class="line">[<span class="meta">@com</span>.iyang.bootbasicio.pojo.GavinYangFiledAnno(desc=秒啊)]</span><br></pre></td></tr></table></figure>
-
-
-
-<h4 id="小站一下"><a href="#小站一下" class="headerlink" title="小站一下"></a>小站一下</h4><p>UserService 无参构造方法 User说使用依赖注入完成一个简单的注入</p>
-<p>认一下Spring写一个差不多的注入注解. 在写一个虚假的 UserService,当然了,我们这里先不使用扫描,就使用简单的UserServcie去操作即可.</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Documented</span></span><br><span class="line"><span class="meta">@Retention</span>(RetentionPolicy.RUNTIME)</span><br><span class="line"><span class="meta">@Target</span>(&#123;ElementType.FIELD&#125;)</span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> GavinYangAutowired &#123;</span><br><span class="line"></span><br><span class="line">    <span class="function">String <span class="title">alias</span><span class="params">()</span> <span class="keyword">default</span> ""</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserService</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GavinYangAutowired</span></span><br><span class="line">    <span class="keyword">private</span> User user;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">UserService</span><span class="params">()</span></span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"UserService 无参构造方法"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">hello</span><span class="params">()</span></span>&#123;</span><br><span class="line">        user.say();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<p>UserClassMain 类来启动发车 , 这里看结果是可以成功的启动 UserService 并且也是用hello方法来调用user的say,都是成功. 但是真实的框架复杂程度不是这几行就可以ok了的. 这只是一个简单易学的demo.</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserClazzMain</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        UserService u  = <span class="keyword">new</span> UserService();</span><br><span class="line">        Field[] fields = u.getClass().getDeclaredFields();</span><br><span class="line">        <span class="keyword">for</span>(Field f : fields)&#123;</span><br><span class="line">            GavinYangAutowired autowired = f.getDeclaredAnnotation(GavinYangAutowired<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">            <span class="keyword">if</span>(autowired != <span class="keyword">null</span>)&#123;</span><br><span class="line">                Class&lt;?&gt; fType = f.getType();</span><br><span class="line">                Constructor&lt;?&gt; typeConstructor = fType.getConstructor();</span><br><span class="line">                Object instance = typeConstructor.newInstance();</span><br><span class="line"></span><br><span class="line">                f.setAccessible(<span class="keyword">true</span>);</span><br><span class="line">                f.set(u,instance);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        u.hello();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// UserService 无参构造方法</span></span><br><span class="line"><span class="comment">// User说</span></span><br></pre></td></tr></table></figure>
-
-
-
-<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>可以看到反射的功能还是蛮强大的, 但是项目里面一般是CRUD,目前也没有什么特别的地方看到使用反射的情况比较多.就是最近一直看Spring源码中,是可以看到有大量使用反射的情况.</p>
 
           
         
