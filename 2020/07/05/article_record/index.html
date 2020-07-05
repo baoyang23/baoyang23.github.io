@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Java,Vector," />
+  <meta name="keywords" content="文章," />
 
 
 
@@ -79,18 +79,17 @@
 
 
 
-<meta name="description" content="Vector 的结构和对数据的添加和删除 与 ArrayList 是非常相似的. 可以点进去看看. 具体的执行逻辑代码还是非常相似的.  Vector 比起 ArrayList 是线程安全的原因是, Vector 在一些方法上是使用了 synchronized 来进行加锁,从而保证了线程安全问题。">
+<meta name="description" content="题记​        这是针对目前已有的文章进行记录说明.   往后希望每周或者自己有空的时候,就多写一些文章或者个人记录。这其中肯定也是有一定的错误的,如果是有错误的的地方,还是希望各位有心人帮我指出来,然后我能够更正. ​       邮箱地址 :  1411091515@qq.com ​       QQ : 1411091515 可以通过以上方式联系, 欢迎指出有错误的地方. Spring">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Vector 源码阅读记录">
-<meta property="og:url" content="http://www.lwfby.cn/2020/04/29/java_list/Vector/index.html">
+<meta property="og:title" content="文章介绍">
+<meta property="og:url" content="http://www.lwfby.cn/2020/07/05/article_record/index.html">
 <meta property="og:site_name" content="鲍洋记录">
-<meta property="og:description" content="Vector 的结构和对数据的添加和删除 与 ArrayList 是非常相似的. 可以点进去看看. 具体的执行逻辑代码还是非常相似的.  Vector 比起 ArrayList 是线程安全的原因是, Vector 在一些方法上是使用了 synchronized 来进行加锁,从而保证了线程安全问题。">
+<meta property="og:description" content="题记​        这是针对目前已有的文章进行记录说明.   往后希望每周或者自己有空的时候,就多写一些文章或者个人记录。这其中肯定也是有一定的错误的,如果是有错误的的地方,还是希望各位有心人帮我指出来,然后我能够更正. ​       邮箱地址 :  1411091515@qq.com ​       QQ : 1411091515 可以通过以上方式联系, 欢迎指出有错误的地方. Spring">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2020-04-29T14:47:50.000Z">
-<meta property="article:modified_time" content="2020-06-20T14:11:35.129Z">
+<meta property="article:published_time" content="2020-07-05T12:46:59.000Z">
+<meta property="article:modified_time" content="2020-07-05T13:03:42.240Z">
 <meta property="article:author" content="鲍洋">
-<meta property="article:tag" content="Java">
-<meta property="article:tag" content="Vector">
+<meta property="article:tag" content="文章">
 <meta name="twitter:card" content="summary">
 
 
@@ -121,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="http://www.lwfby.cn/2020/04/29/java_list/Vector/"/>
+  <link rel="canonical" href="http://www.lwfby.cn/2020/07/05/article_record/"/>
 
 
 
 
 
-  <title>Vector 源码阅读记录 | 鲍洋记录</title>
+  <title>文章介绍 | 鲍洋记录</title>
   
 
 
@@ -288,7 +287,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.lwfby.cn/2020/04/29/java_list/Vector/">
+    <link itemprop="mainEntityOfPage" href="http://www.lwfby.cn/2020/07/05/article_record/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="鲍洋">
@@ -305,7 +304,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Vector 源码阅读记录</h1>
+          <h1 class="post-title" itemprop="name headline">文章介绍</h1>
         
 
         <div class="post-meta">
@@ -317,8 +316,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-04-29T22:47:50+08:00">
-                2020-04-29
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-07-05T20:46:59+08:00">
+                2020-07-05
               </time>
             
 
@@ -340,8 +339,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81/" itemprop="url" rel="index">
-                    <span itemprop="name">Java集合源码</span>
+                  <a href="/categories/%E6%96%87%E7%AB%A0/" itemprop="url" rel="index">
+                    <span itemprop="name">文章</span>
                   </a>
                 </span>
 
@@ -408,9 +407,47 @@
       
 
       
-        <p>Vector 的结构和对数据的添加和删除 与 <a href="https://github.com/baoyang23/source-notes/blob/master/java/jvm_aggregate/ArrayList_Source.md" target="_blank" rel="noopener">ArrayList</a> 是非常相似的. 可以点进去看看.</p>
-<p>具体的执行逻辑代码还是非常相似的. </p>
-<p>Vector 比起 ArrayList 是线程安全的原因是, Vector 在一些方法上是使用了 synchronized 来进行加锁,从而保证了线程安全问题。</p>
+        <h4 id="题记"><a href="#题记" class="headerlink" title="题记"></a>题记</h4><p>​        这是针对目前已有的文章进行记录说明.   往后希望每周或者自己有空的时候,就多写一些文章或者个人记录。这其中肯定也是有一定的错误的,如果是有错误的的地方,还是希望各位有心人帮我指出来,然后我能够更正.</p>
+<p>​       邮箱地址 :  <a href="mailto:1411091515@qq.com">1411091515@qq.com</a></p>
+<p>​       QQ : 1411091515</p>
+<p>可以通过以上方式联系, 欢迎指出有错误的地方.</p>
+<h4 id="Spring-系列"><a href="#Spring-系列" class="headerlink" title="Spring 系列"></a>Spring 系列</h4><p>​       阅读 Spring 其内部代码实现的记录</p>
+<table>
+<thead>
+<tr>
+<th>Project</th>
+<th>地址</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Spring</td>
+<td>Spring<a href="http://www.lwfby.cn/2020/06/27/spring/Spring_Construction/">构造函数阅读</a>                      Spring的refresh<a href="http://www.lwfby.cn/2020/06/28/spring/Spring_Refresh/">方法阅读</a>                     Spring<a href="http://www.lwfby.cn/2020/07/02/spring/Spring_Custom/">小扩展一下</a></td>
+</tr>
+</tbody></table>
+<h4 id="Java源码系列"><a href="#Java源码系列" class="headerlink" title="Java源码系列"></a>Java源码系列</h4><p>​     Java的阅读是必不可少的,阅读是非常有必要的.</p>
+<table>
+<thead>
+<tr>
+<th>Project</th>
+<th>地址</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Java集合篇</td>
+<td>Vector<a href="http://www.lwfby.cn/2020/04/29/java_list/Vector/">阅读记录</a>                                                                           LinkedList<a href="http://www.lwfby.cn/2020/04/29/java_list/LinkedList_Source/">阅读记录</a>                             <a href="http://www.lwfby.cn/2020/04/30/java_list/ArrayDeque_Source/">ArrayDeque</a>                                                                                 <a href="http://www.lwfby.cn/2020/05/06/java_list/ArrayList_Source/">ArrayList</a>                                                <a href="http://www.lwfby.cn/2020/05/12/java_list/PriorityQueue_source/">PriorityQueue</a>                                                                             <a href="http://www.lwfby.cn/2020/05/22/java_list/HashMap_Source/">HashMap</a></td>
+</tr>
+<tr>
+<td>Java 线程篇</td>
+<td><a href="http://www.lwfby.cn/2020/06/20/ThreadLocal_source/">ThreadLocal</a>                       <a href="http://www.lwfby.cn/2020/06/20/ReentrantLock_source/">ReentrantLock</a></td>
+</tr>
+<tr>
+<td>Java 反射篇</td>
+<td><a href="http://www.lwfby.cn/2020/07/01/java_reflect_1/">反射学习</a></td>
+</tr>
+</tbody></table>
+<p>​      </p>
+<h4 id="技术栈"><a href="#技术栈" class="headerlink" title="技术栈"></a>技术栈</h4><p>​     对于技术人来说, 一个发展方向的技术栈是很重要的。  你总要沿着某个方法走才行.   不管怎么说,不辜负自己想做什么的这段时间就可以了啦.</p>
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>​       期待每天的成长都不一样.</p>
 
       
     </div>
@@ -431,7 +468,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>Post link:</strong>
-    <a href="http://www.lwfby.cn/2020/04/29/java_list/Vector/" title="Vector 源码阅读记录">http://www.lwfby.cn/2020/04/29/java_list/Vector/</a>
+    <a href="http://www.lwfby.cn/2020/07/05/article_record/" title="文章介绍">http://www.lwfby.cn/2020/07/05/article_record/</a>
   </li>
   <li class="post-copyright-license">
     <strong>Copyright Notice: </strong>
@@ -446,9 +483,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/Java/" rel="tag"><i class="fa fa-tag"></i> Java</a>
-          
-            <a href="/tags/Vector/" rel="tag"><i class="fa fa-tag"></i> Vector</a>
+            <a href="/tags/%E6%96%87%E7%AB%A0/" rel="tag"><i class="fa fa-tag"></i> 文章</a>
           
         </div>
       
@@ -461,8 +496,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2020/04/23/docker%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" rel="next" title="docker学习笔记">
-                <i class="fa fa-chevron-left"></i> docker学习笔记
+              <a href="/2020/07/02/spring/Spring_Custom/" rel="next" title="Spring自定义(三)">
+                <i class="fa fa-chevron-left"></i> Spring自定义(三)
               </a>
             
           </div>
@@ -470,10 +505,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2020/04/29/java_list/LinkedList_Source/" rel="prev" title="LinkedList源码阅读记录">
-                LinkedList源码阅读记录 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -551,8 +582,17 @@ var jiathis_config={
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -632,6 +672,22 @@ var jiathis_config={
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#题记"><span class="nav-number">1.</span> <span class="nav-text">题记</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Spring-系列"><span class="nav-number">2.</span> <span class="nav-text">Spring 系列</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Java源码系列"><span class="nav-number">3.</span> <span class="nav-text">Java源码系列</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#技术栈"><span class="nav-number">4.</span> <span class="nav-text">技术栈</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#总结"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
