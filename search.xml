@@ -346,6 +346,45 @@
       </tags>
   </entry>
   <entry>
+    <title>ThreadLocal源码阅读</title>
+    <url>/2020/06/20/ThreadLocal_source/</url>
+    <content><![CDATA[<h2 id="ThreadLocal源码阅读"><a href="#ThreadLocal源码阅读" class="headerlink" title="ThreadLocal源码阅读"></a>ThreadLocal源码阅读</h2><p>ThreadLocal 是来这个公司有过使用一次的感受,所以就学习阅读下源码。  其实Thread 这个里面,就有一个 Map(这里是用ThreadLocal内部类中实现的) , 里面的key就是 ThreadLocal, value 就是存储的值,所以一个Thread是有多个 ThreadLocal。 </p>
+<hr>
+<h4 id="参数"><a href="#参数" class="headerlink" title="参数"></a>参数</h4><p>  参数部分</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> threadLocalHashCode = nextHashCode();</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * The next hash code to be given out. Updated atomically. Starts at</span></span><br><span class="line"><span class="comment"> * zero.</span></span><br><span class="line"><span class="comment">   AtomicInteger 是一个线程安全的,实现原理是采用了cas.	</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> AtomicInteger nextHashCode =</span><br><span class="line">    <span class="keyword">new</span> AtomicInteger();</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h4><p> set 赋值</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*	首先获取当前线程.</span></span><br><span class="line"><span class="comment">	调用 getMap 方法, 直接调用 t.trheadLocals来获取 ThreadLocalMap。(ThreadLocalMap这里是ThreadLocal内部自己实现的类)</span></span><br><span class="line"><span class="comment">	如果map不是null的话,就进行set值,这里可以看到 set 的key是this,也就是ThreadLocal它自己.</span></span><br><span class="line"><span class="comment">	否则就是调用createMap方法,走这个方法是可以确认 currentThread中的threadLocals的值是null,所以直接new了一个进行赋值即可.</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">set</span><span class="params">(T value)</span> </span>&#123;</span><br><span class="line">    Thread t = Thread.currentThread();</span><br><span class="line">    ThreadLocalMap map = getMap(t);</span><br><span class="line">    <span class="keyword">if</span> (map != <span class="keyword">null</span>)</span><br><span class="line">        map.set(<span class="keyword">this</span>, value);</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        createMap(t, value);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">ThreadLocalMap <span class="title">getMap</span><span class="params">(Thread t)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> t.threadLocals;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">createMap</span><span class="params">(Thread t, T firstValue)</span> </span>&#123;</span><br><span class="line">        t.threadLocals = <span class="keyword">new</span> ThreadLocalMap(<span class="keyword">this</span>, firstValue);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="Get-方法"><a href="#Get-方法" class="headerlink" title="Get 方法"></a>Get 方法</h4><p> get 方法,获取值.</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">	这里可以看到,获取ThreadLocalMap,如果ThreadLocalMap的是null的话,就会走setInitialValue方法。</span></span><br><span class="line"><span class="comment">	如果有值的话,就会进行获取值并且返回.</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> T <span class="title">get</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    Thread t = Thread.currentThread();</span><br><span class="line">    ThreadLocalMap map = getMap(t);</span><br><span class="line">    <span class="keyword">if</span> (map != <span class="keyword">null</span>) &#123;</span><br><span class="line">        ThreadLocalMap.Entry e = map.getEntry(<span class="keyword">this</span>);</span><br><span class="line">        <span class="keyword">if</span> (e != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="meta">@SuppressWarnings</span>(<span class="string">"unchecked"</span>)</span><br><span class="line">            T result = (T)e.value;</span><br><span class="line">            <span class="keyword">return</span> result;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> setInitialValue();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">	如果获取出来的ThreadLocalMap 不是null的话,就会进行set,这个时候set进去的值,value就是null了.</span></span><br><span class="line"><span class="comment">	如果获取出来是nulld</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> T <span class="title">setInitialValue</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        T value = initialValue();</span><br><span class="line">        Thread t = Thread.currentThread();</span><br><span class="line">        ThreadLocalMap map = getMap(t);</span><br><span class="line">        <span class="keyword">if</span> (map != <span class="keyword">null</span>)</span><br><span class="line">            map.set(<span class="keyword">this</span>, value);</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            createMap(t, value);</span><br><span class="line">        <span class="keyword">return</span> value;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">protected</span> T <span class="title">initialValue</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="remove-方法"><a href="#remove-方法" class="headerlink" title="remove 方法"></a>remove 方法</h4><p>remove 方法就是获取map,如果map不是null的话,就调用m.remove(this)，根据当前this来删除.</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">remove</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    ThreadLocalMap m = getMap(Thread.currentThread());</span><br><span class="line">    <span class="keyword">if</span> (m != <span class="keyword">null</span>)</span><br><span class="line">        m.remove(<span class="keyword">this</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<hr>
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p> ThreadLocal里面的方法也比较少,还是比较好理解的。只要弄清楚ThreadLocal和Thread是怎么在存储的,就很好的理解了。</p>
+<p>注意 : 使用ThreadLocal一定要进行remove,否则容易出现内存泄漏，从而导致内存溢出。</p>
+]]></content>
+      <categories>
+        <category>ThreadLocal</category>
+      </categories>
+      <tags>
+        <tag>java源码</tag>
+        <tag>Java锁</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>ReentrantLock源码阅读</title>
     <url>/2020/06/20/ReentrantLock_source/</url>
     <content><![CDATA[<h2 id="ReentrantLock-源码阅读"><a href="#ReentrantLock-源码阅读" class="headerlink" title="ReentrantLock 源码阅读"></a>ReentrantLock 源码阅读</h2><h4 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h4><p>​        ReetrantLock 效果是和 synchronized 是一样的,只不过 synchronized 是内置锁,ReetrantLock是语法级别的锁, 相对于而言是比synchronized灵活性高些. 不过从我目前公司写代码角度来看,都是直接使用 synchronized . 但是不妨碍我们来看 ReetrantLock 里面的代码实现.</p>
@@ -393,45 +432,6 @@
 公平锁和非公平锁的获取锁方式不一样,但是释放方式是一样的. 公平锁获取锁的时候,如果有线程持有了的话,那么其他的会被挂起并且进入等待队列. 而非公平锁,直接获取锁,就是抢占式.</code></pre>]]></content>
       <categories>
         <category>ReentrantLock</category>
-      </categories>
-      <tags>
-        <tag>java源码</tag>
-        <tag>Java锁</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>ThreadLocal源码阅读</title>
-    <url>/2020/06/20/ThreadLocal_source/</url>
-    <content><![CDATA[<h2 id="ThreadLocal源码阅读"><a href="#ThreadLocal源码阅读" class="headerlink" title="ThreadLocal源码阅读"></a>ThreadLocal源码阅读</h2><p>ThreadLocal 是来这个公司有过使用一次的感受,所以就学习阅读下源码。  其实Thread 这个里面,就有一个 Map(这里是用ThreadLocal内部类中实现的) , 里面的key就是 ThreadLocal, value 就是存储的值,所以一个Thread是有多个 ThreadLocal。 </p>
-<hr>
-<h4 id="参数"><a href="#参数" class="headerlink" title="参数"></a>参数</h4><p>  参数部分</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> threadLocalHashCode = nextHashCode();</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * The next hash code to be given out. Updated atomically. Starts at</span></span><br><span class="line"><span class="comment"> * zero.</span></span><br><span class="line"><span class="comment">   AtomicInteger 是一个线程安全的,实现原理是采用了cas.	</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> AtomicInteger nextHashCode =</span><br><span class="line">    <span class="keyword">new</span> AtomicInteger();</span><br></pre></td></tr></table></figure>
-
-
-
-<h4 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h4><p> set 赋值</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*	首先获取当前线程.</span></span><br><span class="line"><span class="comment">	调用 getMap 方法, 直接调用 t.trheadLocals来获取 ThreadLocalMap。(ThreadLocalMap这里是ThreadLocal内部自己实现的类)</span></span><br><span class="line"><span class="comment">	如果map不是null的话,就进行set值,这里可以看到 set 的key是this,也就是ThreadLocal它自己.</span></span><br><span class="line"><span class="comment">	否则就是调用createMap方法,走这个方法是可以确认 currentThread中的threadLocals的值是null,所以直接new了一个进行赋值即可.</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">set</span><span class="params">(T value)</span> </span>&#123;</span><br><span class="line">    Thread t = Thread.currentThread();</span><br><span class="line">    ThreadLocalMap map = getMap(t);</span><br><span class="line">    <span class="keyword">if</span> (map != <span class="keyword">null</span>)</span><br><span class="line">        map.set(<span class="keyword">this</span>, value);</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        createMap(t, value);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">ThreadLocalMap <span class="title">getMap</span><span class="params">(Thread t)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> t.threadLocals;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">createMap</span><span class="params">(Thread t, T firstValue)</span> </span>&#123;</span><br><span class="line">        t.threadLocals = <span class="keyword">new</span> ThreadLocalMap(<span class="keyword">this</span>, firstValue);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h4 id="Get-方法"><a href="#Get-方法" class="headerlink" title="Get 方法"></a>Get 方法</h4><p> get 方法,获取值.</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">	这里可以看到,获取ThreadLocalMap,如果ThreadLocalMap的是null的话,就会走setInitialValue方法。</span></span><br><span class="line"><span class="comment">	如果有值的话,就会进行获取值并且返回.</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> T <span class="title">get</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    Thread t = Thread.currentThread();</span><br><span class="line">    ThreadLocalMap map = getMap(t);</span><br><span class="line">    <span class="keyword">if</span> (map != <span class="keyword">null</span>) &#123;</span><br><span class="line">        ThreadLocalMap.Entry e = map.getEntry(<span class="keyword">this</span>);</span><br><span class="line">        <span class="keyword">if</span> (e != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="meta">@SuppressWarnings</span>(<span class="string">"unchecked"</span>)</span><br><span class="line">            T result = (T)e.value;</span><br><span class="line">            <span class="keyword">return</span> result;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> setInitialValue();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">	如果获取出来的ThreadLocalMap 不是null的话,就会进行set,这个时候set进去的值,value就是null了.</span></span><br><span class="line"><span class="comment">	如果获取出来是nulld</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> T <span class="title">setInitialValue</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        T value = initialValue();</span><br><span class="line">        Thread t = Thread.currentThread();</span><br><span class="line">        ThreadLocalMap map = getMap(t);</span><br><span class="line">        <span class="keyword">if</span> (map != <span class="keyword">null</span>)</span><br><span class="line">            map.set(<span class="keyword">this</span>, value);</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            createMap(t, value);</span><br><span class="line">        <span class="keyword">return</span> value;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">protected</span> T <span class="title">initialValue</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h4 id="remove-方法"><a href="#remove-方法" class="headerlink" title="remove 方法"></a>remove 方法</h4><p>remove 方法就是获取map,如果map不是null的话,就调用m.remove(this)，根据当前this来删除.</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">remove</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    ThreadLocalMap m = getMap(Thread.currentThread());</span><br><span class="line">    <span class="keyword">if</span> (m != <span class="keyword">null</span>)</span><br><span class="line">        m.remove(<span class="keyword">this</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-
-
-<hr>
-<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p> ThreadLocal里面的方法也比较少,还是比较好理解的。只要弄清楚ThreadLocal和Thread是怎么在存储的,就很好的理解了。</p>
-<p>注意 : 使用ThreadLocal一定要进行remove,否则容易出现内存泄漏，从而导致内存溢出。</p>
-]]></content>
-      <categories>
-        <category>ThreadLocal</category>
       </categories>
       <tags>
         <tag>java源码</tag>
@@ -752,21 +752,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Vector 源码阅读记录</title>
-    <url>/2020/04/29/java_list/Vector/</url>
-    <content><![CDATA[<p>Vector 的结构和对数据的添加和删除 与 <a href="https://github.com/baoyang23/source-notes/blob/master/java/jvm_aggregate/ArrayList_Source.md" target="_blank" rel="noopener">ArrayList</a> 是非常相似的. 可以点进去看看.</p>
-<p>具体的执行逻辑代码还是非常相似的. </p>
-<p>Vector 比起 ArrayList 是线程安全的原因是, Vector 在一些方法上是使用了 synchronized 来进行加锁,从而保证了线程安全问题。</p>
-]]></content>
-      <categories>
-        <category>Java集合源码</category>
-      </categories>
-      <tags>
-        <tag>Java</tag>
-        <tag>Vector</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>LinkedList源码阅读记录</title>
     <url>/2020/04/29/java_list/LinkedList_Source/</url>
     <content><![CDATA[<p>虽然一般都是使用ArrayList集合比使用LinkedList集合要多,但是这并不妨碍我们对LinkedList的源码研究和学习</p>
@@ -851,6 +836,21 @@
       <tags>
         <tag>Java</tag>
         <tag>LinkedList</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Vector 源码阅读记录</title>
+    <url>/2020/04/29/java_list/Vector/</url>
+    <content><![CDATA[<p>Vector 的结构和对数据的添加和删除 与 <a href="https://github.com/baoyang23/source-notes/blob/master/java/jvm_aggregate/ArrayList_Source.md" target="_blank" rel="noopener">ArrayList</a> 是非常相似的. 可以点进去看看.</p>
+<p>具体的执行逻辑代码还是非常相似的. </p>
+<p>Vector 比起 ArrayList 是线程安全的原因是, Vector 在一些方法上是使用了 synchronized 来进行加锁,从而保证了线程安全问题。</p>
+]]></content>
+      <categories>
+        <category>Java集合源码</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+        <tag>Vector</tag>
       </tags>
   </entry>
   <entry>
