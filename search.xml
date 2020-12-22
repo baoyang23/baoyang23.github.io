@@ -864,21 +864,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Vector 源码阅读记录</title>
-    <url>/2020/04/29/java_list/Vector/</url>
-    <content><![CDATA[<p>Vector 的结构和对数据的添加和删除 与 <a href="https://github.com/baoyang23/source-notes/blob/master/java/jvm_aggregate/ArrayList_Source.md" target="_blank" rel="noopener">ArrayList</a> 是非常相似的. 可以点进去看看.</p>
-<p>具体的执行逻辑代码还是非常相似的. </p>
-<p>Vector 比起 ArrayList 是线程安全的原因是, Vector 在一些方法上是使用了 synchronized 来进行加锁,从而保证了线程安全问题。</p>
-]]></content>
-      <categories>
-        <category>Java集合源码</category>
-      </categories>
-      <tags>
-        <tag>Java</tag>
-        <tag>Vector</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>LinkedList源码阅读记录</title>
     <url>/2020/04/29/java_list/LinkedList_Source/</url>
     <content><![CDATA[<p>虽然一般都是使用ArrayList集合比使用LinkedList集合要多,但是这并不妨碍我们对LinkedList的源码研究和学习</p>
@@ -963,6 +948,21 @@
       <tags>
         <tag>Java</tag>
         <tag>LinkedList</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Vector 源码阅读记录</title>
+    <url>/2020/04/29/java_list/Vector/</url>
+    <content><![CDATA[<p>Vector 的结构和对数据的添加和删除 与 <a href="https://github.com/baoyang23/source-notes/blob/master/java/jvm_aggregate/ArrayList_Source.md" target="_blank" rel="noopener">ArrayList</a> 是非常相似的. 可以点进去看看.</p>
+<p>具体的执行逻辑代码还是非常相似的. </p>
+<p>Vector 比起 ArrayList 是线程安全的原因是, Vector 在一些方法上是使用了 synchronized 来进行加锁,从而保证了线程安全问题。</p>
+]]></content>
+      <categories>
+        <category>Java集合源码</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+        <tag>Vector</tag>
       </tags>
   </entry>
   <entry>
