@@ -301,6 +301,428 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.lwfby.cn/2020/06/27/spring/Spring_Construction/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="YangL">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/timg.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="YangL">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/27/spring/Spring_Construction/" itemprop="url">Spring初始化(一)</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-27T21:11:50+08:00">
+                2020-06-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Spring/" itemprop="url" rel="index">
+                    <span itemprop="name">Spring</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2.8k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  11
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h4 id="阅读方法"><a href="#阅读方法" class="headerlink" title="阅读方法"></a>阅读方法</h4><p>   最简单的阅读方法,就是创建一个maven项目,让引入Spring的依赖.  然后写上一个main方法,来读取包下的内容,然后写一个bean,即可. 这个bean要在你扫描的包下.   于是我们直接在new的地方打上断点跟进去即可.</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependencies&gt;</span><br><span class="line"></span><br><span class="line">    &lt;dependency&gt;</span><br><span class="line">        &lt;groupId&gt;org.springframework&lt;/groupId&gt;</span><br><span class="line">        &lt;artifactId&gt;spring-context&lt;/artifactId&gt;</span><br><span class="line">        &lt;version&gt;5.2.0.RELEASE&lt;/version&gt;</span><br><span class="line">    &lt;/dependency&gt;</span><br><span class="line"></span><br><span class="line">&lt;/dependencies&gt;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public class SpringStartMain &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        AnnotationConfigApplicationContext context &#x3D; new AnnotationConfigApplicationContext(&quot;com.iyang.spring&quot;);</span><br><span class="line">        YangBeanOne yangBeanOne &#x3D; context.getBean(YangBeanOne.class);</span><br><span class="line">        System.out.println(yangBeanOne.getClass().toString());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p> 还有一种就是你去github上clone一个Spring的源码,然后倒入idea,当然你需要gradle环境来构建.然后成功的build一下, 如果成功了的话,就在源码的目录创建一个模块(x项目),然后像上面一样。这样做的好处是,你可以随便修改源码的代码, 你觉得它的哪个地方的代码写到不够好的话,也是可以去修改的.</p>
+<h4 id="Debug阅读"><a href="#Debug阅读" class="headerlink" title="Debug阅读"></a>Debug阅读</h4><p>  开始debug进行代码的阅读 : </p>
+<p>  debug就会进入到这个构造函数中, 这里我们先对 this() 和 scan(basePackages) 这二个方法进行阅读, refresh()里面涉及到内容比较多(BeanPostprocess,Aware,event等),不是一下子就能看明白的,是需要大量的时间去仔细阅读的.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Create a new AnnotationConfigApplicationContext, scanning for components</span></span><br><span class="line"><span class="comment"> * in the given packages, registering bean definitions for those components,</span></span><br><span class="line"><span class="comment"> * and automatically refreshing the context.</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> basePackages the packages to scan for component classes</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">AnnotationConfigApplicationContext</span><span class="params">(String... basePackages)</span> </span>&#123;</span><br><span class="line">   <span class="keyword">this</span>();</span><br><span class="line">   scan(basePackages);</span><br><span class="line">   refresh();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<p>this () 方法  </p>
+<p> 可以看到this方法,基本是在做一些对环境初始化的操作.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Create a new AnnotationConfigApplicationContext that needs to be populated</span></span><br><span class="line"><span class="comment"> * through &#123;<span class="doctag">@link</span> #register&#125; calls and then manually &#123;<span class="doctag">@linkplain</span> #refresh refreshed&#125;.</span></span><br><span class="line"><span class="comment"> 同时还会走到 : org.springframework.context.support.GenericApplicationContext#GenericApplicationContext()这个方法里面来.  this.beanFactory = new DefaultListableBeanFactory(); 可以看到这里是new了一个beanFactory的,也就是我们后面的refresh()方法,可以看到DefaultListableBeanFactroy这个类.</span></span><br><span class="line"><span class="comment"> 再往父类走 : org.springframework.context.support.AbstractApplicationContext#AbstractApplicationContext()就会走到这个类的这个方法来, this.resourcePatternResolver = getResourcePatternResolver(); 这里可以看到是初始化了 resourcePatternResolver.当然了,肯定还有一些new的全局变量的初始化也会进行初始化的.</span></span><br><span class="line"><span class="comment"> </span></span><br><span class="line"><span class="comment"> </span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">AnnotationConfigApplicationContext</span><span class="params">()</span> </span>&#123;</span><br><span class="line">   <span class="keyword">this</span>.reader = <span class="keyword">new</span> AnnotatedBeanDefinitionReader(<span class="keyword">this</span>);</span><br><span class="line"><span class="comment">//这个方法对registry,environment和resourceLoader进行赋值,然后根据filter是true,添加了三个filter过滤器.可以看到这个方法虽然带了scanner名字,但是看每个走的方法,好像是没有扫描任何东西,都是对全局参数进行赋值等操作.</span></span><br><span class="line">   <span class="keyword">this</span>.scanner = <span class="keyword">new</span> ClassPathBeanDefinitionScanner(<span class="keyword">this</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">---------------------------------</span><br><span class="line"></span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * Create a new &#123;<span class="doctag">@code</span> AnnotatedBeanDefinitionReader&#125; for the given registry.</span></span><br><span class="line"><span class="comment">	 * &lt;p&gt;If the registry is &#123;<span class="doctag">@link</span> EnvironmentCapable&#125;, e.g. is an &#123;<span class="doctag">@code</span> ApplicationContext&#125;,</span></span><br><span class="line"><span class="comment">	 * the &#123;<span class="doctag">@link</span> Environment&#125; will be inherited, otherwise a new</span></span><br><span class="line"><span class="comment">	 * &#123;<span class="doctag">@link</span> StandardEnvironment&#125; will be created and used.</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@param</span> registry the &#123;<span class="doctag">@code</span> BeanFactory&#125; to load bean definitions into,</span></span><br><span class="line"><span class="comment">	 * in the form of a &#123;<span class="doctag">@code</span> BeanDefinitionRegistry&#125;</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@see</span> #AnnotatedBeanDefinitionReader(BeanDefinitionRegistry, Environment)</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@see</span> #setEnvironment(Environment)</span></span><br><span class="line"><span class="comment">这里可以看到传入进来的registry是 this,也就是传入了AnnotationConfigApplicationContext它自己. </span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">可以看到这个方法主要做的事情是,初始化Environment,然后new一个ConditionEvaluator对象,其保存了五个信息. 最后就分别添加五个 Processor到beanFactroy的beanDefinitionMap中来.</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">AnnotatedBeanDefinitionReader</span><span class="params">(BeanDefinitionRegistry registry)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// getOrCreateEnvironment()方法,先对registry进行非null的判断,如果是Null的话,就会抛出对应的异常.最后是new StandardEnvironment()了一个对象返回来. registry是满足EnvironmentCapable</span></span><br><span class="line"><span class="comment">// this()方法:先对传入进来的registry和environemnt进行非null的判断.this.registry = registry; 紧着new了一个ConditionEvaluator对象,其构造函数中,初始化了registry,beanFactory,environment,resourceLoader和classLoader这五个参数,是在内部类ConditionContextImpl中. 最后往beanFactory的beanDefinitionMap中添加了五个值,分别是:</span></span><br><span class="line"><span class="comment">//org.springframework.context.annotation.internalConfigurationAnnotationProcessor</span></span><br><span class="line"><span class="comment">//org.springframework.context.annotation.internalAutowiredAnnotationProcessor</span></span><br><span class="line"><span class="comment">//org.springframework.context.annotation.internalCommonAnnotationProcessor</span></span><br><span class="line"><span class="comment">//org.springframework.context.event.internalEventListenerProcessor</span></span><br><span class="line"><span class="comment">//org.springframework.context.event.internalEventListenerFactory  </span></span><br><span class="line"><span class="comment">//添加完,new AnnotatedBeanDefinitionReader()这个方法就走完了.        </span></span><br><span class="line">		<span class="keyword">this</span>(registry, getOrCreateEnvironment(registry));</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">----------------------------------</span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * Create a new &#123;<span class="doctag">@code</span> ClassPathBeanDefinitionScanner&#125; for the given bean factory.</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@param</span> registry the &#123;<span class="doctag">@code</span> BeanFactory&#125; to load bean definitions into, in the form</span></span><br><span class="line"><span class="comment">	 * of a &#123;<span class="doctag">@code</span> BeanDefinitionRegistry&#125;</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">ClassPathBeanDefinitionScanner</span><span class="params">(BeanDefinitionRegistry registry)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>(registry, <span class="keyword">true</span>);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// </span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">ClassPathBeanDefinitionScanner</span><span class="params">(BeanDefinitionRegistry registry, <span class="keyword">boolean</span> useDefaultFilters)</span> </span>&#123;</span><br><span class="line"><span class="comment">//这里也有getOrCreateEnvironment()方法来获取环境,在上一步已经做了,所以这步是直接获取上一步的结果即可.      </span></span><br><span class="line">		<span class="keyword">this</span>(registry, useDefaultFilters, getOrCreateEnvironment(registry));</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 先对传入进来的 registry 进行非null的判断,</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">ClassPathBeanDefinitionScanner</span><span class="params">(BeanDefinitionRegistry registry, <span class="keyword">boolean</span> useDefaultFilters,</span></span></span><br><span class="line"><span class="function"><span class="params">			Environment environment, @Nullable ResourceLoader resourceLoader)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">		Assert.notNull(registry, <span class="string">"BeanDefinitionRegistry must not be null"</span>);</span><br><span class="line">		<span class="keyword">this</span>.registry = registry;</span><br><span class="line">		<span class="comment">// 这里传入的是ture,也就是会走到这个if里面来.</span></span><br><span class="line">		<span class="keyword">if</span> (useDefaultFilters) &#123;</span><br><span class="line"><span class="comment">//org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider#registerDefaultFilters, 往includeFilters 集合中添加Filter,这些添加的filter,点进去看即可.            </span></span><br><span class="line">			registerDefaultFilters();</span><br><span class="line">		&#125;</span><br><span class="line"><span class="comment">// this.environment赋上传入进来的environment值.        </span></span><br><span class="line">		setEnvironment(environment);</span><br><span class="line"><span class="comment">// org.springframework.core.io.support.ResourcePatternUtils#getResourcePatternResolver进行判断,这里由于是ResourcePatternResolver,所以在第一个if就返回了.</span></span><br><span class="line"><span class="comment">//接着new一个CachingMetadataReaderFactory,传入进去resourceLoader,new这个类的内部也是可以看,就是对参数进行赋值,并没有做其他的什么事情了.      </span></span><br><span class="line"><span class="comment">//this.componentsIndex = CandidateComponentsIndexLoader.loadIndex(this.resourcePatternResolver.getClassLoader());获取出来的值Null.        </span></span><br><span class="line">		setResourceLoader(resourceLoader);</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<p>scan(basePackages) 方法 </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 对传入进来的参数进行一个校验.</span></span><br><span class="line"><span class="comment">//scanner也是上面那步this.scanner = new ClassPathBeanDefinitionScanner(this)给new出来的.</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">scan</span><span class="params">(String... basePackages)</span> </span>&#123;</span><br><span class="line">   Assert.notEmpty(basePackages, <span class="string">"At least one base package must be specified"</span>);</span><br><span class="line">   <span class="keyword">this</span>.scanner.scan(basePackages);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* Perform a scan within the specified base packages.</span></span><br><span class="line"><span class="comment">* <span class="doctag">@param</span> basePackages the packages to check for annotated classes</span></span><br><span class="line"><span class="comment">* <span class="doctag">@return</span> number of beans registered</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">scan</span><span class="params">(String... basePackages)</span> </span>&#123;</span><br><span class="line"><span class="comment">// org.springframework.beans.factory.support.DefaultListableBeanFactory#getBeanDefinitionCount 走到这步来获取个数,还记得new AnnotatedBeanDefinitionReader(this)这个方法里面添加了五个processor吗?所以这里获取出来的beanCountAtScanStart大小就是5(默认对初始化做任何改动的情况下).</span></span><br><span class="line">	<span class="keyword">int</span> beanCountAtScanStart = <span class="keyword">this</span>.registry.getBeanDefinitionCount();</span><br><span class="line"><span class="comment">//从名字上看,这个方法是真正的做扫描的.其实Spring中,scan都算不做事的,doScan才是真的做事的。到后面还有getBean不是做事的,doGetBean才是做事的,createBean也是的. </span></span><br><span class="line"><span class="comment">//doScan做的事情可以看到,读取包下的类,然后根据filter条件来过滤,满足条件的话,就会封装成ScannedGenericBeanDefinition,最后是一个集合包装的该包下全部满足条件的. 然后就是接着对 sbd进行注解的处理,比如有些打入了Lazy等注解的,都要读取出来,存入bd的信息中.最后再检查一遍db,如果没问题的话,就会根据beanName和bd,new一个BeanDefinitionHolder出来,最后注册到beanFactory中去,也就是放入BeanFactory的beanDeifitionMap中去.    </span></span><br><span class="line">	doScan(basePackages);</span><br><span class="line">	<span class="comment">// Register annotation config processors, if necessary.</span></span><br><span class="line">	<span class="keyword">if</span> (<span class="keyword">this</span>.includeAnnotationConfig) &#123;</span><br><span class="line"><span class="comment">// 先获取出beanFactory,先调用beanFactory的getDependencyComparator和getAutowireCandidateResolver方法,如果满足条件的话,就会有对应的set方法.然后紧接着就是判断beanFactory中是否包含一些bd,如果是不包含的话,这里就会添加进去. 这里判断的值,再最初new reader()的时候已经有添加到BeanFactory的beanDifitionMap中去.        </span></span><br><span class="line">		AnnotationConfigUtils.registerAnnotationConfigProcessors(<span class="keyword">this</span>.registry);</span><br><span class="line">	&#125;</span><br><span class="line">    <span class="comment">// 这里返回int参数,但是 this.scanner.scan(basePackages); 好像并没有使用到返回值.</span></span><br><span class="line">	<span class="keyword">return</span> (<span class="keyword">this</span>.registry.getBeanDefinitionCount() - beanCountAtScanStart);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* Perform a scan within the specified base packages,</span></span><br><span class="line"><span class="comment">* returning the registered bean definitions.</span></span><br><span class="line"><span class="comment">* &lt;p&gt;This method does &lt;i&gt;not&lt;/i&gt; register an annotation config processor</span></span><br><span class="line"><span class="comment">* but rather leaves this up to the caller.</span></span><br><span class="line"><span class="comment">* <span class="doctag">@param</span> basePackages the packages to check for annotated classes</span></span><br><span class="line"><span class="comment">* <span class="doctag">@return</span> set of beans registered if any for tooling registration purposes (never &#123;<span class="doctag">@code</span> null&#125;)</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> Set&lt;BeanDefinitionHolder&gt; <span class="title">doScan</span><span class="params">(String... basePackages)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 先是对传入进来的参数进行检验.</span></span><br><span class="line">	Assert.notEmpty(basePackages, <span class="string">"At least one base package must be specified"</span>);</span><br><span class="line">    <span class="comment">// 存BeanDefinitionHolder的集合,也是最后要返回的.</span></span><br><span class="line">	Set&lt;BeanDefinitionHolder&gt; beanDefinitions = <span class="keyword">new</span> LinkedHashSet&lt;&gt;();</span><br><span class="line">	<span class="keyword">for</span> (String basePackage : basePackages) &#123;</span><br><span class="line"><span class="comment">//根据传入进去的包名字,读取出包名字下的所有文件,然后迭代这些文件,这些文件要有能读的权限,再走isCandidateComponent(metadataReader)这个方法,其中就有使用 excludeFilters和includeFilters,这二个filter来过滤进行一些判断操作. 返回ture,就会往下走,new一个ScannedGenericBeanDefinition,其中beanClass就是这个类的全限定名字.比如这里(com.iyang.spring.bean.YangBeanOne),我们的是这个.</span></span><br><span class="line"><span class="comment">//这就是这个方法,扫描,然后根据特定filter,如果是满足条件的话,就会new一个sbd,然后放入Set集合中,返回. </span></span><br><span class="line">		Set&lt;BeanDefinition&gt; candidates = findCandidateComponents(basePackage);</span><br><span class="line">        </span><br><span class="line">		<span class="keyword">for</span> (BeanDefinition candidate : candidates) &#123;</span><br><span class="line"><span class="comment">//org.springframework.context.annotation.AnnotationScopeMetadataResolver#resolveScopeMetadata,走的这个方法,因AnnotationConfigUtils.attributesFor(...)方法返回的是null,所以这个里面就仅仅只是new了一个ScopeMetadata对象返回了           </span></span><br><span class="line">			ScopeMetadata scopeMetadata = <span class="keyword">this</span>.scopeMetadataResolver.resolveScopeMetadata(candidate);</span><br><span class="line"><span class="comment">//scope的值是singletone.这不就是我们熟悉的单例嘛.            </span></span><br><span class="line">			candidate.setScope(scopeMetadata.getScopeName());</span><br><span class="line"><span class="comment">//获取出这个bean的名字            </span></span><br><span class="line">			String beanName = <span class="keyword">this</span>.beanNameGenerator.generateBeanName(candidate, <span class="keyword">this</span>.registry);</span><br><span class="line"><span class="comment">// db是 AbstractBeanDefinition的话,这里肯定是,从AbstractBeanDefinition这个名字上看,是一个抽象的，也就是应该是父类.            </span></span><br><span class="line">			<span class="keyword">if</span> (candidate <span class="keyword">instanceof</span> AbstractBeanDefinition) &#123;</span><br><span class="line"><span class="comment">//beanDefinition.applyDefaults(this.beanDefinitionDefaults)该方法是对一些参数进行赋值操作. </span></span><br><span class="line"><span class="comment">//                </span></span><br><span class="line">				postProcessBeanDefinition((AbstractBeanDefinition) candidate, beanName);</span><br><span class="line">			&#125;</span><br><span class="line"><span class="comment">// bd是AnnotatedBeanDefinition或者其子类.            </span></span><br><span class="line">			<span class="keyword">if</span> (candidate <span class="keyword">instanceof</span> AnnotatedBeanDefinition) &#123;</span><br><span class="line"><span class="comment">// 该方是对bd的Lazy.calss,Primary.class,DependsOn.class,Role.class,Description.class这些注解进行获取,如果有的话,就会调用bd对应的set方法给值set进去. 当然我们这里的bean没有这些属性.这里可自行加入一些注入,然后debug到这个地方进行看.</span></span><br><span class="line">                AnnotationConfigUtils.processCommonDefinitionAnnotations((AnnotatedBeanDefinition) candidate);</span><br><span class="line">				&#125;</span><br><span class="line"><span class="comment">// 检查registry中是否含有这个beanName,如果没包含的话,就直接返回ture.            </span></span><br><span class="line">			<span class="keyword">if</span> (checkCandidate(beanName, candidate)) &#123;</span><br><span class="line"><span class="comment">// 传入bean和beanName, new一个bean的Holder出来,也就是bean的持有者的意思.其实个人觉得这里是对bean进行一层封装,Holder更抽象地理解点.                </span></span><br><span class="line">				BeanDefinitionHolder definitionHolder = <span class="keyword">new</span> BeanDefinitionHolder(candidate, beanName);</span><br><span class="line"><span class="comment">//scopeMetadata中获取出getScopedProxyMode,如果是No的话,就直接返回definitionHolder         </span></span><br><span class="line">				definitionHolder =</span><br><span class="line">							AnnotationConfigUtils.applyScopedProxyMode(scopeMetadata, definitionHolder, <span class="keyword">this</span>.registry);</span><br><span class="line"><span class="comment">// 添加到最外层的集合中                </span></span><br><span class="line">				beanDefinitions.add(definitionHolder);</span><br><span class="line"><span class="comment">//org.springframework.beans.factory.support.DefaultListableBeanFactory#registerBeanDefinition,最后走到了这里,该方法会先对传入进来的参数进行非null的判断,如果bd是AbstractBeanDefinition的话,就会强转调用其validate()方法,进行检验. 在从this.beanDefinitionMap中获取,根据beanName,第一次肯定是获取不到的,走到else.else中在判断hasBeanCreationStarted(),这里返回的是flase,也就是走到了else的else中去了,根据beanName和bean存入到this.beanDefinitionMap中,然后beanName添加到beanDefinitionNames集合中.  这就是这步根据beanName和bean放入beanFactory的beanDefinitionMap集合中.               </span></span><br><span class="line">				registerBeanDefinition(definitionHolder, <span class="keyword">this</span>.registry);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> beanDefinitions;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><ul>
+<li><p>this() 方法 :  该方法中主要是初始化了 this.reader 和 this.scanner这个参数,当然了,其中还有一些环境等信息   的初始化. this.reader的时候,是有往beanFactroy中添加五个默认要添加的bd,也就是添加到了 BeanFactory的BeanDefitionMap中.  this.scanner 也是对一些环境等信息初始化 , 然后下接来的方法就是使用  this.scanner来进扫描 class,然后满足条件的,就封装成bd,注册到beanFactory中去.</p>
+</li>
+<li><p>register() 方法里面调用 this.reader.register(componentClasses); 该方法就是读取包下的class信息,然后满足条件的就封装成bd,同时还会对注解@Lazy等也会读取,如果是有这些注解的话,就会调用bd对应的set方法,给赋值进去,最后将bd给注册到BeanFactory的beanDefitionMap中去即可.</p>
+</li>
+</ul>
+<p>  可以看到 this() 方法 和 register()方法,主要是对环境的初始化和根据传入进来的包名来进行扫描获取class信息,满足条件的class信息就会转化为bd,然后注册到beanFactory中去.</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.lwfby.cn/2020/06/20/ReentrantLock_source/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="YangL">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/timg.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="YangL">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/20/ReentrantLock_source/" itemprop="url">ReentrantLock源码阅读</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-20T22:47:50+08:00">
+                2020-06-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ReentrantLock/" itemprop="url" rel="index">
+                    <span itemprop="name">ReentrantLock</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1.7k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  7
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="ReentrantLock-源码阅读"><a href="#ReentrantLock-源码阅读" class="headerlink" title="ReentrantLock 源码阅读"></a>ReentrantLock 源码阅读</h2><h4 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h4><p>​        ReetrantLock 效果是和 synchronized 是一样的,只不过 synchronized 是内置锁,ReetrantLock是语法级别的锁, 相对于而言是比synchronized灵活性高些. 不过从我目前公司写代码角度来看,都是直接使用 synchronized . 但是不妨碍我们来看 ReetrantLock 里面的代码实现.</p>
+<p>​    使用代码 : 有lock方法就一定要有 unlock方法来释放锁.  一般代码中这样写即可.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ReentrantLockCaseMain</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> ReentrantLock lock = <span class="keyword">new</span> ReentrantLock();</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">lockUseCase</span><span class="params">()</span></span>&#123;</span><br><span class="line"></span><br><span class="line">        lock.lock();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            System.out.println(<span class="string">"执行业务代码逻辑"</span>);</span><br><span class="line">        &#125;<span class="keyword">finally</span> &#123;</span><br><span class="line">            lock.unlock();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="代码分析"><a href="#代码分析" class="headerlink" title="代码分析"></a>代码分析</h4><p>​      ReetrantLock 中是没有什么全局参数,相比于集合,就没有那么多全局参数.但是我们要看其里面的内,这里有三个类,  Sync , NonfairSync , FairSync.     NonfairSync和FairSync 都是有继承 Sync. 可以看到NonfairSync 是非公平锁 , FairSync是公平锁.</p>
+<p>​      Sync 又集成 AQS, 使用独占锁,  重写了 tryRelease 方法. </p>
+<ul>
+<li><p>构造函数:  默认是使用的非公平锁,如果传入进来的是true就会使用公平锁,否则就会使用非公平锁.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"> <span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Creates an instance of &#123;<span class="doctag">@code</span> ReentrantLock&#125;.</span></span><br><span class="line"><span class="comment"> * This is equivalent to using &#123;<span class="doctag">@code</span> ReentrantLock(false)&#125;.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">ReentrantLock</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    sync = <span class="keyword">new</span> NonfairSync();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Creates an instance of &#123;<span class="doctag">@code</span> ReentrantLock&#125; with the</span></span><br><span class="line"><span class="comment"> * given fairness policy.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> fair &#123;<span class="doctag">@code</span> true&#125; if this lock should use a fair ordering policy</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">ReentrantLock</span><span class="params">(<span class="keyword">boolean</span> fair)</span> </span>&#123;</span><br><span class="line">    sync = fair ? <span class="keyword">new</span> FairSync() : <span class="keyword">new</span> NonfairSync();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>lock 方法:  lock方法是加锁的方法</p>
+<p>lock方法是调用的 Sync 的lock方法, 然后我们可以看到上锁的时候,走的Sync,然后根据FairSync/NonfairSync取走各自的加锁方法,所以说公平锁和非公平锁是加锁的方式是不一样的.</p>
+</li>
+</ul>
+<p>  非公平锁获取锁的时候,会获取state这个状态标识,然后再去走对应的逻辑,这里多了比非公平锁多了一个从队列中获取信息和不能获取锁的线程就会被挂起进入队列中排队.</p>
+  <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">lock</span><span class="params">()</span> </span>&#123;    sync.lock();&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Sync </span></span><br><span class="line"><span class="function"><span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">lock</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 公平锁</span></span><br><span class="line"><span class="comment">     * Sync object for fair locks</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">tatic <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">FairSync</span> <span class="keyword">extends</span> <span class="title">Sync</span> </span>&#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = -<span class="number">3000897897090466540L</span>;</span><br><span class="line"></span><br><span class="line">    	<span class="comment">/* </span></span><br><span class="line"><span class="comment">    	acquire(1) 调用到AQS中,最后还是调用到下面的tryAcquire方法.</span></span><br><span class="line"><span class="comment">    	那些没有获取到锁的线程,就会按照队列的方式排队,满足先进先出的效果的,也就是先来的线程先执行,</span></span><br><span class="line"><span class="comment">    	果然这就很公平</span></span><br><span class="line"><span class="comment">    	**/</span></span><br><span class="line">        <span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">lock</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            acquire(<span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * Fair version of tryAcquire.  Don't grant access unless</span></span><br><span class="line"><span class="comment">         * recursive call or no waiters or is first.</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="function"><span class="keyword">protected</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">tryAcquire</span><span class="params">(<span class="keyword">int</span> acquires)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">final</span> Thread current = Thread.currentThread();</span><br><span class="line">            <span class="keyword">int</span> c = getState();</span><br><span class="line">            <span class="keyword">if</span> (c == <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="comment">/**</span></span><br><span class="line"><span class="comment">                	hasQueuedPredecessors() 方法,先判断头结点和尾结点是不相等的,因为相等的话,就重复了,就是同一个. 然后在判断头结点的 thread是不是当前线程,如果不是当前的前程的话,那么就是在这个线程钱面还有一个等待获取锁时间更久的线程,于是就先抛弃这个线程,去执行那个等待更久的线程.</span></span><br><span class="line"><span class="comment">                	</span></span><br><span class="line"><span class="comment">                	compareAndSetState 就是用cas来获取锁的代码,如果获取成功的话,就会走setExclusiveOwnerThread方法,这里set进去的值是在释放锁的时候会用到.</span></span><br><span class="line"><span class="comment">                	最后返回true,说明获取锁成功了.</span></span><br><span class="line"><span class="comment">                */</span></span><br><span class="line">                <span class="keyword">if</span> (!hasQueuedPredecessors() &amp;&amp;</span><br><span class="line">                    compareAndSetState(<span class="number">0</span>, acquires)) &#123;</span><br><span class="line">                    setExclusiveOwnerThread(current);</span><br><span class="line">                    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">/**</span></span><br><span class="line"><span class="comment">            	获取从setExclusiveOwnerThread里面的thread,来判断是否与当前线程相等,如果相等的话,就说明重入了.</span></span><br><span class="line"><span class="comment">            */</span></span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span> (current == getExclusiveOwnerThread()) &#123;</span><br><span class="line">                <span class="keyword">int</span> nextc = c + acquires;</span><br><span class="line">                <span class="keyword">if</span> (nextc &lt; <span class="number">0</span>)</span><br><span class="line">                    <span class="keyword">throw</span> <span class="keyword">new</span> Error(<span class="string">"Maximum lock count exceeded"</span>);</span><br><span class="line">                setState(nextc);</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">        &#125;之前</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">hasQueuedPredecessors</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// The correctness of this depends on head being initialized</span></span><br><span class="line">        <span class="comment">// before tail and on head.next being accurate if the current</span></span><br><span class="line">        <span class="comment">// thread is first in queue.</span></span><br><span class="line">        Node t = tail; <span class="comment">// Read fields in reverse initialization order</span></span><br><span class="line">        Node h = head;</span><br><span class="line">        Node s;</span><br><span class="line">        <span class="keyword">return</span> h != t &amp;&amp;</span><br><span class="line">            ((s = h.next) == <span class="keyword">null</span> || s.thread != Thread.currentThread());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">	非公平锁:</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">NonfairSync</span> <span class="keyword">extends</span> <span class="title">Sync</span> </span>&#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">7316153563782823691L</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * Performs lock.  Try immediate barge, backing up to normal</span></span><br><span class="line"><span class="comment">         * acquire on failure.</span></span><br><span class="line"><span class="comment">         可以看到非公平锁是没有从队列中获取说明结点信息,而是直接获取锁的.</span></span><br><span class="line"><span class="comment">         获取成功了就会走 setExclusiveOwnerThread 方法</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">lock</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">if</span> (compareAndSetState(<span class="number">0</span>, <span class="number">1</span>))</span><br><span class="line">                setExclusiveOwnerThread(Thread.currentThread());</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">                acquire(<span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">protected</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">tryAcquire</span><span class="params">(<span class="keyword">int</span> acquires)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> nonfairTryAcquire(acquires);</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">	Sync类中</span></span><br><span class="line"><span class="comment">	这段代码的逻辑也是和 公平锁后来的处理一样的了. c如果是0的话,就会走获取锁的代码,如果不是0的话,就说明重入了,所以就++</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">nonfairTryAcquire</span><span class="params">(<span class="keyword">int</span> acquires)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">final</span> Thread current = Thread.currentThread();</span><br><span class="line">            <span class="keyword">int</span> c = getState();</span><br><span class="line">            <span class="keyword">if</span> (c == <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="keyword">if</span> (compareAndSetState(<span class="number">0</span>, acquires)) &#123;</span><br><span class="line">                    setExclusiveOwnerThread(current);</span><br><span class="line">                    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span> (current == getExclusiveOwnerThread()) &#123;</span><br><span class="line">                <span class="keyword">int</span> nextc = c + acquires;</span><br><span class="line">                <span class="keyword">if</span> (nextc &lt; <span class="number">0</span>) <span class="comment">// overflow</span></span><br><span class="line">                    <span class="keyword">throw</span> <span class="keyword">new</span> Error(<span class="string">"Maximum lock count exceeded"</span>);</span><br><span class="line">                setState(nextc);</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<p>  unlock方法:   unlock是释放锁的方法. 可以看到释放锁是走的 Sync的release方法,所以不管公平锁还是非公平锁起走的释放锁方法是不一样的.</p>
+  <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">unlock</span><span class="params">()</span> </span>&#123;    sync.release(<span class="number">1</span>);&#125;  </span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">	Sync 中方法. </span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">release</span><span class="params">(<span class="keyword">int</span> arg)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// tryRelease()方法返回true的话,就说明锁都释放完了.</span></span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span> (tryRelease(arg)) &#123;</span><br><span class="line">            Node h = head;</span><br><span class="line">            <span class="comment">// 恢复线程</span></span><br><span class="line">            <span class="keyword">if</span> (h != <span class="keyword">null</span> &amp;&amp; h.waitStatus != <span class="number">0</span>)</span><br><span class="line">                unparkSuccessor(h);</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">tryRelease</span><span class="params">(<span class="keyword">int</span> releases)</span> </span>&#123;</span><br><span class="line">            <span class="comment">// 释放锁</span></span><br><span class="line">            <span class="keyword">int</span> c = getState() - releases;</span><br><span class="line">            <span class="comment">// 如果当前线程不是自己的话,就会抛出异常.这里可以理解为,独占锁,肯定是自己.</span></span><br><span class="line">            <span class="comment">// 也就是说,如果不是独占锁的话,就会抛出异常.</span></span><br><span class="line">            <span class="keyword">if</span> (Thread.currentThread() != getExclusiveOwnerThread())</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> IllegalMonitorStateException();</span><br><span class="line">            <span class="keyword">boolean</span> free = <span class="keyword">false</span>;</span><br><span class="line">            <span class="comment">// 如果你调用了一次lock的话,那么会加一,所以这个地方要等这个lock方法全部被释放掉.</span></span><br><span class="line">    		<span class="comment">// 也就是由于重入锁的原因.</span></span><br><span class="line">            <span class="keyword">if</span> (c == <span class="number">0</span>) &#123;</span><br><span class="line">                free = <span class="keyword">true</span>;</span><br><span class="line">                <span class="comment">// 释放完了,就设置了null.  </span></span><br><span class="line">                <span class="comment">// 然后AbstractOwnableSynchronizer中的thread标记也就是null,</span></span><br><span class="line">                <span class="comment">// 所以下个线程判断是null的话,就可以获取到执行权,也就是获取到锁.</span></span><br><span class="line">                setExclusiveOwnerThread(<span class="keyword">null</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            setState(c);</span><br><span class="line">            <span class="keyword">return</span> free;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​         </p>
+<ul>
+<li><p>​    isLocked () 方法, 判断这个线程是不是被锁了:</p>
+<p>​    调用Sync中isLock方法,如果不是0的话,就说明是被锁了,如果是0的话,就说明没有被锁.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Queries if this lock is held by any thread. This method is</span></span><br><span class="line"><span class="comment">     * designed for use in monitoring of the system state,</span></span><br><span class="line"><span class="comment">     * not for synchronization control.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> &#123;<span class="doctag">@code</span> true&#125; if any thread holds this lock and</span></span><br><span class="line"><span class="comment">     *         &#123;<span class="doctag">@code</span> false&#125; otherwise</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isLocked</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> sync.isLocked();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line"> <span class="function"><span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">isLocked</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> getState() != <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ul>
+<p>  hasQueuedThreads()  :  是否有线程在等待队列中</p>
+<p>  hasQueuedThread(Thread thread) :  线程是否在等待队列中</p>
+<p>  getQueueLength() :  获取队列中线程个数</p>
+<p>  等这些方法都是比较好理解的,可以自行点进去仔细看下.  </p>
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><pre><code> Sync  /  NonfairSync  /  FairSync  这个三个类就是 ReetrantLock中的三个类,都是围绕这这三个类在做文章.
+
+公平锁和非公平锁的获取锁方式不一样,但是释放方式是一样的. 公平锁获取锁的时候,如果有线程持有了的话,那么其他的会被挂起并且进入等待队列. 而非公平锁,直接获取锁,就是抢占式.</code></pre>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://www.lwfby.cn/2020/06/20/ThreadLocal_source/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1613,6 +2035,181 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.lwfby.cn/2020/04/29/java_list/Vector/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="YangL">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/timg.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="YangL">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/04/29/java_list/Vector/" itemprop="url">Vector 源码阅读记录</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-04-29T22:47:50+08:00">
+                2020-04-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81/" itemprop="url" rel="index">
+                    <span itemprop="name">Java集合源码</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  86
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  1
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>Vector 的结构和对数据的添加和删除 与 <a href="https://github.com/baoyang23/source-notes/blob/master/java/jvm_aggregate/ArrayList_Source.md" target="_blank" rel="noopener">ArrayList</a> 是非常相似的. 可以点进去看看.</p>
+<p>具体的执行逻辑代码还是非常相似的. </p>
+<p>Vector 比起 ArrayList 是线程安全的原因是, Vector 在一些方法上是使用了 synchronized 来进行加锁,从而保证了线程安全问题。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://www.lwfby.cn/2020/04/29/java_list/LinkedList_Source/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1847,1066 +2444,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.lwfby.cn/2020/04/29/java_list/Vector/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="YangL">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/timg.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="YangL">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/04/29/java_list/Vector/" itemprop="url">Vector 源码阅读记录</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-04-29T22:47:50+08:00">
-                2020-04-29
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81/" itemprop="url" rel="index">
-                    <span itemprop="name">Java集合源码</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  86
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  1
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>Vector 的结构和对数据的添加和删除 与 <a href="https://github.com/baoyang23/source-notes/blob/master/java/jvm_aggregate/ArrayList_Source.md" target="_blank" rel="noopener">ArrayList</a> 是非常相似的. 可以点进去看看.</p>
-<p>具体的执行逻辑代码还是非常相似的. </p>
-<p>Vector 比起 ArrayList 是线程安全的原因是, Vector 在一些方法上是使用了 synchronized 来进行加锁,从而保证了线程安全问题。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.lwfby.cn/2020/04/23/docker%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="YangL">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/timg.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="YangL">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/04/23/docker%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="url">docker学习笔记</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-04-23T22:47:50+08:00">
-                2020-04-23
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/docker/" itemprop="url" rel="index">
-                    <span itemprop="name">docker</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  2.9k
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  16
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="docker"><a href="#docker" class="headerlink" title="docker"></a>docker</h3><blockquote>
-<p><strong>Docker</strong> 是个好东西，所以你得学习。 进公司是一直都有使用docker来发布项目的,之前对docker也是有多多少少的学习。最近想学习一下k8s，所以也顺路安装一下docker.</p>
-</blockquote>
-<hr>
-<h3 id="Docker-安装"><a href="#Docker-安装" class="headerlink" title="Docker 安装"></a>Docker 安装</h3><blockquote>
-<p>这里笔者安装的环境就是 VM 上跑的 Centos 来进行安装的</p>
-</blockquote>
-<ol>
-<li><p>卸载旧版本</p>
-<p>[root@localhost ~]# sudo yum remove docker \</p>
-<blockquote>
-<pre><code>docker-client \
-docker-client-latest \
-docker-common \
-docker-latest \
-docker-latest-logrotate \
-docker-logrotate \
-docker-engine
-已加载插件：fastestmirror
-参数 docker 没有匹配
-参数 docker-client 没有匹配
-参数 docker-client-latest 没有匹配
-参数 docker-common 没有匹配
-参数 docker-latest 没有匹配
-参数 docker-latest-logrotate 没有匹配
-参数 docker-logrotate 没有匹配
-参数 docker-engine 没有匹配
-不删除任何软件包</code></pre></blockquote>
-</li>
-<li><p>安装所需要的依赖包</p>
-<blockquote>
-<p><strong>sudo</strong> <strong>yum install</strong> -y yum-utils <br> device-mapper-persistent-data <br> lvm2</p>
-</blockquote>
-</li>
-<li><p>设置稳定的仓库</p>
-<blockquote>
-<p><strong>sudo</strong> yum-config-manager <br>  –add-repo <br>  https:<strong>//</strong>download.docker.com<strong>/</strong>linux<strong>/</strong>centos<strong>/</strong>docker-ce.repo</p>
-</blockquote>
-</li>
-<li><p>安装最新的Docker Engine-Community</p>
-<blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt;sudo yum install docker-ce docker-ce-cli containerd.io</span><br></pre></td></tr></table></figure>
-</blockquote>
-</li>
-</ol>
-<hr>
-<p> 感觉 正常的安装 docker 还是很慢的</p>
-<p>Step 1 : 安装必要的一些系统工具</p>
-<figure class="highlight docker"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo yum install -y yum-utils device-mapper-persistent-data lvm2</span><br></pre></td></tr></table></figure>
-
-
-
-<p>Step 2 : 添加软件信息</p>
-<figure class="highlight docker"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo yum-config-manager --<span class="keyword">add</span><span class="bash">-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo</span></span><br></pre></td></tr></table></figure>
-
-
-
-<p>Step 3 :  更新并且安装 docker-ce</p>
-<figure class="highlight docker"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo yum makecache fast</span><br></pre></td></tr></table></figure>
-
-
-
-<p>Step 4 : 开启Docker服务</p>
-<figure class="highlight docker"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo service docker start</span><br></pre></td></tr></table></figure>
-
-
-
-<p>Step 5 (非必要),配置加速</p>
-<p>/etc/docker/daemon.json (如果没有这个文件的话,就去创建一个)</p>
-<p>{</p>
-<p>“registry-mirrors”: [“<a href="http://hub-mirror.c.163.com&quot;]">http://hub-mirror.c.163.com&quot;]</a></p>
-<p>}</p>
-<p>Step 6 重启指令</p>
-<p>   systemctl daemon-reload</p>
-<p>   systemctl restart docker</p>
-<hr>
-<p>现在VM上安装一台Centos 7 , 安装好docker , 然后使用克隆来克隆一台即可。最好的镜像加速也要配置下.</p>
-<p>Linux : Centos 7</p>
-<table>
-<thead>
-<tr>
-<th>主机名</th>
-<th>ip</th>
-<th><strong>kubelet</strong>/<strong>kubeadm</strong>/<strong>kubectl</strong></th>
-<th>flannel version</th>
-<th>备注</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>master</td>
-<td>192.168.247.131</td>
-<td>V1.14.2</td>
-<td>V0.11.0</td>
-<td>主节点</td>
-</tr>
-<tr>
-<td>node</td>
-<td>192.168.247.132</td>
-<td>V1.14.2</td>
-<td>V0.11.0</td>
-<td>node节点</td>
-</tr>
-</tbody></table>
-<h3 id="主机名"><a href="#主机名" class="headerlink" title="主机名"></a>主机名</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hostnamectl set-hostname master</span><br><span class="line">hostnamectl set-hostname node</span><br></pre></td></tr></table></figure>
-
-
-
-<p> 修改/etc/hosts ; 即可</p>
-<p> [root@localhost ~]# cat /etc/hosts<br>127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4<br>::1         localhost localhost.localdomain localhost6 localhost6.localdomain6<br>192.168.247.131 master<br>192.168.247.132 node</p>
-<hr>
-<p>零时禁用Swap : </p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">swapoff -a</span><br></pre></td></tr></table></figure>
-
-
-
-<p>永久禁用:</p>
-<p>  sed -i.bak ‘/swap/s/^/#/‘ /etc/fstab</p>
-<hr>
-<p>内核参数修改 :</p>
-<p>   零时修改 :</p>
-<p>​        sysctl net.bridge.bridge-nf-call-iptables=1</p>
-<p>​       sysctl net.bridge.bridge-nf-call-ip6tables=1</p>
-<p>   永久修改 :</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">cat &lt;&lt;EOF &gt;  /etc/sysctl.d/k8s.conf</span><br><span class="line">net.bridge.bridge-nf-call-ip6tables = 1</span><br><span class="line">net.bridge.bridge-nf-call-iptables = 1</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
-
-<p>   sysctl -p /etc/sysctl.d/k8s.conf</p>
-<p>Notes  :  如果遇见了下面这个错误</p>
-<p>sysctl: cannot stat /proc/sys/net/bridge/bridge-nf-call-iptables: No such file or directory<br>sysctl: cannot stat /proc/sys/net/bridge/bridge-nf-call-ip6tables: No such file or directory</p>
-<p>执行 modprobe br_netfilter 即可.</p>
-<hr>
-<p>修改 Cgroup Driver  –&gt; 修改daemon.json</p>
-<p> 在 /etc/docker/daemon.json中新加</p>
-<p>“exec-opts”: [“native.cgroupdriver=systemd”</p>
-<p>[root@localhost ~]# cat /etc/docker/daemon.json<br>{<br>  “registry-mirrors”: [“<a href="http://hub-mirror.c.163.com&quot;]">http://hub-mirror.c.163.com&quot;]</a>,<br>  “exec-opts”: [“native.cgroupdriver=systemd”]<br>}</p>
-<p>这样的效果即可.</p>
-<p>配置了后记得重启下docker即可</p>
-<hr>
-<p>设置 k8s 源</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">cat &lt;&lt;EOF &gt; /etc/yum.repos.d/kubernetes.repo</span><br><span class="line">[kubernetes]</span><br><span class="line">name=Kubernetes</span><br><span class="line">baseurl=https://mirrors.aliyun.com/kubernetes/yum/repos/kubernetes-el7-x86_64/</span><br><span class="line">enabled=1</span><br><span class="line">gpgcheck=1</span><br><span class="line">repo_gpgcheck=1</span><br><span class="line">gpgkey=https://mirrors.aliyun.com/kubernetes/yum/doc/yum-key.gpg https://mirrors.aliyun.com/kubernetes/yum/doc/rpm-package-key.gpg</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
-
-
-
-<blockquote>
-<ol>
-<li>[] 中括号中的是repository id，唯一，用来标识不同仓库</li>
-<li>name 仓库名称，自定义</li>
-<li>baseurl 仓库地址</li>
-<li>enable 是否启用该仓库，默认为1表示启用</li>
-<li>gpgcheck 是否验证从该仓库获得程序包的合法性，1为验证</li>
-<li>repo_gpgcheck 是否验证元数据的合法性 元数据就是程序包列表，1为验证</li>
-<li>gpgkey=URL 数字签名的公钥文件所在位置，如果gpgcheck值为1，此处就需要指定gpgkey文件的位置，如果gpgcheck值为0就不需要此项了</li>
-</ol>
-</blockquote>
-<p>更新下缓存 :</p>
-<p> yum clean all</p>
-<p> yum -y makecache</p>
-<hr>
-<h3 id="Master节点安装"><a href="#Master节点安装" class="headerlink" title="Master节点安装"></a>Master节点安装</h3><p> 如果不指定的话,那么就默认是安装最新的</p>
-<figure class="highlight docker"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install -y kubelet-<span class="number">1.14</span>.<span class="number">2</span> kubeadm-<span class="number">1.14</span>.<span class="number">2</span> kubectl-<span class="number">1.14</span>.<span class="number">2</span></span><br></pre></td></tr></table></figure>
-
-
-
-<p>启动kubelet 并且设置为开机自动启动</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl <span class="built_in">enable</span> kubelet &amp;&amp; systemctl start kubelet</span><br></pre></td></tr></table></figure>
-
-
-
-<p>kubelet命令补全</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">"source &lt;(kubectl completion bash)"</span> &gt;&gt; ~/.bash_profile</span><br><span class="line"><span class="built_in">source</span> .bash_profile</span><br></pre></td></tr></table></figure>
-
-
-
-<hr>
-<h3 id="下载镜像"><a href="#下载镜像" class="headerlink" title="下载镜像"></a>下载镜像</h3><p>vi image.sh</p>
-<p> 往 sh 脚本里面写入 下面的内容</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">url=registry.cn-hangzhou.aliyuncs.com/google_containers</span><br><span class="line">version=v1.14.2</span><br><span class="line">images=(`kubeadm config images list --kubernetes-version=<span class="variable">$version</span>|awk -F <span class="string">'/'</span> <span class="string">'&#123;print $2&#125;'</span>`)</span><br><span class="line"><span class="keyword">for</span> imagename <span class="keyword">in</span> <span class="variable">$&#123;images[@]&#125;</span> ; <span class="keyword">do</span></span><br><span class="line">  docker pull <span class="variable">$url</span>/<span class="variable">$imagename</span></span><br><span class="line">  docker tag <span class="variable">$url</span>/<span class="variable">$imagename</span> k8s.gcr.io/<span class="variable">$imagename</span></span><br><span class="line">  docker rmi -f <span class="variable">$url</span>/<span class="variable">$imagename</span></span><br><span class="line"><span class="keyword">done</span></span><br></pre></td></tr></table></figure>
-
-
-
-<p>给权限 chmod u+x image.sh</p>
-<p>启动 ./image.sh</p>
-<hr>
-<h3 id="初始化-Master"><a href="#初始化-Master" class="headerlink" title="初始化 Master"></a>初始化 Master</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubeadm init --apiserver-advertise-address 192.168.247.131 --pod-network-cidr=10.244.0.0/16</span><br></pre></td></tr></table></figure>
-
-<p> 这里启动ok了后会有 node加入节点的信息</p>
-<p>加载环境变量</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">"export KUBECONFIG=/etc/kubernetes/admin.conf"</span> &gt;&gt; ~/.bash_profile</span><br><span class="line"><span class="built_in">source</span> .bash_profile</span><br></pre></td></tr></table></figure>
-
-
-
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p <span class="variable">$HOME</span>/.kube</span><br><span class="line">cp -i /etc/kubernetes/admin.conf <span class="variable">$HOME</span>/.kube/config</span><br><span class="line">chown $(id -u):$(id -g) <span class="variable">$HOME</span>/.kube/config</span><br></pre></td></tr></table></figure>
-
-
-
-<hr>
-<p>安装pod 网络</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml</span><br></pre></td></tr></table></figure>
-
-<p>如果 kube-flannel.yml 访问不了的话，就创建一个,然后copy进去</p>
-<h2 id="root-localhost-cat-kube-flannel-yml"><a href="#root-localhost-cat-kube-flannel-yml" class="headerlink" title="[root@localhost ~]# cat kube-flannel.yml "></a>[root@localhost ~]# cat kube-flannel.yml </h2><p>apiVersion: policy/v1beta1<br>kind: PodSecurityPolicy<br>metadata:<br>  name: psp.flannel.unprivileged<br>  annotations:<br>    seccomp.security.alpha.kubernetes.io/allowedProfileNames: docker/default<br>    seccomp.security.alpha.kubernetes.io/defaultProfileName: docker/default<br>    apparmor.security.beta.kubernetes.io/allowedProfileNames: runtime/default<br>    apparmor.security.beta.kubernetes.io/defaultProfileName: runtime/default<br>spec:<br>  privileged: false<br>  volumes:<br>    - configMap<br>    - secret<br>    - emptyDir<br>    - hostPath<br>  allowedHostPaths:<br>    - pathPrefix: “/etc/cni/net.d”<br>    - pathPrefix: “/etc/kube-flannel”<br>    - pathPrefix: “/run/flannel”<br>  readOnlyRootFilesystem: false</p>
-<h1 id="Users-and-groups"><a href="#Users-and-groups" class="headerlink" title="Users and groups"></a>Users and groups</h1><p>  runAsUser:<br>    rule: RunAsAny<br>  supplementalGroups:<br>    rule: RunAsAny<br>  fsGroup:<br>    rule: RunAsAny</p>
-<h1 id="Privilege-Escalation"><a href="#Privilege-Escalation" class="headerlink" title="Privilege Escalation"></a>Privilege Escalation</h1><p>  allowPrivilegeEscalation: false<br>  defaultAllowPrivilegeEscalation: false</p>
-<h1 id="Capabilities"><a href="#Capabilities" class="headerlink" title="Capabilities"></a>Capabilities</h1><p>  allowedCapabilities: [‘NET_ADMIN’]<br>  defaultAddCapabilities: []<br>  requiredDropCapabilities: []</p>
-<h1 id="Host-namespaces"><a href="#Host-namespaces" class="headerlink" title="Host namespaces"></a>Host namespaces</h1><p>  hostPID: false<br>  hostIPC: false<br>  hostNetwork: true<br>  hostPorts:</p>
-<ul>
-<li>min: 0<br>max: 65535<h1 id="SELinux"><a href="#SELinux" class="headerlink" title="SELinux"></a>SELinux</h1>seLinux:<h1 id="SELinux-is-unused-in-CaaSP"><a href="#SELinux-is-unused-in-CaaSP" class="headerlink" title="SELinux is unused in CaaSP"></a>SELinux is unused in CaaSP</h1>rule: ‘RunAsAny’</li>
-</ul>
-<hr>
-<p>kind: ClusterRole<br>apiVersion: rbac.authorization.k8s.io/v1beta1<br>metadata:<br>  name: flannel<br>rules:</p>
-<ul>
-<li>apiGroups: [‘extensions’]<br>resources: [‘podsecuritypolicies’]<br>verbs: [‘use’]<br>resourceNames: [‘psp.flannel.unprivileged’]</li>
-<li>apiGroups:<ul>
-<li>“”<br>resources:</li>
-<li>pods<br>verbs:</li>
-<li>get</li>
-</ul>
-</li>
-<li>apiGroups:<ul>
-<li>“”<br>resources:</li>
-<li>nodes<br>verbs:</li>
-<li>list</li>
-<li>watch</li>
-</ul>
-</li>
-<li>apiGroups:<ul>
-<li>“”<br>resources:</li>
-<li>nodes/status<br>verbs:</li>
-<li>patch</li>
-</ul>
-</li>
-</ul>
-<hr>
-<p>kind: ClusterRoleBinding<br>apiVersion: rbac.authorization.k8s.io/v1beta1<br>metadata:<br>  name: flannel<br>roleRef:<br>  apiGroup: rbac.authorization.k8s.io<br>  kind: ClusterRole<br>  name: flannel<br>subjects:</p>
-<ul>
-<li>kind: ServiceAccount<br>name: flannel<br>namespace: kube-system</li>
-</ul>
-<hr>
-<p>apiVersion: v1<br>kind: ServiceAccount<br>metadata:<br>  name: flannel<br>  namespace: kube-system</p>
-<hr>
-<p>kind: ConfigMap<br>apiVersion: v1<br>metadata:<br>  name: kube-flannel-cfg<br>  namespace: kube-system<br>  labels:<br>    tier: node<br>    app: flannel<br>data:<br>  cni-conf.json: |<br>    {<br>      “name”: “cbr0”,<br>      “cniVersion”: “0.3.1”,<br>      “plugins”: [<br>        {<br>          “type”: “flannel”,<br>          “delegate”: {<br>            “hairpinMode”: true,<br>            “isDefaultGateway”: true<br>          }<br>        },<br>        {<br>          “type”: “portmap”,<br>          “capabilities”: {<br>            “portMappings”: true<br>          }<br>        }<br>      ]<br>    }<br>  net-conf.json: |<br>    {<br>      “Network”: “10.244.0.0/16”,<br>      “Backend”: {<br>        “Type”: “vxlan”<br>      }<br>    }</p>
-<hr>
-<p>apiVersion: apps/v1<br>kind: DaemonSet<br>metadata:<br>  name: kube-flannel-ds-amd64<br>  namespace: kube-system<br>  labels:<br>    tier: node<br>    app: flannel<br>spec:<br>  selector:<br>    matchLabels:<br>      app: flannel<br>  template:<br>    metadata:<br>      labels:<br>        tier: node<br>        app: flannel<br>    spec:<br>      affinity:<br>        nodeAffinity:<br>          requiredDuringSchedulingIgnoredDuringExecution:<br>            nodeSelectorTerms:<br>              - matchExpressions:<br>                  - key: kubernetes.io/os<br>                    operator: In<br>                    values:<br>                      - linux<br>                  - key: kubernetes.io/arch<br>                    operator: In<br>                    values:<br>                      - amd64<br>      hostNetwork: true<br>      tolerations:<br>      - operator: Exists<br>        effect: NoSchedule<br>      serviceAccountName: flannel<br>      initContainers:<br>      - name: install-cni<br>        image: quay.io/coreos/flannel:v0.12.0-amd64<br>        command:<br>        - cp<br>        args:<br>        - -f<br>        - /etc/kube-flannel/cni-conf.json<br>        - /etc/cni/net.d/10-flannel.conflist<br>        volumeMounts:<br>        - name: cni<br>          mountPath: /etc/cni/net.d<br>        - name: flannel-cfg<br>          mountPath: /etc/kube-flannel/<br>      containers:<br>      - name: kube-flannel<br>        image: quay.io/coreos/flannel:v0.12.0-amd64<br>        command:<br>        - /opt/bin/flanneld<br>        args:<br>        - –ip-masq<br>        - –kube-subnet-mgr<br>        resources:<br>          requests:<br>            cpu: “100m”<br>            memory: “50Mi”<br>          limits:<br>            cpu: “100m”<br>            memory: “50Mi”<br>        securityContext:<br>          privileged: false<br>          capabilities:<br>            add: [“NET_ADMIN”]<br>        env:<br>        - name: POD_NAME<br>          valueFrom:<br>            fieldRef:<br>              fieldPath: metadata.name<br>        - name: POD_NAMESPACE<br>          valueFrom:<br>            fieldRef:<br>              fieldPath: metadata.namespace<br>        volumeMounts:<br>        - name: run<br>          mountPath: /run/flannel<br>        - name: flannel-cfg<br>          mountPath: /etc/kube-flannel/<br>      volumes:<br>        - name: run<br>          hostPath:<br>            path: /run/flannel<br>        - name: cni<br>          hostPath:<br>            path: /etc/cni/net.d<br>        - name: flannel-cfg<br>          configMap:<br>            name: kube-flannel-cfg</p>
-<hr>
-<p>apiVersion: apps/v1<br>kind: DaemonSet<br>metadata:<br>  name: kube-flannel-ds-arm64<br>  namespace: kube-system<br>  labels:<br>    tier: node<br>    app: flannel<br>spec:<br>  selector:<br>    matchLabels:<br>      app: flannel<br>  template:<br>    metadata:<br>      labels:<br>        tier: node<br>        app: flannel<br>    spec:<br>      affinity:<br>        nodeAffinity:<br>          requiredDuringSchedulingIgnoredDuringExecution:<br>            nodeSelectorTerms:<br>              - matchExpressions:<br>                  - key: kubernetes.io/os<br>                    operator: In<br>                    values:<br>                      - linux<br>                  - key: kubernetes.io/arch<br>                    operator: In<br>                    values:<br>                      - arm64<br>      hostNetwork: true<br>      tolerations:<br>      - operator: Exists<br>        effect: NoSchedule<br>      serviceAccountName: flannel<br>      initContainers:<br>      - name: install-cni<br>        image: quay.io/coreos/flannel:v0.12.0-arm64<br>        command:<br>        - cp<br>        args:<br>        - -f<br>        - /etc/kube-flannel/cni-conf.json<br>        - /etc/cni/net.d/10-flannel.conflist<br>        volumeMounts:<br>        - name: cni<br>          mountPath: /etc/cni/net.d<br>        - name: flannel-cfg<br>          mountPath: /etc/kube-flannel/<br>      containers:<br>      - name: kube-flannel<br>        image: quay.io/coreos/flannel:v0.12.0-arm64<br>        command:<br>        - /opt/bin/flanneld<br>        args:<br>        - –ip-masq<br>        - –kube-subnet-mgr<br>        resources:<br>          requests:<br>            cpu: “100m”<br>            memory: “50Mi”<br>          limits:<br>            cpu: “100m”<br>            memory: “50Mi”<br>        securityContext:<br>          privileged: false<br>          capabilities:<br>             add: [“NET_ADMIN”]<br>        env:<br>        - name: POD_NAME<br>          valueFrom:<br>            fieldRef:<br>              fieldPath: metadata.name<br>        - name: POD_NAMESPACE<br>          valueFrom:<br>            fieldRef:<br>              fieldPath: metadata.namespace<br>        volumeMounts:<br>        - name: run<br>          mountPath: /run/flannel<br>        - name: flannel-cfg<br>          mountPath: /etc/kube-flannel/<br>      volumes:<br>        - name: run<br>          hostPath:<br>            path: /run/flannel<br>        - name: cni<br>          hostPath:<br>            path: /etc/cni/net.d<br>        - name: flannel-cfg<br>          configMap:<br>            name: kube-flannel-cfg</p>
-<hr>
-<p>apiVersion: apps/v1<br>kind: DaemonSet<br>metadata:<br>  name: kube-flannel-ds-arm<br>  namespace: kube-system<br>  labels:<br>    tier: node<br>    app: flannel<br>spec:<br>  selector:<br>    matchLabels:<br>      app: flannel<br>  template:<br>    metadata:<br>      labels:<br>        tier: node<br>        app: flannel<br>    spec:<br>      affinity:<br>        nodeAffinity:<br>          requiredDuringSchedulingIgnoredDuringExecution:<br>            nodeSelectorTerms:<br>              - matchExpressions:<br>                  - key: kubernetes.io/os<br>                    operator: In<br>                    values:<br>                      - linux<br>                  - key: kubernetes.io/arch<br>                    operator: In<br>                    values:<br>                      - arm<br>      hostNetwork: true<br>      tolerations:<br>      - operator: Exists<br>        effect: NoSchedule<br>      serviceAccountName: flannel<br>      initContainers:<br>      - name: install-cni<br>        image: quay.io/coreos/flannel:v0.12.0-arm<br>        command:<br>        - cp<br>        args:<br>        - -f<br>        - /etc/kube-flannel/cni-conf.json<br>        - /etc/cni/net.d/10-flannel.conflist<br>        volumeMounts:<br>        - name: cni<br>          mountPath: /etc/cni/net.d<br>        - name: flannel-cfg<br>          mountPath: /etc/kube-flannel/<br>      containers:<br>      - name: kube-flannel<br>        image: quay.io/coreos/flannel:v0.12.0-arm<br>        command:<br>        - /opt/bin/flanneld<br>        args:<br>        - –ip-masq<br>        - –kube-subnet-mgr<br>        resources:<br>          requests:<br>            cpu: “100m”<br>            memory: “50Mi”<br>          limits:<br>            cpu: “100m”<br>            memory: “50Mi”<br>        securityContext:<br>          privileged: false<br>          capabilities:<br>             add: [“NET_ADMIN”]<br>        env:<br>        - name: POD_NAME<br>          valueFrom:<br>            fieldRef:<br>              fieldPath: metadata.name<br>        - name: POD_NAMESPACE<br>          valueFrom:<br>            fieldRef:<br>              fieldPath: metadata.namespace<br>        volumeMounts:<br>        - name: run<br>          mountPath: /run/flannel<br>        - name: flannel-cfg<br>          mountPath: /etc/kube-flannel/<br>      volumes:<br>        - name: run<br>          hostPath:<br>            path: /run/flannel<br>        - name: cni<br>          hostPath:<br>            path: /etc/cni/net.d<br>        - name: flannel-cfg<br>          configMap:<br>            name: kube-flannel-cfg</p>
-<hr>
-<p>apiVersion: apps/v1<br>kind: DaemonSet<br>metadata:<br>  name: kube-flannel-ds-ppc64le<br>  namespace: kube-system<br>  labels:<br>    tier: node<br>    app: flannel<br>spec:<br>  selector:<br>    matchLabels:<br>      app: flannel<br>  template:<br>    metadata:<br>      labels:<br>        tier: node<br>        app: flannel<br>    spec:<br>      affinity:<br>        nodeAffinity:<br>          requiredDuringSchedulingIgnoredDuringExecution:<br>            nodeSelectorTerms:<br>              - matchExpressions:<br>                  - key: kubernetes.io/os<br>                    operator: In<br>                    values:<br>                      - linux<br>                  - key: kubernetes.io/arch<br>                    operator: In<br>                    values:<br>                      - ppc64le<br>      hostNetwork: true<br>      tolerations:<br>      - operator: Exists<br>        effect: NoSchedule<br>      serviceAccountName: flannel<br>      initContainers:<br>      - name: install-cni<br>        image: quay.io/coreos/flannel:v0.12.0-ppc64le<br>        command:<br>        - cp<br>        args:<br>        - -f<br>        - /etc/kube-flannel/cni-conf.json<br>        - /etc/cni/net.d/10-flannel.conflist<br>        volumeMounts:<br>        - name: cni<br>          mountPath: /etc/cni/net.d<br>        - name: flannel-cfg<br>          mountPath: /etc/kube-flannel/<br>      containers:<br>      - name: kube-flannel<br>        image: quay.io/coreos/flannel:v0.12.0-ppc64le<br>        command:<br>        - /opt/bin/flanneld<br>        args:<br>        - –ip-masq<br>        - –kube-subnet-mgr<br>        resources:<br>          requests:<br>            cpu: “100m”<br>            memory: “50Mi”<br>          limits:<br>            cpu: “100m”<br>            memory: “50Mi”<br>        securityContext:<br>          privileged: false<br>          capabilities:<br>             add: [“NET_ADMIN”]<br>        env:<br>        - name: POD_NAME<br>          valueFrom:<br>            fieldRef:<br>              fieldPath: metadata.name<br>        - name: POD_NAMESPACE<br>          valueFrom:<br>            fieldRef:<br>              fieldPath: metadata.namespace<br>        volumeMounts:<br>        - name: run<br>          mountPath: /run/flannel<br>        - name: flannel-cfg<br>          mountPath: /etc/kube-flannel/<br>      volumes:<br>        - name: run<br>          hostPath:<br>            path: /run/flannel<br>        - name: cni<br>          hostPath:<br>            path: /etc/cni/net.d<br>        - name: flannel-cfg<br>          configMap:<br>            name: kube-flannel-cfg</p>
-<hr>
-<p>apiVersion: apps/v1<br>kind: DaemonSet<br>metadata:<br>  name: kube-flannel-ds-s390x<br>  namespace: kube-system<br>  labels:<br>    tier: node<br>    app: flannel<br>spec:<br>  selector:<br>    matchLabels:<br>      app: flannel<br>  template:<br>    metadata:<br>      labels:<br>        tier: node<br>        app: flannel<br>    spec:<br>      affinity:<br>        nodeAffinity:<br>          requiredDuringSchedulingIgnoredDuringExecution:<br>            nodeSelectorTerms:<br>              - matchExpressions:<br>                  - key: kubernetes.io/os<br>                    operator: In<br>                    values:<br>                      - linux<br>                  - key: kubernetes.io/arch<br>                    operator: In<br>                    values:<br>                      - s390x<br>            hostNetwork: true<br>            tolerations:<br>            - operator: Exists<br>                effect: NoSchedule<br>            serviceAccountName: flannel<br>            initContainers:<br>            - name: install-cni<br>                image: quay.io/coreos/flannel:v0.12.0-s390x<br>                command:<br>                - cp<br>                args:<br>                - -f<br>                - /etc/kube-flannel/cni-conf.json<br>                - /etc/cni/net.d/10-flannel.conflist<br>                volumeMounts:<br>                - name: cni<br>                    mountPath: /etc/cni/net.d<br>                - name: flannel-cfg<br>                    mountPath: /etc/kube-flannel/<br>            containers:<br>            - name: kube-flannel<br>                image: quay.io/coreos/flannel:v0.12.0-s390x<br>                command:<br>                - /opt/bin/flanneld<br>                args:<br>                - –ip-masq<br>                - –kube-subnet-mgr<br>                resources:<br>                    requests:<br>                        cpu: “100m”<br>                        memory: “50Mi”<br>                    limits:<br>                        cpu: “100m”<br>                        memory: “50Mi”<br>                securityContext:<br>                    privileged: false<br>                    capabilities:<br>                          add: [“NET_ADMIN”]<br>                env:<br>                - name: POD_NAME<br>                    valueFrom:<br>                        fieldRef:<br>                            fieldPath: metadata.name<br>                - name: POD_NAMESPACE<br>                    valueFrom:<br>                        fieldRef:<br>                            fieldPath: metadata.namespace<br>                volumeMounts:<br>                - name: run<br>                    mountPath: /run/flannel<br>                - name: flannel-cfg<br>                    mountPath: /etc/kube-flannel/<br>            volumes:<br>                - name: run<br>                    hostPath:<br>                        path: /run/flannel<br>                - name: cni<br>                    hostPath:<br>                        path: /etc/cni/net.d<br>                - name: flannel-cfg<br>                    configMap:<br>                        name: kube-flannel-cfg</p>
-<p>然后执行 kubectl apply -f kube-flannel.yml 即可</p>
-<hr>
-<p>Node 节点执行加入的指令即可</p>
-<p>安装 K8s 过程中如果出现错误的话.</p>
-<blockquote>
-<p>error execution phase preflight: [preflight] Some fatal errors occurred:<br>[ERROR ImagePull]: failed to pull image k8s.gcr.io/kube-apiserver:v1.18.0: output: Error response from daemon: Get <a href="https://k8s.gcr.io/v2/" target="_blank" rel="noopener">https://k8s.gcr.io/v2/</a>: net/http: request canceled while waiting for connection (Client.Timeout exceeded while awaiting headers)<br>, error: exit status 1<br>   [ERROR ImagePull]: failed to pull image k8s.gcr.io/kube-controller-manager:v1.18.0: output: Error response from daemon: Get <a href="https://k8s.gcr.io/v2/" target="_blank" rel="noopener">https://k8s.gcr.io/v2/</a>: net/http: request canceled while waiting for connection (Client.Timeout exceeded while awaiting headers)<br>, error: exit status 1<br>   [ERROR ImagePull]: failed to pull image k8s.gcr.io/kube-scheduler:v1.18.0: output: Error response from daemon: Get <a href="https://k8s.gcr.io/v2/" target="_blank" rel="noopener">https://k8s.gcr.io/v2/</a>: net/http: request canceled while waiting for connection (Client.Timeout exceeded while awaiting headers)<br>, error: exit status 1<br>   [ERROR ImagePull]: failed to pull image k8s.gcr.io/kube-proxy:v1.18.0: output: Error response from daemon: Get <a href="https://k8s.gcr.io/v2/" target="_blank" rel="noopener">https://k8s.gcr.io/v2/</a>: net/http: request canceled while waiting for connection (Client.Timeout exceeded while awaiting headers)<br>, error: exit status 1<br>   [ERROR ImagePull]: failed to pull image k8s.gcr.io/pause:3.2: output: Error response from daemon: Get <a href="https://k8s.gcr.io/v2/" target="_blank" rel="noopener">https://k8s.gcr.io/v2/</a>: net/http: request canceled while waiting for connection (Client.Timeout exceeded while awaiting headers)<br>, error: exit status 1<br>   [ERROR ImagePull]: failed to pull image k8s.gcr.io/etcd:3.4.3-0: output: Error response from daemon: Get <a href="https://k8s.gcr.io/v2/" target="_blank" rel="noopener">https://k8s.gcr.io/v2/</a>: net/http: request canceled while waiting for connection (Client.Timeout exceeded while awaiting headers)<br>, error: exit status 1<br>   [ERROR ImagePull]: failed to pull image k8s.gcr.io/coredns:1.6.7: output: Error response from daemon: Get <a href="https://k8s.gcr.io/v2/" target="_blank" rel="noopener">https://k8s.gcr.io/v2/</a>: net/http: request canceled while waiting for connection (Client.Timeout exceeded while awaiting headers)<br>, error: exit status 1docker tag docker.io/mirrorgooglecontainers/kube-apiserver:v1.14.0</p>
-</blockquote>
-<p>Helm 安装</p>
-<blockquote>
-<p>这里的v2.14.1 版本是可以选择的</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt;curl -O https:&#x2F;&#x2F;get.helm.sh&#x2F;helm-v2.14.1-linux-amd64.tar.gz</span><br></pre></td></tr></table></figure>
-
-
-</blockquote>
-<p>Helm 卸载 tiller 操作</p>
-<blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt;kubectl get -n kube-system secrets,sa,clusterrolebinding -o name|grep tiller|xargs kubectl -n kube-system delete</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt;kubectl get all -n kube-system -l app&#x3D;helm -o name|xargs kubectl delete -n kube-system</span><br></pre></td></tr></table></figure>
-</blockquote>
-<p><code>https://www.cnblogs.com/jackluo/p/10345266.html</code> 参考地址</p>
-<p>低版本Helm 的 tiller 处理方法</p>
-<p><code>helm init --upgrade --tiller-image cnych/tiller:v2.10.0</code></p>
-<blockquote>
-<p><a href="https://www.jianshu.com/p/f43f07361398https://www.jianshu.com/p/f43f07361398" target="_blank" rel="noopener">https://www.jianshu.com/p/f43f07361398https://www.jianshu.com/p/f43f07361398</a> 参考地址</p>
-</blockquote>
-<p>错误:</p>
-<blockquote>
-<p>[root@node1 ~]# helm install stable/nginx-ingress -n nginx-ingress –namespace kube-system  -f ingress-nginx.yaml<br>Error: release nginx-ingress failed: namespaces “kube-system” is forbidden: User “system:serviceaccount:kube-system:default” cannot get resource “namespaces” in API group “” in the namespace “kube-system”<br>[root@node1 ~]# </p>
-</blockquote>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.lwfby.cn/2020/04/19/redis%E7%BC%93%E5%AD%98/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="YangL">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/timg.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="YangL">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/04/19/redis%E7%BC%93%E5%AD%98/" itemprop="url">Redis缓存知识学习</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-04-19T22:20:00+08:00">
-                2020-04-19
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Redis/" itemprop="url" rel="index">
-                    <span itemprop="name">Redis</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  3.1k
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  14
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="Redis-缓存知识的学习"><a href="#Redis-缓存知识的学习" class="headerlink" title="Redis 缓存知识的学习"></a>Redis 缓存知识的学习</h3><blockquote>
-<p>现在缓存,消息队列,集群(集群就涉及到很多中间件)的使用或者说是学习都是必须的,也是必备的. 所以就这周就打算学习下Redis缓存方面的知识来记录。</p>
-</blockquote>
-<h3 id="Redis-安装-基于Linux"><a href="#Redis-安装-基于Linux" class="headerlink" title="Redis 安装(基于Linux)"></a>Redis 安装(基于Linux)</h3><blockquote>
-<p>这里说下我使用的电脑环境是 Ubuntu , 所以在执行make的时候,很多gcc之类的东西是不需要安装的.</p>
-</blockquote>
-<p>  这里我们使用Redis 官方给出来的案例来进行安装</p>
-<ol>
-<li><p>wget <a href="http://download.redis.io/releases/redis-5.0.8.tar.gz" target="_blank" rel="noopener">http://download.redis.io/releases/redis-5.0.8.tar.gz</a> (<a href="https://redis.io/download" target="_blank" rel="noopener">https://redis.io/download</a>) 使用wget 或者去官网上下载都是可以的。</p>
-</li>
-<li><p>tar zxvf redis-5.0.8.tar.gz   这里使用官方目前提供的来进来下载。</p>
-</li>
-<li><p>cd redis-5.0.8   目录下面  然后执行 make (看你的权限是不是要执行 sudo make) </p>
-</li>
-<li><p>cd src 下面  sudo ./redis-server</p>
-</li>
-</ol>
-<hr>
-<p>启动成功界面</p>
-<p>13827:C 19 Apr 2020 14:48:09.023 # oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo<br>13827:C 19 Apr 2020 14:48:09.023 # Redis version=5.0.8, bits=64, commit=00000000, modified=0, pid=13827, just started<br>13827:C 19 Apr 2020 14:48:09.023 # Warning: no config file specified, using the default config. In order to specify a config file use ./redis-server /path/to/redis.conf<br>13827:M 19 Apr 2020 14:48:09.024 * Increased maximum number of open files to 10032 (it was originally set to 1024).<br>           <em>.</em><br>      <em>.-``__ ‘’-.</em><br> <em>.-``    <code>.</code></em>.  ‘’-._           Redis 5.0.8 (00000000/0) 64 bit<br>.-<code>.-```.  ```\/    _.,_ &#39;&#39;-._                                   
-(    &#39;      ,       .-`  | `,    )     Running in standalone mode
-|`-._`-...-` __...-.</code>-.<em>|’<code>_.-&#39;|     Port: 6379
-|</code>-.</em>   <code>._    /     _.-&#39;    |     PID: 13827</code>-._    <code>-._</code>-./  <em>.-‘    _.-‘<br>|<code>-._</code>-.</em>    <code>-.__.-&#39;    _.-&#39;_.-&#39;|                                  
-|</code>-.<em>`-.</em>        <em>.-‘</em>.-‘    |           <a href="http://redis.io" target="_blank" rel="noopener">http://redis.io</a><br><code>-._</code>-.<em>`-.__.-‘</em>.-‘    <em>.-‘<br>|<code>-._</code>-.</em>    <code>-.__.-&#39;    _.-&#39;_.-&#39;|                                  
-|</code>-.<em>`-.</em>        <em>.-‘</em>.-‘    |<br><code>-._</code>-.<em>`-.__.-‘</em>.-‘    <em>.-‘<br> `-.</em>    <code>-.__.-&#39;    _.-&#39;</code>-._        <em>.-‘<br>         `-._</em>.-‘                                      </p>
-<hr>
-<p>13827:M 19 Apr 2020 14:48:09.024 # WARNING: The TCP backlog setting of 511 cannot be enforced because /proc/sys/net/core/somaxconn is set to the lower value of 128.<br>13827:M 19 Apr 2020 14:48:09.024 # Server initialized<br>13827:M 19 Apr 2020 14:48:09.024 # WARNING overcommit_memory is set to 0! Background save may fail under low memory condition. To fix this issue add ‘vm.overcommit_memory = 1’ to /etc/sysctl.conf and then reboot or run the command ‘sysctl vm.overcommit_memory=1’ for this to take effect.<br>13827:M 19 Apr 2020 14:48:09.024 # WARNING you have Transparent Huge Pages (THP) support enabled in your kernel. This will create latency and memory usage issues with Redis. To fix this issue run the command ‘echo never &gt; /sys/kernel/mm/transparent_hugepage/enabled’ as root, and add it to your /etc/rc.local in order to retain the setting after a reboot. Redis must be restarted after THP is disabled.<br>13827:M 19 Apr 2020 14:48:09.024 * Ready to accept connections</p>
-<hr>
-<p>   然后就可以看到 redis的启动界面, 然后再开一个黑窗口,也同样是在src下面, sudo ./redis-cli  就可以连上(这里我都是在同一台server上,ip,port什么都是默认的, 如果你启动有修改的话,那么连接的时候,这些配置也是需要进行修改的)</p>
-<p><strong>对于 Redis的安装,熟悉Linux的朋友还是很快的。</strong></p>
-<hr>
-<h3 id="Redis-数据结构"><a href="#Redis-数据结构" class="headerlink" title="Redis 数据结构"></a>Redis 数据结构</h3><ol>
-<li><p>字符串 String</p>
-<blockquote>
-<p>127.0.0.1:6379[1]&gt; set name yang<br>OK<br>127.0.0.1:6379[1]&gt; get name<br>“yang”</p>
-<p>可以看到对于 String 存储还是常规的</p>
-</blockquote>
-</li>
-<li><p>字典 Hash</p>
-<blockquote>
-<p>127.0.0.1:6379[1]&gt; HSET json1 name gavin age 18<br>(integer) 2</p>
-<p>127.0.0.1:6379[1]&gt; hget json1 name<br>“gavin”<br>127.0.0.1:6379[1]&gt; hget json1 age<br>“18”</p>
-<p> 对于Hash 存储的基本操作,基于还是看你个人想怎么存储. </p>
-<p> 127.0.0.1:6379[1]&gt; HEXISTS json1 json<br>(integer) 0<br>127.0.0.1:6379[1]&gt; HEXISTS json1 name<br>(integer) 1</p>
-<p> 这是判断这个key是否存在</p>
-</blockquote>
-</li>
-<li><p>列表List</p>
-<blockquote>
-<p>127.0.0.1:6379[1]&gt; lpush list1 1,2,3,4,5,6,7<br>(integer) 1<br>127.0.0.1:6379[1]&gt; lpush list1 8 9 10 11 12 13 14<br>(integer) 8<br>127.0.0.1:6379[1]&gt; LRANGE list1 0 11<br>1) “14”<br>2) “13”<br>3) “12”<br>4) “11”<br>5) “10”<br>6) “9”<br>7) “8”<br>8) “1,2,3,4,5,6,7”</p>
-<p>可以看出lpush 对于添加的顺序，最先添加的值是在最后面的。</p>
-<p>127.0.0.1:6379[1]&gt; RPUSH list1 latsone<br>(integer) 9</p>
-<p>127.0.0.1:6379[1]&gt; LRANGE list1 0 13<br>1) “14”<br>2) “13”<br>3) “12”<br>4) “11”<br>5) “10”<br>6) “9”<br>7) “8”<br>8) “1,2,3,4,5,6,7”<br>9) “latsone”</p>
-<p>rpush 就是直接在最尾部进行追加.</p>
-<p>lpop key(lits1 对应自己的key) : 返回并删除指定 Key 的链表中的第一个元素</p>
-<p>rpop key: 返回并删除指定 Key 的链表中的最后一个元素,即尾元素 </p>
-</blockquote>
-</li>
-<li><p>集合Set</p>
-<blockquote>
-<p>127.0.0.1:6379[1]&gt; sadd set1 a b c<br>(integer) 3<br>127.0.0.1:6379[1]&gt; sadd set z<br>(integer) 1<br>127.0.0.1:6379[1]&gt; SMEMBERS set1<br>1) “b”<br>2) “a”<br>3) “c”<br>127.0.0.1:6379[1]&gt; SISMEMBER set1 c<br>(integer) 1<br>127.0.0.1:6379[1]&gt; SISMEMBER set1 x<br>(integer) 0<br>127.0.0.1:6379[1]&gt; SMEMBERS set1<br>1) “b”<br>2) “a”<br>3) “c”<br>127.0.0.1:6379[1]&gt; SREM set1 a<br>(integer) 1<br>127.0.0.1:6379[1]&gt; SMEMBERS set1<br>1) “b”<br>2) “c”</p>
-<p>sadd  是进行添加</p>
-<p>smembers  进行查看该集合中数据</p>
-<p>sismember 判断集合中是否有该值,如果是有的话,就会返回1,如果是没有的话,就会返回0</p>
-<p>srem 是删除集合中某个元素. 如果存在删除就返回1,如果不存在删除就会返回0 </p>
-</blockquote>
-</li>
-<li><p>有序集合 ZSet</p>
-<blockquote>
-<p>127.0.0.1:6379[1]&gt; SREM set1 add<br>(integer) 0<br>127.0.0.1:6379[1]&gt; zadd scores 90 ‘Chinese’<br>(integer) 1<br>127.0.0.1:6379[1]&gt; zadd scores 94 ‘math’<br>(integer) 1<br>127.0.0.1:6379[1]&gt; zadd scores 96 ‘english’<br>(integer) 1<br>127.0.0.1:6379[1]&gt; ZRANGE scores 0 -1<br>1) “Chinese”<br>2) “math”<br>3) “english”<br>127.0.0.1:6379[1]&gt; ZRANGE scores 0 -1 withscores<br>1) “Chinese”<br>2) “90”<br>3) “math”<br>4) “94”<br>5) “english”<br>6) “96”<br>127.0.0.1:6379[1]&gt; zadd scores 88 ‘matha’<br>(integer) 1<br>127.0.0.1:6379[1]&gt; ZRANGE scores 0 -1 withscores<br>1) “matha”<br>2) “88”<br>3) “Chinese”<br>4) “90”<br>5) “math”<br>6) “94”<br>7) “english”<br>8) “96”</p>
-<p>zset 的基本操作.等到你工作需要使用的时候,可以在权衡来具体使用</p>
-</blockquote>
-<hr>
-</li>
-</ol>
-<p>   还有一些数据结果，对于平常的项目或者需求是很少使用到的.这里也列举出来,做一个大概的说明.</p>
-<ol>
-<li><p>HyperLogLog</p>
-<blockquote>
-<p>HyperLogLog 是用来做 <strong>基数统计</strong> 的算法. 优点 : 再输入元素的数量或者体积非常非常大的时候时候,计算基数所需要的空间总是固定的,并且很小.</p>
-<p>Redis 中 HyperLogLog 键只需花费12KB内存,就可以计算接近 2^64 个不同的元素的基数.</p>
-<p>127.0.0.1:6379[1]&gt; PFADD pf1 1 2 3 4 1 2 3 2 2 2 2<br>(integer) 1<br>127.0.0.1:6379[1]&gt; PFCOUNT pf1<br>(integer) 4<br>127.0.0.1:6379[1]&gt; pfadd m2 3 3 3 4 4 4 5 5 5 6 6 6 1<br>(integer) 1<br>127.0.0.1:6379[1]&gt; PFMERGE mergeN pf1 m2<br>OK<br>127.0.0.1:6379[1]&gt; PFCOUNT mergeN<br>(integer) 6</p>
-<p>从结果可以看出, HyperLogLog 就是对进行统计.</p>
-<p>实用场景 :  统计注册Ip个数,统计每日访问IP数 等数有关</p>
-</blockquote>
-</li>
-<li><p>Geo</p>
-<blockquote>
-<p>127.0.0.1:6379[1]&gt; GEOADD cities:locations 117.12 39.08 tianjin 114.29 38.02 shijiazhuang 118.01 39.08 tangshan 115.29 38.51 baoding<br>(integer) 4</p>
-<p>127.0.0.1:6379[1]&gt; GEOPOS cities:locations tianjin<br>1) 1) “117.12000042200088501”<br>  2) “39.0800000535766543”<br>127.0.0.1:6379[1]&gt; GEOPOS cities:locations tianjin baoding<br>1) 1) “117.12000042200088501”<br>  2) “39.0800000535766543”<br>2) 1) “115.28999894857406616”<br>  2) “38.50999956342798924”</p>
-<p>geoadd 是存储</p>
-<p>geopos 是根据地名来进行存储数据</p>
-<p>127.0.0.1:6379[1]&gt; geodist cities:locations tianjin tangshan km<br>“76.8434”<br>127.0.0.1:6379[1]&gt; geodist cities:locations tianjin tangshans km<br>(nil)</p>
-<p>km 是计算具体的单位 : m(米),km(千米),mi(英里),ft(英尺)</p>
-<p>参考连接(<a href="https://blog.csdn.net/qq_34206560/article/details/91049218" target="_blank" rel="noopener">https://blog.csdn.net/qq_34206560/article/details/91049218</a>)</p>
-</blockquote>
-</li>
-<li><p>Pub/Sub</p>
-<blockquote>
-<p>开启二个 黑窗口 来连接 redis</p>
-<p>窗口一 : 对CCTV 进行订阅</p>
-<p>127.0.0.1:6379&gt; subscribe CCTV<br>Reading messages… (press Ctrl-C to quit)<br>1) “subscribe”<br>2) “CCTV”<br>3) (integer) 1</p>
-<p>1) “message”<br>2) “CCTV”<br>3) “\xe6\x88\x91\xe6\x98\xafGavin”</p>
-<p>1) “message”<br>2) “CCTV”<br>3) “Hello Gavin”</p>
-<p>窗口二 :  对CCTV 进行写</p>
-<p>127.0.0.1:6379[1]&gt; publish CCTV “我是Gavin”<br>(integer) 1<br>127.0.0.1:6379[1]&gt; publish CCTV “Hello Gavin”<br>(integer) 1</p>
-<p>要先开启 订阅，不然发送的消息会丢失。</p>
-</blockquote>
-</li>
-</ol>
-<hr>
-<p>还有一个更需要了解的知识,是更加必不可少的.</p>
-<ul>
-<li>Redis Module </li>
-<li>BloomFilter</li>
-<li>RedisSearch</li>
-<li>Redis-ML</li>
-</ul>
-<p>等等</p>
-<hr>
-<h3 id="Redis-实现分布式锁"><a href="#Redis-实现分布式锁" class="headerlink" title="Redis 实现分布式锁"></a>Redis 实现分布式锁</h3><ul>
-<li><p>获取锁的时候,如果先用 setnx 来争取到锁,再给expire 的锁来设置过期时间 防止锁忘记释放. 如果在expire之前,程序出现异常的话,那么这个setnx获取到的锁就无法被释放掉.</p>
-<p>如果是正常获获取锁并且设置过期时间</p>
-<hr>
-<p>/**</p>
-<ul>
-<li><p>尝试获取 分布式锁</p>
-</li>
-<li><p>我们使用key来当锁，因为key是唯一的。</p>
-</li>
-<li><p>原因就是我们在上面讲到可靠性时，分布式锁要满足第四个条件解铃还须系铃人，通过给value赋值为requestId，</p>
-</li>
-<li><p>我们就知道这把锁是哪个请求加的了，在解锁的时候就可以有依据。requestId可以使用UUID.randomUUID().toString()方法生成<br>*</p>
-</li>
-<li><p>这个参数我们填的是NX，意思是SET IF NOT EXIST，即当key不存在时，我们进行set操作；若key已经存在，则不做任何操作</p>
-</li>
-<li><p>这个参数我们传的是PX，意思是我们要给这个key加一个过期的设置，具体时间由第五个参数决定</p>
-</li>
-<li><p>设置超时时期</p>
-</li>
-<li><p>@param jedis</p>
-</li>
-<li><p>@param localKey</p>
-</li>
-<li><p>@param requestId  请求表示</p>
-</li>
-<li><p>@param expireTime 超时时间</p>
-</li>
-<li><p>@return<br>*/<br>public static boolean tryGetDistributedLock(Jedis jedis,String localKey,String requestId,int expireTime){<br> return LOCK_SUCCESS.equalsIgnoreCase(jedis.set(localKey, requestId, SET_IF_NOT_EXIST, SET_WITH_EXPIRE_TIME, expireTime));<br>}</p>
-<hr>
-</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li><p>释放锁 </p>
-<hr>
-<p> /**</p>
-<ul>
-<li><p>释放锁</p>
-</li>
-<li><p>requestId : 请求标识</p>
-</li>
-<li><p>@param jedis</p>
-</li>
-<li><p>@param localKey</p>
-</li>
-<li><p>@param requestId</p>
-</li>
-<li><p>@return<br>*</p>
-</li>
-<li><p>不能直接使用 jedis.del(lockKey) 来删除锁,可能当前进来的锁并不是 先前判断出锁的拥有者<br>*<br>*/<br>public static boolean releaseDistributedLock(Jedis jedis,String localKey,String requestId){<br> String script = “if redis.call(‘get’, KEYS[1]) == ARGV[1] then return redis.call(‘del’, KEYS[1]) else return 0 end”;<br> Object result = jedis.eval(script, Collections.singletonList(localKey), Collections.singletonList(requestId));<br> return RELEASE_SUCCESS.equals(result);</p>
-<p>}</p>
-<hr>
-</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li>如果Redis的Key需要设置同一时期过去,key是很多的话,redis可能会出现短暂的卡顿现象.</li>
-</ul>
-<hr>
-<h3 id="Redis-获取-Key-技巧"><a href="#Redis-获取-Key-技巧" class="headerlink" title="Redis 获取 Key 技巧"></a>Redis 获取 Key 技巧</h3><p>抛出问题 :   <strong>加入Redis 里面有 一亿个Key,其中有10w个key是以某个固定的的已知前缀开头,如何将它们全部找出来?</strong></p>
-<p>使用keys指令可以扫出指定模式的key列表。 X </p>
-<p>使用scan指令来获取key列表。  Y</p>
-<p>这个时候你要回答redis关键的一个特性：redis的单线程的。keys指令会导致线程阻塞一段时间，线上服务会停顿，直到指令执行完毕，服务才能恢复。这个时候可以使用scan指令，scan指令可以无阻塞的提取出指定模式的key列表，但是会有一定的重复概率，在客户端做一次去重就可以了，但是整体所花费的时间会比直接用keys指令长。</p>
-<hr>
-<h3 id="Redis-持久化"><a href="#Redis-持久化" class="headerlink" title="Redis 持久化"></a>Redis 持久化</h3><p>​         默认情况下, Redis 将内存数据库快照保存到dump.rdb二进制文件中. </p>
-<ul>
-<li><p>RDB :  配置文件 save 60 1000 . 除了在配置文件中使用save,还可以手动执行save来生成RDB快照文件.save 是同步命令,bgsave是异步命令, bgsave 会从 redis 主进程fork出一个子进程来专门生成rdb二进制文件</p>
-<blockquote>
-<p>127.0.0.1:6379[1]&gt; save<br>OK        </p>
-</blockquote>
-</li>
-<li><p>AOF : 配置文件中 appendonly : yes 修改为yes.</p>
-<blockquote>
-<p>appendfsync  always: 每次有新命令追加到aof文件中就执行一个持久化指令,非常慢但是安全</p>
-<p>appendfsync  everysec : 每次执行一次持久化,足够快(和使用rdb持久化差不多) 并且故障时只丢失1s的数据</p>
-<p>appendfsync no : 从不持久化</p>
-</blockquote>
-</li>
-</ul>
-<hr>
-<h3 id="Pipeline-学习"><a href="#Pipeline-学习" class="headerlink" title="Pipeline 学习"></a>Pipeline 学习</h3><p>​      pipeline 可以将多次 IO 往返的时间缩减为一次,前提是pipeline执行的指令之间没有因果关系.</p>
-<hr>
-<p>package com.yang.basicjavacache.redis.test;</p>
-<p>import redis.clients.jedis.Jedis;<br>import redis.clients.jedis.Pipeline;</p>
-<p>import java.util.HashMap;<br>import java.util.Map;</p>
-<p>/<strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong>***</strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong><br>*<PRE><br>*</p>
-<ul>
-<li>File Name       : </li>
-<li></li>
-<li>Creation Date   : 20-4-19</li>
-<li></li>
-<li>Author          : Gavin</li>
-<li></li>
-<li>Purpose         : </li>
-<li></li>
-<li>History         : </li>
-<li></li>
-<li></PRE></li>
-<li><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong>**</strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong>/</li>
-</ul>
-<p>public class PipelineTestMain {</p>
-<pre><code>public static void main(String[] args) {
-
-    Jedis redis = new Jedis(&quot;192.168.18.141&quot;, 6379);
-    redis.auth(&quot;123456&quot;);
-    Map&lt;String, String&gt; data = new HashMap&lt;String, String&gt;();
-    redis.select(8);
-    redis.flushDB();
-    long start = System.currentTimeMillis();
-    for (int i = 0; i &lt; 1000000; i++) {
-        data.clear();
-        data.put(&quot;k_&quot; + i, &quot;v_&quot; + i);
-        redis.hmset(&quot;key_&quot; + i, data);
-    }
-    long end = System.currentTimeMillis();
-    System.out.println(&quot;    共插入:[&quot; + redis.dbSize() + &quot;]条 .. &quot;);
-    System.out.println(&quot;1,未使用PIPE批量设值耗时&quot; + (end - start) / 1000 + &quot;秒..&quot;);
-
-    redis.select(8);
-    redis.flushDB();
-    Pipeline pipe = redis.pipelined();
-    start = System.currentTimeMillis();
-    for (int i = 0; i &lt; 1000000; i++) {
-        data.clear();
-        data.put(&quot;k_&quot; + i, &quot;v_&quot; + i);
-        pipe.hmset(&quot;key_&quot; + i, data); //将值封装到PIPE对象，此时并未执行，还停留在客户端
-    }
-    pipe.sync();
-    end = System.currentTimeMillis();
-    System.out.println(&quot;    PIPE共插入:[&quot; + redis.dbSize() + &quot;]条 .. &quot;);
-    System.out.println(&quot;2,使用PIPE批量设值耗时&quot; + (end - start) / 1000 + &quot;秒 ..&quot;);
-}</code></pre><p>}</p>
-<blockquote>
-<p>   共插入:[1000000]条 ..<br>1,未使用PIPE批量设值耗时14秒..<br>   PIPE共插入:[1000000]条 ..<br>2,使用PIPE批量设值耗时1秒 ..</p>
-<p>从执行的结果来看的，这中间的时间差别还是很大的.</p>
-</blockquote>
-<p>Pipeline 管道技术,指的是客户端可以发送多个请求到服务端,过程中不需要等待请求的回复,在最后一次并读结果即可.</p>
-<hr>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2961,7 +2498,7 @@ docker-engine
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">23</span>
+                  <span class="site-state-item-count">25</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -3057,7 +2594,7 @@ docker-engine
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">46.8k</span>
+    <span title="Site words total count">54.2k</span>
   
 </div>
 
