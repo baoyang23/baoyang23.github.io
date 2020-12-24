@@ -301,6 +301,376 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.lwfby.cn/2020/04/18/%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3JVM%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="YangL">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/timg.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="YangL">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/04/18/%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3JVM%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/" itemprop="url">深入了解JVM阅读笔记</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-04-18T00:15:00+08:00">
+                2020-04-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/JVM/" itemprop="url" rel="index">
+                    <span itemprop="name">JVM</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  6.2k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  23
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="深入理解JVM阅读笔记"><a href="#深入理解JVM阅读笔记" class="headerlink" title="深入理解JVM阅读笔记"></a>深入理解JVM阅读笔记</h3><ol>
+<li><p>个人认为学习JVM是对每个学习(深入)JAVA的人是一个必备的知识。</p>
+</li>
+<li><p>同时JVM里面的知识也不是一遍就可以学习好的，是要经过反复的阅读和自己的理解。肯定还要带有一定的项目实战经历(但是这个一般的情况都不是很容易遇见)。  </p>
+<hr>
+</li>
+</ol>
+<h3 id="Java内存区域笔记"><a href="#Java内存区域笔记" class="headerlink" title="Java内存区域笔记"></a>Java内存区域笔记</h3><ol>
+<li><p>程序计数器: </p>
+<p> 程序计数器是一块较小的内存,可以看成当前线程所执行的字节码的行号指示器.字节码解释器工作是通过改变计数器的值来选取吓一条需要执行的字节码,分支,循环,跳转,异常处理,线程恢复等基础功能都需要依赖这个计数器来完成.</p>
+<p>  如果线程正在执行的是一个JAVA方法,这个计数器记录的是正在执行的虚拟机字节码指令地址,如果执行的是Native方法,这个计数器的值就是空(Undefind).此内存区域是唯一一个在JAVA虚拟机规范中没有规定任    OutOfMemoryError情况的区域</p>
+</li>
+<li><p>Java虚拟机栈</p>
+<p>​        与程序计数器一样，Java虚拟机栈（Java Virtual Machine Stacks）也是线程私有的，它的生命周期与线程相同。虚拟机栈描述的是Java方法执行的内存模型：每个方法在执行的同时都会创建一个栈帧（Stack Frame)用于存储局部变量表、操作数栈、动态链接、方法出口等信息。每一个方法从调用直至执行完成的过程，就对应着一个栈帧在虚拟机栈中入栈到出栈的过程。</p>
+<p>​       局部变量表存放了编译可知的各种基本类型(boolean,byte,char,short,int,float,long,double),对象引用(reference类型,它不等同于对象本身，可能是一个指向对象起始地址的引用指针，也可能是指向一个代表对象的句柄或其他与此对象相关的位置）和returnAddress类型)    </p>
+<p>​       在JAVA虚拟机规范中,对这个区域的规定了二种异常情况,如果线程请求的栈深度大于虚拟机所允许的深度,将会跑出来StackOverflowError异常,如果虚拟机栈可以动态扩展,如果扩展的是无法申请到足够的内存,就会抛出OutOfMeneryError异常</p>
+</li>
+</ol>
+<p>   ​       虚拟机栈是Java执行方法的内存模型。每个方法被执行的时候，都会创建一个栈帧，当把栈帧压入栈，当方法正常返回或者抛出未捕获的异常时，栈帧就会出栈。</p>
+<p>   ​       栈帧:  栈帧存储方法的相关信息，包含局部变量数表，返回值，操作数栈，动态链接。</p>
+<p>   ​                  局部变量表:  包含了方法执行过程中的所有变量。局部变量数组所需要的空间在编译期间完成分配，在方法运行期间不会改变局部变量数组大小。</p>
+<p>   ​                  返回值: 如果有返回值的话,压入调用者栈帧中的操作数栈中，并且把PC的值指向 方法调用指令 后面的一条指令地址。</p>
+<p>   ​                  操作数栈:  操作变量的内存模型。操作数栈的最大深度在编译的时候已经确定（写入方法区Code属性的max_stacks项中）。操作数栈的元素可以是任意JAVA类型。32位数据占用栈空间为1，64位数据占用栈空间为6。方法刚开始执行的时候，栈是空的，当方法执行过程中，各种字节码指令往栈中存取数据。</p>
+<p>   ​                  动态链接:  每个栈帧都持有在运行常量池中该栈帧所属方法的引用，持有这个引用是为了支持方法调用过程的动态链接。</p>
+<ol start="3">
+<li><p>本地方法栈</p>
+<p>​       本地方法栈（Native Method Stack）与虚拟机栈所发挥的作用是非常相似的，它们之间的区别不过是虚拟机栈为虚拟机执行Java方法（也就是字节码）服务，而本地方法栈则为虚拟机使用到的Native方法服务。在虚拟机规范中对本地方法栈中方法使用的语言、使用方式与数据结构并没有强制规定，因此具体的虚拟机可以自由实现它。甚至有的虚拟机（譬如Sun HotSpot虚拟机）直接就把本地方法栈和虚拟机栈合二为一。与虚拟机栈一样，本地方法栈区域也会抛出StackOverflowError和OutOfMemoryError异常</p>
+<p>​      调用本地Native的内存模型</p>
+<p>​      线程独享</p>
+</li>
+<li><p>Java堆</p>
+<p>​    Java堆（Java Heap）是Java虚拟机所管理的内存中最大的一块.Java堆是被所有线程共享的一块内存区域.此内存区域的唯一目的就是存放对象实例,几乎所有的对象实例都在这里分配.所有的对象实例以及数组都要在堆上分配,但是随着JIT编译器的发展与逃逸分析技术逐渐成熟，栈上分配、标量替换优化技术将会导致一些微妙的变化发生，所有的对象都分配在堆上也渐渐变得不是那么“绝对”了`</p>
+<p>​    Java堆是垃圾收集器管理的主要区域，因此很多时候也被称做“GC堆。从内存回收的角度来看，由于现在收集器基本都采用分代收集算法，所以Java堆中还可以细分为：新生代和老年代；再细致一点的有Eden空间、From Survivor空间、To Survivor空间等。从内存分配的角度来看，线程共享的Java堆中可能划分出多个线程私有的分配缓冲区（Thread Local Allocation Buffer，TLAB）。不过无论如何划分，都与存放内容无关，无论哪个区域，存储的都仍然是对象实例，进一步划分的目的是为了更好地回收内存，或者更快地分配内存。</p>
+<p>​    当前主流的虚拟机都是按照可扩展来实现的(通过-Xmx 和 -Xms控制)。如果在堆中没有内存完成实例分配，堆中没有内存完成实例配置，并且堆也无法再扩展时，将会抛出来OurOfMemoryError异常。</p>
+</li>
+<li><p>方法区</p>
+<p>  方法区与Java堆一样,是各个线程共享的内存区域，它用于存储已被虚拟机加载的类信息，常量，静态变量，即时编译器后的代码等数据。虽然Java虚拟机规范把方法区描述为堆的一个逻辑部分，但是它却有一个别名叫做Non-Heap（非堆），目的应该是与Java堆区分开来。</p>
+<p>  多人都更愿意把方法区称为“永久代”（Permanent Generation），本质上两者并不等价，仅仅是因为HotSpot虚拟机的设计团队选择把GC分代收集扩展至方法区，或者说使用永久代来实现方法区而已，这样HotSpot的垃圾收集器可以像管理Java堆一样管理这部分内存。（Java8 中好像永久代换了名字）</p>
+<p>​    根据虚拟机规定，当方法区无法满足内存分配的需求时，将会抛出OutOfMemoryError异常。</p>
+</li>
+<li><p>运行时常量池</p>
+<p>​        运行时常量池（Runtime Constant Pool）是方法区的一部分。Class文件中除了有类的版本、字段、方法、接口等描述信息外，还有一项信息是常量池（Constant Pool Table），用于存放编译期生成的各种字面量和符号引用，这部分内容将在类加载后进入方法区的运行时常量池中存放。</p>
+<p>​        运行时常量池相对于Class文件常量池的另外一个重要特性时具备动态性，Java语言并不要求常量一定只有编译期才能产生，也就是非预置入Class文件中常量池的内容才能进入方法区运行时常量池，运行期间也可能将新的常量放入池中，这种特性被开发人员利用得比较多的便是String类的intern()方法。</p>
+<p>​        运行时常量池时方法区的一部分，自然受到方法区内存限制,当常量池无法再申请到内存时就会抛出OutOfMemeryError异常。</p>
+</li>
+<li><p>直接内存</p>
+<p>直接内存（Direct Memory）并不是虚拟机运行时数据区的一部分，也不是Java虚拟机规范中定义的内存区域。但是这部分内存也被频繁地使用，而且也可能导致OutOfMemoryError异常出现，所以我们放到这里一起讲解。</p>
+</li>
+</ol>
+<p>总结 :  对于Java内存区域的知识点大致是这样，但是每个点都是要深入进去了解的。这里是摘抄书籍的内容来做笔记。后期再看的时候，会添加上个人笔记。</p>
+<hr>
+<h3 id="类文件结构"><a href="#类文件结构" class="headerlink" title="类文件结构"></a>类文件结构</h3><ol>
+<li><p>Class类文件结构</p>
+<p>​     任何一个Class文件都对应着唯一一个类或接口的定义信息，但反过来说，类或接口并不一定都得定义在文件里（譬如类或接口也可以通过类加载器直接生成）。</p>
+<p>​     Class文件是一组以8位字节为基础单位的二进制流，各个数据项目严格按照顺序紧凑地排列在Class文件之中，中间没有添加任何分隔符，这使得整个Class文件中存储的内容几乎全部是程序运行的必要数据，没有空隙存在。</p>
+<p>​      这里我们就采用书中的代码,跟着来一步一步实现。</p>
+<p>​       进入到这个TestClass.java的目录下，执行javac TestClass.java 就会在同一级目录下生成出 TestClass.class文件，这里我是用 Sublime 打开的.class文件,也同样可以看到书中的效果，开头的cafe babe(至于这其中的故事可以去看原书籍).</p>
+<p>​        然后继续在刚刚的目录下,来执行 javap -verbose TestClass ，都可以看到效果。这里的内容对着原书籍上仔细的一一对看即可。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">package com.yang.basicjavatest.gjvm;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @Author: Mu_Yi</span><br><span class="line"> * @Date: 2020&#x2F;4&#x2F;18 14:27</span><br><span class="line"> * @Version 1.0</span><br><span class="line"> * @qq: 1411091515</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class TestClass &#123;</span><br><span class="line"></span><br><span class="line">    private int m;</span><br><span class="line"></span><br><span class="line">    public int inc()&#123;</span><br><span class="line"></span><br><span class="line">        return m + 1;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>cafe babe 0000 0034 0013 0a00 0400 0f09<br>0003 0010 0700 1107 0012 0100 016d 0100<br>0149 0100 063c 696e 6974 3e01 0003 2829<br>5601 0004 436f 6465 0100 0f4c 696e 654e<br>756d 6265 7254 6162 6c65 0100 0369 6e63<br>0100 0328 2949 0100 0a53 6f75 7263 6546<br>696c 6501 000e 5465 7374 436c 6173 732e<br>6a61 7661 0c00 0700 080c 0005 0006 0100<br>2563 6f6d 2f79 616e 672f 6261 7369 636a<br>6176 6174 6573 742f 676a 766d 2f54 6573<br>7443 6c61 7373 0100 106a 6176 612f 6c61<br>6e67 2f4f 626a 6563 7400 2100 0300 0400<br>0000 0100 0200 0500 0600 0000 0200 0100<br>0700 0800 0100 0900 0000 1d00 0100 0100<br>0000 052a b700 01b1 0000 0001 000a 0000<br>0006 0001 0000 0009 0001 000b 000c 0001<br>0009 0000 001f 0002 0001 0000 0007 2ab4<br>0002 0460 ac00 0000 0100 0a00 0000 0600<br>0100 0000 0f00 0100 0d00 0000 0200 0e</p>
+</blockquote>
+</li>
+</ol>
+<pre><code>javap -verbose TestClass.class 效果</code></pre><blockquote>
+<p>D:\Java_DaiMa\idea_github_self\basic-java-io\basic-java-test\src\main\java\com\yang\basicjavatest\gjvm&gt;javap -verbose TestClass.class<br>Classfile /D:/Java_DaiMa/idea_github_self/basic-java-io/basic-java-test/src/main/java/com/yang/basicjavatest/gjvm/TestClass.class<br>  Last modified 2020-4-18; size 303 bytes<br>  MD5 checksum b5c0b88622793ee9ace089dce2d2959d<br>  Compiled from “TestClass.java”<br>public class com.yang.basicjavatest.gjvm.TestClass<br>  minor version: 0<br>  major version: 52<br>  flags: ACC_PUBLIC, ACC_SUPER<br>Constant pool:<br>   #1 = Methodref          #4.#15         // java/lang/Object.”<init>“:()V<br>   #2 = Fieldref           #3.#16         // com/yang/basicjavatest/gjvm/TestClass.m:I<br>   #3 = Class              #17            // com/yang/basicjavatest/gjvm/TestClass<br>   #4 = Class              #18            // java/lang/Object<br>   #5 = Utf8               m<br>   #6 = Utf8               I<br>   #7 = Utf8               <init><br>   #8 = Utf8               ()V<br>   #9 = Utf8               Code<br>  #10 = Utf8               LineNumberTable<br>  #11 = Utf8               inc<br>  #12 = Utf8               ()I<br>  #13 = Utf8               SourceFile<br>  #14 = Utf8               TestClass.java<br>  #15 = NameAndType        #7:#8          // “<init>“:()V<br>  #16 = NameAndType        #5:#6          // m:I<br>  #17 = Utf8               com/yang/basicjavatest/gjvm/TestClass<br>  #18 = Utf8               java/lang/Object<br>{<br>  public com.yang.basicjavatest.gjvm.TestClass();<br>    descriptor: ()V<br>    flags: ACC_PUBLIC<br>    Code:<br>      stack=1, locals=1, args_size=1<br>         0: aload_0<br>         1: invokespecial #1                  // Method java/lang/Object.”<init>“:()V<br>         4: return<br>      LineNumberTable:<br>        line 9: 0</p>
+<p>  public int inc();<br>    descriptor: ()I<br>    flags: ACC_PUBLIC<br>    Code:<br>      stack=2, locals=1, args_size=1<br>         0: aload_0<br>         1: getfield      #2                  // Field m:I<br>         4: iconst_1<br>         5: iadd<br>         6: ireturn<br>      LineNumberTable:<br>        line 15: 0<br>}<br>SourceFile: “TestClass.java”</p>
+</blockquote>
+<ol start="2">
+<li><p>LineNumberTable 属性 </p>
+<p> LineNumberTable属性用于描述Java源码行号与字节码行号（字节码的偏移量）之间的对应关系。它并不是运行时必需的属性，但默认会生成到Class文件之中，可以在Javac中分别使用-g:none或-g:lines选项来取消或要求生成这项信息。如果选择不生成LineNumberTable属性，对程序运行产生的最主要的影响就是当抛出异常时，堆栈中将不会显示出错的行号，并且在调试程序的时候，也无法按照源码行来设置断点。     </p>
+</li>
+</ol>
+<ol start="3">
+<li><p>LocalVariableTable属性</p>
+<p>LocalVariableTable属性用于描述栈帧中局部变量表中的变量与Java源码中定义的变量之间的关系，它也不是运行时必需的属性，但默认会生成到Class文件之中，可以在Javac中分别使用-g:none或-g:vars选项来取消或要求生成这项信息。如果没有生成这项属性，最大的影响就是当其他人引用这个方法时，所有的参数名称都将会丢失，IDE将会使用诸如arg0、arg1之类的占位符代替原有的参数名，这对程序运行没有影响，但是会对代码编写带来较大不便，而且在调试期间无法根据参数名称从上下文中获得参数值。</p>
+</li>
+</ol>
+<ol start="4">
+<li><p>SourceFile属性</p>
+<p> SourceFile属性用于记录生成这个Class文件的源码文件名称。这个属性也是可选的，可以分别使用Javac的-g:none或-g:source选项来关闭或要求生成这项信息。在Java中，对于大多数的类来说，类名和文件名是一致的，但是有一些特殊情况（如内部类）例外。如果不生成这项属性，当抛出异常时，堆栈中将不会显示出错代码所属的文件名。这个属性是一个定长的属性。</p>
+</li>
+</ol>
+<ol start="5">
+<li><p>ConstantValue 属性</p>
+<p> ConstantValue属性的作用是通知虚拟机自动为静态变量赋值。只有被static关键字修饰的变量（类变量）才可以使用这项属性。类似“int x=123”和“static int x=123”这样的变量定义在Java程序中是非常常见的事情，但虚拟机对这两种变量赋值的方式和时刻都有所不同。对于非static类型的变量（也就是实例变量）的赋值是在实例构造器<init>方法中进行的；而对于类变量，则有两种方式可以选择：在类构造器<clinit>方法中或者使用ConstantValue属性。目前Sun Javac编译器的选择是：如果同时使用final和static来修饰一个变量（按照习惯，这里称“常量”更贴切），并且这个变量的数据类型是基本类型或者java.lang.String的话，就生成ConstantValue属性来进行初始化，如果这个变量没有被final修饰，或者并非基本类型及字符串，则将会选择在<clinit>方法中进行初始化。</p>
+</li>
+<li><p>InnerClasses 属性</p>
+<p> InnerClasses属性用于记录内部类与宿主类之间的关联。如果一个类中定义了内部类，那编译器将会为它以及它所包含的内部类生成InnerClasses属性。</p>
+</li>
+</ol>
+<p>   等等更多的属性就去具体的原书籍中查看</p>
+<hr>
+<ol start="2">
+<li>字节码指令也推荐在原书籍中查看。</li>
+</ol>
+<hr>
+<h3 id="类加载机制"><a href="#类加载机制" class="headerlink" title="类加载机制"></a>类加载机制</h3><ol>
+<li><p>类加载的时机 :  </p>
+<p>  类从被加载到虚拟机内存中开始,到卸载出内存为止，它的整个生命周期包括 : 加载(loading),验证(verification),准备(Preparation), 解析(resolution),初始化(init),使用(use) 和 卸载(unloading).</p>
+</li>
+<li><p>加载(类加载):</p>
+<ul>
+<li>通过一个类的全限定名来获取定义此类的二进制字节流</li>
+<li>将这个字节流所代表的静态存储结构转化为方法区的运行时数据。</li>
+<li>在内存中生成一个代表这个类的 java.lang.Class对象，作为方法区这个类的各种数据访问入口。</li>
+</ul>
+</li>
+<li><p>验证 :</p>
+<p>  验证是连接阶段的第一步,这一阶段的目的是为了确保Class文件的字节流中包含的信息符合当前虚拟机的要求，并且不会危害到虚拟机自身的安危。</p>
+<ul>
+<li>​    文件格式的检验 ： 这一阶段要验证字节流是否符合Class文件格式的规范，并且能被当前版本的虚拟机处理。</li>
+<li>元数据验证:  是对字节码描述的信息进行语义分析，以确保起描述的信息符合Java语言虚拟机的要求。</li>
+<li>字节码验证:  通过数据流和控制流分析，确保程序语义是合法的，符合逻辑的。</li>
+<li>符号引用验证: 最后一阶段的检验发生在虚拟机将符号引用转化为直接引用的时候。</li>
+</ul>
+</li>
+<li><p>准备 :  </p>
+<p>​    准备阶段是正式为类变量分配内存并设置类变变量初始化的阶段，这些变量所使用的内存都将在方法区中进行分配。这时候进行内存分配的仅包括类变量(被static修饰的变量)，而不包括实例变量，实例变量将会在对象实例化时随着对象一起分配在Java堆中。</p>
+</li>
+<li><p>解析 : </p>
+<ul>
+<li><p>​     类或接口的解析:   假设当前代码所处的类是D,如果要把一个从未解析的过的符号引用N解析为一个类或者接口C直接引用</p>
+<ol>
+<li><p>​     如果C不是一个数组类型，那虚拟机将会把代表N的全限定名传递给D的类加载器去加载这个类C。在加载过程中，由于元数据验证、字节码验证的需要，又可能触发其他相关类的加载动作，例如加载这个类的父类或实现的接口。一旦这个加载过程出现了任何异常，解析过程就宣告失败。</p>
+</li>
+<li><p>如果C是一个数组类型，并且数组的元素类型为对象，也就是N的描述符会是类似“[Ljava/lang/Integer”的形式，那将会按照第1点的规则加载数组元素类型。如果N的描述符如前面所假设的形式，需要加载的元素类型就是“java.lang.Integer”，接着由虚拟机生成一个代表此数组维度和元素的数组对象。</p>
+</li>
+<li><p>如果上面的步骤没有出现任何异常，那么C在虚拟机中实际上已经成为一个有效的类或接口了，但在解析完成之前还要进行符号引用验证，确认D是否具备对C的访问权限。如果发现不具备访问权限，将抛出java.lang.IllegalAccessError异常。</p>
+</li>
+</ol>
+</li>
+</ul>
+</li>
+</ol>
+<ul>
+<li><p>字段解析 : </p>
+<p>​      要解析一个未被解析过的字段符号引用，首先将会对字段表内class_index[插图]项中索引的CONSTANT_Class_info符号引用进行解析，也就是字段所属的类或接口的符号引用。如果在解析这个类或接口符号引用的过程中出现了任何异常，都会导致字段符号引用解析的失败。如果解析成功完成，那将这个字段所属的类或接口用C表示，虚拟机规范要求按照如下步骤对C进行后续字段的搜索。</p>
+<ol>
+<li>​        如果C本身就包含了简单名称和字段描述符都与目标相匹配的字段，则返回这个字段的直接引用，查找结束。</li>
+<li>否则，如果在C中实现了接口，将会按照继承关系从下往上递归搜索各个接口和它的父接口，如果接口中包含了简单名称和字段描述符都与目标相匹配的字段，则返回这个字段的直接引用，查找结束。</li>
+<li>否则，如果C不是java.lang.Object的话，将会按照继承关系从下往上递归搜索其父类，如果在父类中包含了简单名称和字段描述符都与目标相匹配的字段，则返回这个字段的直接引用，查找结束。</li>
+<li>否则，查找失败，抛出java.lang.NoSuchFieldError异常。</li>
+</ol>
+</li>
+<li><p>类方法解析 :</p>
+<p>​     类方法解析的第一个步骤与字段解析一样，也需要先解析出类方法表的class_index[插图]项中索引的方法所属的类或接口的符号引用，如果解析成功，我们依然用C表示这个类，接下来虚拟机将会按照如下步骤进行后续的类方法搜索。</p>
+<ol>
+<li><p>​      类方法和接口方法符号引用的常量类型定义是分开的，如果在类方法表中发现class_index中索引的C是个接口，那就直接抛出java.lang.IncompatibleClassChangeError异常。</p>
+</li>
+<li><p>如果通过了第1步，在类C中查找是否有简单名称和描述符都与目标相匹配的方法，如果有则返回这个方法的直接引用，查找结束。</p>
+</li>
+<li><p>否则，在类C的父类中递归查找是否有简单名称和描述符都与目标相匹配的方法，如果有则返回这个方法的直接引用，查找结束。</p>
+</li>
+<li><p>否则，在类C实现的接口列表及它们的父接口之中递归查找是否有简单名称和描述符都与目标相匹配的方法，如果存在匹配的方法，说明类C是一个抽象类，这时查找结束，抛出java.lang.AbstractMethodError异常。</p>
+</li>
+<li><p>否则，宣告方法查找失败，抛出java.lang.NoSuchMethodError。</p>
+</li>
+</ol>
+</li>
+</ul>
+<pre><code>最后，如果查找过程成功返回了直接引用，将会对这个方法进行权限验证，如果发现不具备对此方法的访问权限，将抛出java.lang.IllegalAccessError异常。</code></pre><ul>
+<li><p>接口方法解析: </p>
+<p> 接口方法也需要先解析出接口方法表的class_index项中索引的方法所属的类或接口的符号引用，如果解析成功，依然用C表示这个接口，接下来虚拟机将会按照如下步骤进行后续的接口方法搜索。</p>
+<ol>
+<li>​    与类方法解析不同，如果在接口方法表中发现class_index中的索引C是个类而不是接口，那就直接抛出java.lang.IncompatibleClassChangeError异常。</li>
+<li>否则，在接口C中查找是否有简单名称和描述符都与目标相匹配的方法，如果有则返回这个方法的直接引用，查找结束。</li>
+<li>否则，在接口C的父接口中递归查找，直到java.lang.Object类（查找范围会包括Object类）为止，看是否有简单名称和描述符都与目标相匹配的方法，如果有则返回这个方法的直接引用，查找结束。</li>
+<li>否则，宣告方法查找失败，抛出java.lang.NoSuchMethodError异常。</li>
+</ol>
+</li>
+</ul>
+<pre><code>​    由于接口中的所有方法默认都是public的，所以不存在访问权限的问题，因此接口方法的符号解析应当不会抛出java.lang.IllegalAccessError异常。</code></pre><ol start="6">
+<li><p>初始化 : </p>
+<p>​    类初始化阶段是类加载过程的最后一步，前面的类加载过程中。除了在加载阶段用户应用程序可以通过自定义类加载器参与之外，其余动作完全由虚拟机主导和控制。到了初始化阶段，才真正开始执行类中定义的Java程序代码（或者说是字节码）</p>
+</li>
+<li><p>类加载阶段:</p>
+<pre><code>类加载器虽然只用于实现类的加载动作，但它在JAVA程序中起到的作用却远远不限于类加载阶段。对于任意一个类，都需要由加载它的类加载器和这个类本身一同确立其在JAVA虚拟机中的唯一性，每一个类加载器，都拥有一个独立的类名称空间。比较两个类是否“相等”，只有在这两个类是由同一个类加载器加载的前提下才有意义，否则，即使这两个类来源于同一个Class文件，被同一个虚拟机加载，只要加载它们的类加载器不同，那这两个类就必定不相等。</code></pre><p>跟着书上的写了代码，结果也是书上的。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">package com.yang.basicjavatest.gjvm;</span><br><span class="line"></span><br><span class="line">import java.io.InputStream;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @Author: Mu_Yi</span><br><span class="line"> * @Date: 2020&#x2F;4&#x2F;18 15:35</span><br><span class="line"> * @Version 1.0</span><br><span class="line"> * @qq: 1411091515</span><br><span class="line"> *&#x2F;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">public class ClassLoaderTest &#123;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) throws Exception &#123;</span><br><span class="line"></span><br><span class="line">        ClassLoader classLoader &#x3D; new ClassLoader() &#123;</span><br><span class="line">            @Override</span><br><span class="line">            public Class&lt;?&gt; loadClass(String name) throws ClassNotFoundException &#123;</span><br><span class="line">               try&#123;</span><br><span class="line">                   String fileName &#x3D; name.substring(name.lastIndexOf(&quot;.&quot;) + 1 ) + &quot;.class&quot;;</span><br><span class="line">                   InputStream inputStream &#x3D; getClass().getResourceAsStream(fileName);</span><br><span class="line">                   if(inputStream &#x3D;&#x3D; null)&#123;</span><br><span class="line">                       return super.loadClass(name);</span><br><span class="line">                   &#125;</span><br><span class="line">                   byte [] b &#x3D; new byte[inputStream.available()];</span><br><span class="line">                   inputStream.read(b);</span><br><span class="line">                   return defineClass(name,b,0,b.length);</span><br><span class="line">               &#125;catch (Exception e)&#123;</span><br><span class="line">                   throw new ClassNotFoundException(name);</span><br><span class="line">               &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line">        Object instance &#x3D; classLoader.loadClass(&quot;com.yang.basicjavatest.gjvm.ClassLoaderTest&quot;).newInstance();</span><br><span class="line"></span><br><span class="line">        System.out.println(instance.getClass());</span><br><span class="line">        System.out.println(instance instanceof ClassLoaderTest);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ol>
+<hr>
+<p>后续会持续学习JVM方面的知识,也会持续更新这篇知识。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://www.lwfby.cn/2020/01/16/Spring%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB%E6%97%A5%E8%AE%B0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -710,7 +1080,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">22</span>
+                  <span class="site-state-item-count">23</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -721,7 +1091,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-count">14</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -732,7 +1102,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">20</span>
+                  <span class="site-state-item-count">21</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -806,7 +1176,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">42.2k</span>
+    <span title="Site words total count">46.8k</span>
   
 </div>
 
