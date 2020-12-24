@@ -89,7 +89,7 @@
 <meta name="description" content="ReentrantLock 源码阅读介绍​        ReetrantLock 效果是和 synchronized 是一样的,只不过 synchronized 是内置锁,ReetrantLock是语法级别的锁, 相对于而言是比synchronized灵活性高些. 不过从我目前公司写代码角度来看,都是直接使用 synchronized . 但是不妨碍我们来看 ReetrantLock 里面的代码">
 <meta property="og:type" content="article">
 <meta property="og:title" content="ReentrantLock源码阅读">
-<meta property="og:url" content="http://www.lwfby.cn/2020/06/20/ReentrantLock_source/index.html">
+<meta property="og:url" content="http://www.lwfby.cn/2020/06/20/java_juc/ReentrantLock_source/index.html">
 <meta property="og:site_name" content="YangL">
 <meta property="og:description" content="ReentrantLock 源码阅读介绍​        ReetrantLock 效果是和 synchronized 是一样的,只不过 synchronized 是内置锁,ReetrantLock是语法级别的锁, 相对于而言是比synchronized灵活性高些. 不过从我目前公司写代码角度来看,都是直接使用 synchronized . 但是不妨碍我们来看 ReetrantLock 里面的代码">
 <meta property="article:published_time" content="2020-06-20T14:47:50.000Z">
@@ -127,7 +127,7 @@
 
 
 
-  <link rel="canonical" href="http://www.lwfby.cn/2020/06/20/ReentrantLock_source/"/>
+  <link rel="canonical" href="http://www.lwfby.cn/2020/06/20/java_juc/ReentrantLock_source/"/>
 
 
 
@@ -189,7 +189,7 @@
       
         
         <li class="menu-item menu-item-home">
-          <a href="/home/" rel="section">
+          <a href="/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
@@ -304,7 +304,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.lwfby.cn/2020/06/20/ReentrantLock_source/">
+    <link itemprop="mainEntityOfPage" href="http://www.lwfby.cn/2020/06/20/java_juc/ReentrantLock_source/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="YangL">
@@ -486,7 +486,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="http://www.lwfby.cn/2020/06/20/ReentrantLock_source/" title="ReentrantLock源码阅读">http://www.lwfby.cn/2020/06/20/ReentrantLock_source/</a>
+    <a href="http://www.lwfby.cn/2020/06/20/java_juc/ReentrantLock_source/" title="ReentrantLock源码阅读">http://www.lwfby.cn/2020/06/20/java_juc/ReentrantLock_source/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>
@@ -516,8 +516,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2020/06/20/ThreadLocal_source/" rel="next" title="ThreadLocal源码阅读">
-                <i class="fa fa-chevron-left"></i> ThreadLocal源码阅读
+              <a href="/2020/05/22/java_list/HashMap_Source/" rel="next" title="HashMap 源码阅读记录">
+                <i class="fa fa-chevron-left"></i> HashMap 源码阅读记录
               </a>
             
           </div>
@@ -526,8 +526,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2020/06/27/spring/Spring_Construction/" rel="prev" title="Spring初始化(一)">
-                Spring初始化(一) <i class="fa fa-chevron-right"></i>
+              <a href="/2020/06/20/java_juc/ThreadLocal_source/" rel="prev" title="ThreadLocal源码阅读">
+                ThreadLocal源码阅读 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -635,7 +635,7 @@ var jiathis_config={
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">25</span>
+                  <span class="site-state-item-count">24</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -646,7 +646,7 @@ var jiathis_config={
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-count">13</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -747,7 +747,7 @@ var jiathis_config={
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">54.2k</span>
+    <span title="Site words total count">54.1k</span>
   
 </div>
 
