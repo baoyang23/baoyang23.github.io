@@ -1,0 +1,1293 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.ico?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/favicon.ico?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="MyBatis,Java源码," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="前提​    MyBatis 与 SpringBoot 整合操作.  在这次整合的过程中,再次明白自己毫无疑问的是一个比较手残的同学了. ​    这里我们是基于 sql 语句写在 xml 里面进行整合的操作. 入门​      这里说下创建一个 入门 项目的大致流程. ​       先创建一个 SpringBoot 项目 ,  引入依赖 :   https:&#x2F;&#x2F;github.com&#x2F;baoya">
+<meta property="og:type" content="article">
+<meta property="og:title" content="mybatis-springboot">
+<meta property="og:url" content="http://www.lwfby.cn/2020/12/27/mybatis/mybatis-springboot/index.html">
+<meta property="og:site_name" content="YangL">
+<meta property="og:description" content="前提​    MyBatis 与 SpringBoot 整合操作.  在这次整合的过程中,再次明白自己毫无疑问的是一个比较手残的同学了. ​    这里我们是基于 sql 语句写在 xml 里面进行整合的操作. 入门​      这里说下创建一个 入门 项目的大致流程. ​       先创建一个 SpringBoot 项目 ,  引入依赖 :   https:&#x2F;&#x2F;github.com&#x2F;baoya">
+<meta property="article:published_time" content="2020-12-27T14:10:47.000Z">
+<meta property="article:modified_time" content="2020-12-27T14:13:38.680Z">
+<meta property="article:author" content="YangL">
+<meta property="article:tag" content="MyBatis">
+<meta property="article:tag" content="Java源码">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":true,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://www.lwfby.cn/2020/12/27/mybatis/mybatis-springboot/"/>
+
+
+
+
+
+  <title>mybatis-springboot | YangL</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">YangL</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Write good code</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.lwfby.cn/2020/12/27/mybatis/mybatis-springboot/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="YangL">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/timg.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="YangL">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">mybatis-springboot</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-12-27T22:10:47+08:00">
+                2020-12-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/MyBatis/" itemprop="url" rel="index">
+                    <span itemprop="name">MyBatis</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  3.3k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  14
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h4 id="前提"><a href="#前提" class="headerlink" title="前提"></a>前提</h4><p>​    MyBatis 与 SpringBoot 整合操作.  在这次整合的过程中,再次明白自己毫无疑问的是一个比较手残的同学了.</p>
+<p>​    这里我们是基于 sql 语句写在 xml 里面进行整合的操作.</p>
+<h4 id=""><a href="#" class="headerlink" title=""></a></h4><h4 id="入门"><a href="#入门" class="headerlink" title="入门"></a>入门</h4><p>​      这里说下创建一个 入门 项目的大致流程.</p>
+<p>​       先创建一个 SpringBoot 项目 ,  引入依赖 :   <a href="https://github.com/baoyang23/mybtatis-analysis/blob/master/mybatis-spring-boot-hello/pom.xml" target="_blank" rel="noopener">https://github.com/baoyang23/mybtatis-analysis/blob/master/mybatis-spring-boot-hello/pom.xml</a></p>
+<p>​        创建 MyBatis 的配置文件信息 :     <a href="https://github.com/baoyang23/mybtatis-analysis/blob/master/mybatis-spring-boot-hello/src/main/resources/mybatis-config.xml" target="_blank" rel="noopener">https://github.com/baoyang23/mybtatis-analysis/blob/master/mybatis-spring-boot-hello/src/main/resources/mybatis-config.xml</a></p>
+<p>​        创建查询的 sql 语句，也就是我们的 mapper 文件 : <a href="https://github.com/baoyang23/mybtatis-analysis/tree/master/mybatis-spring-boot-hello/src/main/resources/mapper" target="_blank" rel="noopener">https://github.com/baoyang23/mybtatis-analysis/tree/master/mybatis-spring-boot-hello/src/main/resources/mapper</a></p>
+<p>​       application.properties :  <a href="https://github.com/baoyang23/mybtatis-analysis/blob/master/mybatis-spring-boot-hello/src/main/resources/application.properties" target="_blank" rel="noopener">https://github.com/baoyang23/mybtatis-analysis/blob/master/mybatis-spring-boot-hello/src/main/resources/application.properties</a></p>
+<p>​      扫描 mapper 接口 :  @MapperScan(basePackages = {“com.iyang.mybatis.springboot.hello.mapper”})  <a href="https://github.com/baoyang23/mybtatis-analysis/blob/master/mybatis-spring-boot-hello/src/main/java/com/iyang/mybatis/springboot/hello/MybatisSpringBootHelloApplication.java" target="_blank" rel="noopener">https://github.com/baoyang23/mybtatis-analysis/blob/master/mybatis-spring-boot-hello/src/main/java/com/iyang/mybatis/springboot/hello/MybatisSpringBootHelloApplication.java</a></p>
+<p>这里是没有引入 web 依赖的 , 直接启动 main 方法 ,  然后就可以看到我们查询出来的结果了.</p>
+<p>如果你熟悉 SpringBoot 源码的话，就会晓得有一个自动装配的操作.</p>
+<p>如果不熟悉的话，那么就只能通过 @MapperScan(basePackages =  {“com.iyang.mybatis.springboot.hello.mapper”}) 去看 ,  这样有些是依赖自动装配（spring.factories） 中的配置加载的,  所以这里建议在看之前，如果是有一点 SpringBoot  扩展的知识了解是很好的。如果没有怎么办呢？没有就来看我接下来的内容。</p>
+<p>其实这个地方你仔细想下，在 MyBatis 与 Spring 整合的时候，通过 xml 的方式给 MyBatis 的bean 已经  mybatis-spring 中自己写的扫描类，最后将扫描出来的 bd 在还没初始化之前，将bd 的beanClass 替换为我们的代理类.</p>
+<p>那么，SpringBoot 与 MyBatis 整合的时候，最后要做的事情是不是也是将 MyBatis 的信息注入到 SpringBoot 来呢？只不过，SpringBoot 就不像 Spring 一样了，还将 bean 的信息配置到 xml 文件中.</p>
+<p>于是，接下来跟我的阅读&amp;分析来一步一步的往下看.</p>
+<h4 id="-1"><a href="#-1" class="headerlink" title=""></a></h4><h4 id="方法分析"><a href="#方法分析" class="headerlink" title="方法分析"></a>方法分析</h4><p>​     <strong>关注点一</strong> :   这里我们点入到    org.mybatis.spring.annotation.MapperScan 注解里面来，可以看到有一个   @Import(MapperScannerRegistrar.class) , 于是我们顺手跟进来 :   org.mybatis.spring.annotation.MapperScannerRegistrar ,  从名字上来，这个类就做了一个扫描mapper并且将mapper注入到Spring容器中来的事情.</p>
+<p>​    <strong>关注点二</strong> :   我们从引入进来的依赖来看,    mybatis-spring-boot-starter-2.1.2.jar  跟进到 这个包来，可以看到这个包也是引入一些进来.   mybatis/mybatis-spring/spring-boot-starter-jdbc  这三个依赖我们应该不是很陌生的，mybatis-spring-boot-autoconfigure主要来看这个。    spring.factories 的作用大家可以去了解下，SpringBoot很多 EnableAutoConfiguration  的配置都是放入在这个里面的，在启动的时候，会去一层一层的去读取 spring.factories 文件的内容。  这里我们主要来看 :   org.mybatis.spring.boot.autoconfigure.MybatisAutoConfiguration 这个类皆可.</p>
+<p>​     MyBatis 在 properties 中的配置文件读取 :  org.mybatis.spring.boot.autoconfigure.MybatisProperties</p>
+<p>可以看到该类上是有: @ConfigurationProperties(prefix = MybatisProperties.MYBATIS_PREFIX)</p>
+<p>于是我们一下子就多了二个关注点, 这里我们可以采用之前的  笨方法，  当你对整合流程执行不是很熟悉的话，可以在这二个关注点的重写方法上都打算断点，看下其执行顺序是怎么执行的.    弄清楚了执行流程,就可以跟着流程来一步一步的分析. 从我们打上 debug 开始，往下的执行流程就是一步一步来的，那么就跟着我们debug  的方法来一步一步的分析.</p>
+<p>org.mybatis.spring.annotation.MapperScannerRegistrar#registerBeanDefinitions() —&gt;     org.mybatis.spring.boot.autoconfigure.MybatisAutoConfiguration#MybatisAutoConfiguration  —&gt;  org.mybatis.spring.boot.autoconfigure.MybatisAutoConfiguration#afterPropertiesSet  —-&gt;    org.mybatis.spring.boot.autoconfigure.MybatisAutoConfiguration#sqlSessionFactory  —&gt;   org.mybatis.spring.boot.autoconfigure.MybatisAutoConfiguration#sqlSessionTemplate() —-&gt;</p>
+<p><strong>org.mybatis.spring.annotation.MapperScannerRegistrar#registerBeanDefinitions() 方法</strong> :</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * &#123;@inheritDoc&#125;</span><br><span class="line"> *&#x2F;</span><br><span class="line">@Override</span><br><span class="line">public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) &#123;</span><br><span class="line">&#x2F;***</span><br><span class="line">*  这里是获取出了注解里面属性的值. </span><br><span class="line">*&#x2F;   </span><br><span class="line">  AnnotationAttributes mapperScanAttrs &#x3D; </span><br><span class="line">  AnnotationAttributes.fromMap(importingClassMetadata.getAnnotationAttributes(MapperScan.class.getName()));</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 能获取到有注解,不是null,就会走到下面的代码中来.    </span><br><span class="line">  if (mapperScanAttrs !&#x3D; null) &#123;</span><br><span class="line">    registerBeanDefinitions(importingClassMetadata, mapperScanAttrs, registry,</span><br><span class="line">        generateBaseBeanName(importingClassMetadata, 0));</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* </span><br><span class="line">*&#x2F;</span><br><span class="line">  void registerBeanDefinitions(AnnotationMetadata annoMeta, AnnotationAttributes annoAttrs,</span><br><span class="line">      BeanDefinitionRegistry registry, String beanName) &#123;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 利用 BeanDefinitionBuilder 构造者,传入了一个 MapperScannerConfigurer.class</span><br><span class="line">&#x2F;&#x2F; 这里的 builder里面是有一个 bd 的,里面的beanClass就是 MapperScannerConfigurer      </span><br><span class="line">    BeanDefinitionBuilder builder &#x3D; BeanDefinitionBuilder.genericBeanDefinition(MapperScannerConfigurer.class);</span><br><span class="line">    builder.addPropertyValue(&quot;processPropertyPlaceHolders&quot;, true);</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 这里获取 @MapperScan 注解的属性, 如果属性是有值的话,就会设置到 builder 中来. </span><br><span class="line">    Class&lt;? extends Annotation&gt; annotationClass &#x3D; annoAttrs.getClass(&quot;annotationClass&quot;);</span><br><span class="line">    if (!Annotation.class.equals(annotationClass)) &#123;</span><br><span class="line">      builder.addPropertyValue(&quot;annotationClass&quot;, annotationClass);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    Class&lt;?&gt; markerInterface &#x3D; annoAttrs.getClass(&quot;markerInterface&quot;);</span><br><span class="line">    if (!Class.class.equals(markerInterface)) &#123;</span><br><span class="line">      builder.addPropertyValue(&quot;markerInterface&quot;, markerInterface);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    Class&lt;? extends BeanNameGenerator&gt; generatorClass &#x3D; annoAttrs.getClass(&quot;nameGenerator&quot;);</span><br><span class="line">    if (!BeanNameGenerator.class.equals(generatorClass)) &#123;</span><br><span class="line">      builder.addPropertyValue(&quot;nameGenerator&quot;, BeanUtils.instantiateClass(generatorClass));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    Class&lt;? extends MapperFactoryBean&gt; mapperFactoryBeanClass &#x3D; annoAttrs.getClass(&quot;factoryBean&quot;);</span><br><span class="line">    if (!MapperFactoryBean.class.equals(mapperFactoryBeanClass)) &#123;</span><br><span class="line">      builder.addPropertyValue(&quot;mapperFactoryBeanClass&quot;, mapperFactoryBeanClass);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    String sqlSessionTemplateRef &#x3D; annoAttrs.getString(&quot;sqlSessionTemplateRef&quot;);</span><br><span class="line">    if (StringUtils.hasText(sqlSessionTemplateRef)) &#123;</span><br><span class="line">      builder.addPropertyValue(&quot;sqlSessionTemplateBeanName&quot;, annoAttrs.getString(&quot;sqlSessionTemplateRef&quot;));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    String sqlSessionFactoryRef &#x3D; annoAttrs.getString(&quot;sqlSessionFactoryRef&quot;);</span><br><span class="line">    if (StringUtils.hasText(sqlSessionFactoryRef)) &#123;</span><br><span class="line">      builder.addPropertyValue(&quot;sqlSessionFactoryBeanName&quot;, annoAttrs.getString(&quot;sqlSessionFactoryRef&quot;));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 下面是根据 value&#x2F;basePackages&#x2F;basePackageClasses 来获取包的信息,</span><br><span class="line">&#x2F;&#x2F; 这里也就说, 我们可以跟着这三个属性来配置包信息.      </span><br><span class="line">    List&lt;String&gt; basePackages &#x3D; new ArrayList&lt;&gt;();</span><br><span class="line">    basePackages.addAll(</span><br><span class="line">        Arrays.stream(annoAttrs.getStringArray(&quot;value&quot;)).filter(StringUtils::hasText).collect(Collectors.toList()));</span><br><span class="line"></span><br><span class="line">    basePackages.addAll(Arrays.stream(annoAttrs.getStringArray(&quot;basePackages&quot;)).filter(StringUtils::hasText)</span><br><span class="line">        .collect(Collectors.toList()));</span><br><span class="line"></span><br><span class="line">    basePackages.addAll(Arrays.stream(annoAttrs.getClassArray(&quot;basePackageClasses&quot;)).map(ClassUtils::getPackageName)</span><br><span class="line">        .collect(Collectors.toList()));</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 如果没有获取到包的信息,那就根据注解所在的路径来获取默认的路径.      </span><br><span class="line">    if (basePackages.isEmpty()) &#123;</span><br><span class="line">      basePackages.add(getDefaultBasePackage(annoMeta));</span><br><span class="line">    &#125;</span><br><span class="line">&#x2F;&#x2F; 如果有lazyInitialization属性的值,就设置到 builder 中来. </span><br><span class="line">    String lazyInitialization &#x3D; annoAttrs.getString(&quot;lazyInitialization&quot;);</span><br><span class="line">    if (StringUtils.hasText(lazyInitialization)) &#123;</span><br><span class="line">      builder.addPropertyValue(&quot;lazyInitialization&quot;, lazyInitialization);</span><br><span class="line">    &#125;</span><br><span class="line">&#x2F;&#x2F; 添加包的属性</span><br><span class="line">    builder.addPropertyValue(&quot;basePackage&quot;, StringUtils.collectionToCommaDelimitedString(basePackages));</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;  getBeanDefinition() 在返回 bd 之前，会走一个 validate 方法.</span><br><span class="line">&#x2F;&#x2F; org.springframework.beans.factory.support.DefaultListableBeanFactory#registerBeanDefinition</span><br><span class="line">&#x2F;&#x2F; 走这个方法来将 bd 给注入到 Spring 容器中来.</span><br><span class="line">&#x2F;&#x2F; 这里注入进去的 beanName 的值是 :  com.iyang.mybatis.springboot.hello.MybatisSpringBootHelloApplication#MapperScannerRegistrar#0</span><br><span class="line">&#x2F;&#x2F; 注入进去的 bd 的 beanClass : class org.mybatis.spring.mapper.MapperScannerConfigurer </span><br><span class="line">    registry.registerBeanDefinition(beanName, builder.getBeanDefinition());</span><br><span class="line"></span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>这里可以总结下 registerBeanDefinitions 方法，该方法就是将 @MapperScan  的注解属性的值给到  : BeanDefinitionBuilder builder, 该builder  里面有bd,bd的beanClass是MapperScannerConfigurer，最后将MapperScannerConfigurer注入到 Spring 容器中来.</strong></p>
+<hr>
+<p><strong>MyBatisAutoConfiguration()  有参构造函数</strong></p>
+<p>这里我们在 MybatisAutoConfiguration 构造函数上打上断点, 可以根据 断点来分析，走完👆面的方法，然后我们点击走到下一个断点来，就会走到 这个 有参构造函数.</p>
+<p>如果好奇的话，可以跟踪debug 的堆栈信息，是怎么走到这步来的. 走到这个方法来 : finishBeanFactoryInitialization(beanFactory) 这是最初的入口.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">public MybatisAutoConfiguration(MybatisProperties properties, ObjectProvider&lt;Interceptor[]&gt; interceptorsProvider,</span><br><span class="line">    ObjectProvider&lt;TypeHandler[]&gt; typeHandlersProvider, ObjectProvider&lt;LanguageDriver[]&gt; languageDriversProvider,</span><br><span class="line">    ResourceLoader resourceLoader, ObjectProvider&lt;DatabaseIdProvider&gt; databaseIdProvider,</span><br><span class="line">    ObjectProvider&lt;List&lt;ConfigurationCustomizer&gt;&gt; configurationCustomizersProvider) &#123;</span><br><span class="line">&#x2F;&#x2F; 这里都是赋值    </span><br><span class="line">  this.properties &#x3D; properties;</span><br><span class="line">  this.interceptors &#x3D; interceptorsProvider.getIfAvailable();</span><br><span class="line">  this.typeHandlers &#x3D; typeHandlersProvider.getIfAvailable();</span><br><span class="line">  this.languageDrivers &#x3D; languageDriversProvider.getIfAvailable();</span><br><span class="line">  this.resourceLoader &#x3D; resourceLoader;</span><br><span class="line">  this.databaseIdProvider &#x3D; databaseIdProvider.getIfAvailable();</span><br><span class="line">  this.configurationCustomizers &#x3D; configurationCustomizersProvider.getIfAvailable();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>org.mybatis.spring.boot.autoconfigure.MybatisAutoConfiguration#afterPropertiesSet()方法</strong></p>
+<p>这里可以看到是对配置文件是否存在进行检验.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line">public void afterPropertiesSet() &#123;</span><br><span class="line">  checkConfigFileExists();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 检验配置文件是否存在</span><br><span class="line">  private void checkConfigFileExists() &#123;</span><br><span class="line">    if (this.properties.isCheckConfigLocation() &amp;&amp; StringUtils.hasText(this.properties.getConfigLocation())) &#123;</span><br><span class="line">      Resource resource &#x3D; this.resourceLoader.getResource(this.properties.getConfigLocation());</span><br><span class="line">      Assert.state(resource.exists(),</span><br><span class="line">          &quot;Cannot find config location: &quot; + resource + &quot; (please add config file or check your Mybatis configuration)&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>org.mybatis.spring.boot.autoconfigure.MybatisAutoConfiguration#sqlSessionFactory 方法</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 这里说下 @ConditionalOnMissingBean 的作用,当bean不存在的时候，则实例化这个bean.</span><br><span class="line">&#x2F;&#x2F; 这里会传入 dataSource 进来.</span><br><span class="line">@Bean</span><br><span class="line">@ConditionalOnMissingBean</span><br><span class="line">public SqlSessionFactory sqlSessionFactory(DataSource dataSource) throws Exception &#123;</span><br><span class="line">&#x2F;&#x2F; 创建 sqlSessionBean 对象.    </span><br><span class="line">  SqlSessionFactoryBean factory &#x3D; new SqlSessionFactoryBean();</span><br><span class="line">&#x2F;&#x2F; 设置 dataSource &amp; SpringBootVFS.class      </span><br><span class="line">  factory.setDataSource(dataSource);</span><br><span class="line">  factory.setVfs(SpringBootVFS.class);</span><br><span class="line">&#x2F;&#x2F; 获取到 MyBatis 的配置文件属性,如果有的话,就会设置到 configLocation属性来.    </span><br><span class="line">  if (StringUtils.hasText(this.properties.getConfigLocation())) &#123;</span><br><span class="line">    factory.setConfigLocation(this.resourceLoader.getResource(this.properties.getConfigLocation()));</span><br><span class="line">  &#125;</span><br><span class="line">    </span><br><span class="line">&#x2F;&#x2F; 这里从 properties 中获取 configuration,没有值就会是null.    </span><br><span class="line">  applyConfiguration(factory);</span><br><span class="line">  if (this.properties.getConfigurationProperties() !&#x3D; null) &#123;</span><br><span class="line">    factory.setConfigurationProperties(this.properties.getConfigurationProperties());</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 如果有插件,就会设置插件.    </span><br><span class="line">  if (!ObjectUtils.isEmpty(this.interceptors)) &#123;</span><br><span class="line">    factory.setPlugins(this.interceptors);</span><br><span class="line">  &#125;</span><br><span class="line">  if (this.databaseIdProvider !&#x3D; null) &#123;</span><br><span class="line">    factory.setDatabaseIdProvider(this.databaseIdProvider);</span><br><span class="line">  &#125;</span><br><span class="line">&#x2F;&#x2F; 包的名别设置    </span><br><span class="line">  if (StringUtils.hasLength(this.properties.getTypeAliasesPackage())) &#123;</span><br><span class="line">    factory.setTypeAliasesPackage(this.properties.getTypeAliasesPackage());</span><br><span class="line">  &#125;</span><br><span class="line">  if (this.properties.getTypeAliasesSuperType() !&#x3D; null) &#123;</span><br><span class="line">    factory.setTypeAliasesSuperType(this.properties.getTypeAliasesSuperType());</span><br><span class="line">  &#125;</span><br><span class="line">  if (StringUtils.hasLength(this.properties.getTypeHandlersPackage())) &#123;</span><br><span class="line">    factory.setTypeHandlersPackage(this.properties.getTypeHandlersPackage());</span><br><span class="line">  &#125;</span><br><span class="line">  if (!ObjectUtils.isEmpty(this.typeHandlers)) &#123;</span><br><span class="line">    factory.setTypeHandlers(this.typeHandlers);</span><br><span class="line">  &#125;</span><br><span class="line">  if (!ObjectUtils.isEmpty(this.properties.resolveMapperLocations())) &#123;</span><br><span class="line">    factory.setMapperLocations(this.properties.resolveMapperLocations());</span><br><span class="line">  &#125;</span><br><span class="line">&#x2F;&#x2F; 这里都是配置属性的设置.    </span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 获取 propert 字段属性的名字.    </span><br><span class="line">  Set&lt;String&gt; factoryPropertyNames &#x3D; Stream</span><br><span class="line">      .of(new BeanWrapperImpl(SqlSessionFactoryBean.class).getPropertyDescriptors()).map(PropertyDescriptor::getName)</span><br><span class="line">      .collect(Collectors.toSet());</span><br><span class="line">  Class&lt;? extends LanguageDriver&gt; defaultLanguageDriver &#x3D; this.properties.getDefaultScriptingLanguageDriver();</span><br><span class="line">  if (factoryPropertyNames.contains(&quot;scriptingLanguageDrivers&quot;) &amp;&amp; !ObjectUtils.isEmpty(this.languageDrivers)) &#123;</span><br><span class="line">    &#x2F;&#x2F; Need to mybatis-spring 2.0.2+</span><br><span class="line">    factory.setScriptingLanguageDrivers(this.languageDrivers);</span><br><span class="line">    if (defaultLanguageDriver &#x3D;&#x3D; null &amp;&amp; this.languageDrivers.length &#x3D;&#x3D; 1) &#123;</span><br><span class="line">      defaultLanguageDriver &#x3D; this.languageDrivers[0].getClass();</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#x2F;&#x2F; 设置默认的脚本语言解析器. 这里没有,设置的是默认的null.    </span><br><span class="line">  if (factoryPropertyNames.contains(&quot;defaultScriptingLanguageDriver&quot;)) &#123;</span><br><span class="line">    &#x2F;&#x2F; Need to mybatis-spring 2.0.2+</span><br><span class="line">    factory.setDefaultScriptingLanguageDriver(defaultLanguageDriver);</span><br><span class="line">  &#125;</span><br><span class="line">&#x2F;&#x2F; org.mybatis.spring.SqlSessionFactoryBean#getObject,这里走到了 SqlSessionBean.</span><br><span class="line">&#x2F;&#x2F; 这个SqlSessionFactoryBean是在有之前 mybatis和Spring 整合分析有提过到的,可以参考getObject方法: https:&#x2F;&#x2F;github.com&#x2F;baoyang23&#x2F;mybtatis-analysis&#x2F;tree&#x2F;master&#x2F;mybatis-spring-hello    </span><br><span class="line">&#x2F;&#x2F; 这里会走 org.mybatis.spring.SqlSessionFactoryBean#getObject 的 afterPropertiesSet 方法来创建一个 SqlSessionFactory , 这里返回的 SqlSessionFactory 就注入到 Spring 容器中来.    </span><br><span class="line">  return factory.getObject();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>所以这个方法 ： 先是new了一个SqlSessionFactoryBean对象，如果你仔细看的话，你会发现这个对象在之前 mybatis-spring 整合的时候，我们通过 xml 配置文件配置进来的，并且同时通过标签给赋值了datasource等信息，  而这里是通过代码，if等判断，来对 SqlSessionFactoryBean 的属性进行set值的. 最后也是创建出一个  SqlSessionFactory 给注入到 Spring 容器中来.</strong></p>
+<hr>
+<p><strong>org.mybatis.spring.boot.autoconfigure.MybatisAutoConfiguration#sqlSessionTemplate 方法</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">@Bean</span><br><span class="line">@ConditionalOnMissingBean</span><br><span class="line">public SqlSessionTemplate sqlSessionTemplate(SqlSessionFactory sqlSessionFactory) &#123;</span><br><span class="line">&#x2F;&#x2F; 这里根据 executorType 是否有值来判断要走的构造函数方法.    </span><br><span class="line">  ExecutorType executorType &#x3D; this.properties.getExecutorType();</span><br><span class="line">  if (executorType !&#x3D; null) &#123;</span><br><span class="line">    return new SqlSessionTemplate(sqlSessionFactory, executorType);</span><br><span class="line">  &#125; else &#123;</span><br><span class="line">&#x2F;&#x2F; 这里默认的获取是 SIMPLE 这个 ExecutorType.      </span><br><span class="line">    return new SqlSessionTemplate(sqlSessionFactory);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; org.mybatis.spring.SqlSessionTemplate#SqlSessionTemplate(org.apache.ibatis.session.SqlSessionFactory, org.apache.ibatis.session.ExecutorType, org.springframework.dao.support.PersistenceExceptionTranslator),最后可以跟进到这个方法中来.</span><br><span class="line"></span><br><span class="line">  public SqlSessionTemplate(SqlSessionFactory sqlSessionFactory, ExecutorType executorType,</span><br><span class="line">      PersistenceExceptionTranslator exceptionTranslator) &#123;</span><br><span class="line">&#x2F;&#x2F; 对sqlSessionFactory 和 executorType 进行校验</span><br><span class="line">    notNull(sqlSessionFactory, &quot;Property &#39;sqlSessionFactory&#39; is required&quot;);</span><br><span class="line">    notNull(executorType, &quot;Property &#39;executorType&#39; is required&quot;);</span><br><span class="line"></span><br><span class="line">    this.sqlSessionFactory &#x3D; sqlSessionFactory;</span><br><span class="line">    this.executorType &#x3D; executorType;</span><br><span class="line">    this.exceptionTranslator &#x3D; exceptionTranslator;</span><br><span class="line">&#x2F;&#x2F; 这里通过 JDK 的代码来生成了一个 sqlSessionProxy 代理的对象.      </span><br><span class="line">    this.sqlSessionProxy &#x3D; (SqlSession) newProxyInstance(SqlSessionFactory.class.getClassLoader(),</span><br><span class="line">        new Class[] &#123; SqlSession.class &#125;, new SqlSessionInterceptor());</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<p>该方法是将 SqlSessionTemplate 给注入到 Spring 容器中啦.</p>
+<h4 id="-2"><a href="#-2" class="headerlink" title=""></a></h4><h4 id="疑惑点"><a href="#疑惑点" class="headerlink" title="疑惑点"></a>疑惑点</h4><p>​     大家有没有疑惑我们定义的 mapper 接口 好像从这个流程分析下来，并没有提到 ，那么是在上面时候被注入到 Spring 容器中来的呢？</p>
+<p>​     registerBeanDefinitions()  这个方法 , 注入了MapperScannerConfigurer 到  Spring 容器中来了，可以回顾下之前 mybatis 整合 Spring 的时候，我们是通过 xml 配置了这个对象注入到 spring  容器中来的。 那么注入进来的,回调到  org.mybatis.spring.mapper.MapperScannerConfigurer#postProcessBeanDefinitionRegistry 这个方法的时候，就会将扫描并且将我们的mapper接口文件，给注入到 Spring 容器中来的.  然后扫描的包，是根据@MapperScan 解析注解的时候，是有对扫描的包进行解析的.</p>
+<h4 id="-3"><a href="#-3" class="headerlink" title=""></a></h4><h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>​      其实 SpringBoot 整合 MyBatis , 我们从二个切入点来分析是怎么整合进来的.<br> ​      一是 @MapperScan 注解中的 @Import(MapperScannerRegistrar.class) 将  MapperScannerRegistrar 给导入到 Spring 容器中来, 然后MapperSacnnerRegistrar 来讲  org.mybatis.spring.mapper.MapperScannerConfigurer 给注入到 Spring中来，替换了我们之前用 Spring 整合 Mybatis 的时候，通过xml配置文件整合进来.</p>
+<p>​     二是利用 SpringBoot 提供的 spring-boot-autoconfigure +  spring.factories() 来 配置自动注入, 这里注入了 MybatisAutoConfiguration 配置类. 然后注入进来的 MyBatis 配置类做了什么事情呢？  可以看到这个类中是有做:   注入了 SqlSessionFactory.  SqlSessionFactory 又是怎么注入进来的呢？ 可以看到  org.mybatis.spring.boot.autoconfigure.MybatisAutoConfiguration#sqlSessionFactory 方法是有先创建一个 org.mybatis.spring.SqlSessionFactoryBean 的， 看到  SqlSessionFactoryBean 这个对象，我们就不难想起 Spring + Mybatis 里面的 beans.xml  是将该对象注入到 Spring 容器中来. 这里是直接new的，然后将一些配置属性并满足条件,给set到  SqlSessionFactoryBean  中来，最后调用   org.mybatis.spring.SqlSessionFactoryBean#getObject 方法来获取  SqlSessionFactory.</p>
+<p>spring.factories 文件内容</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># Auto Configure</span><br><span class="line">org.springframework.boot.autoconfigure.EnableAutoConfiguration&#x3D;\</span><br><span class="line">org.mybatis.spring.boot.autoconfigure.MybatisLanguageDriverAutoConfiguration,\</span><br><span class="line">org.mybatis.spring.boot.autoconfigure.MybatisAutoConfiguration</span><br></pre></td></tr></table></figure>
+
+
+
+<p>最后从写的案例里面看, MyBatis 整合 SpringBoot 其实都是在 mybatis —&gt; MyBatis + Spring  等一步一步推导上来的，所以这里不难理解，好的技术都是在有需要和时间的沉淀下一步一步成长起来的.</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    YangL
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://www.lwfby.cn/2020/12/27/mybatis/mybatis-springboot/" title="mybatis-springboot">http://www.lwfby.cn/2020/12/27/mybatis/mybatis-springboot/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/MyBatis/" rel="tag"><i class="fa fa-tag"></i> MyBatis</a>
+          
+            <a href="/tags/Java%E6%BA%90%E7%A0%81/" rel="tag"><i class="fa fa-tag"></i> Java源码</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/12/27/mybatis/mybatis-spring/" rel="next" title="mybatis-spring">
+                <i class="fa fa-chevron-left"></i> mybatis-spring
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+<span class="jiathis_txt">分享到：</span>
+<a class="jiathis_button_fav">收藏夹</a>
+<a class="jiathis_button_copy">复制网址</a>
+<a class="jiathis_button_email">邮件</a>
+<a class="jiathis_button_weixin">微信</a>
+<a class="jiathis_button_qzone">QQ空间</a>
+<a class="jiathis_button_tqq">腾讯微博</a>
+<a class="jiathis_button_douban">豆瓣</a>
+<a class="jiathis_button_share">一键分享</a>
+
+<a href="http://www.jiathis.com/share?uid=2140465" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" >
+var jiathis_config={
+  data_track_clickback:true,
+  summary:"",
+  shortUrl:false,
+  hideMore:false
+}
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/timg.jpg"
+                alt="YangL" />
+            
+              <p class="site-author-name" itemprop="name">YangL</p>
+              <p class="site-description motion-element" itemprop="description">I kown today that i am i</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">27</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">21</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/baoyang23" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="1411091515@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#前提"><span class="nav-number">1.</span> <span class="nav-text">前提</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#"><span class="nav-number">2.</span> <span class="nav-text"></span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#入门"><span class="nav-number">3.</span> <span class="nav-text">入门</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#-1"><span class="nav-number">4.</span> <span class="nav-text"></span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#方法分析"><span class="nav-number">5.</span> <span class="nav-text">方法分析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#-2"><span class="nav-number">6.</span> <span class="nav-text"></span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#疑惑点"><span class="nav-number">7.</span> <span class="nav-text">疑惑点</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#-3"><span class="nav-number">8.</span> <span class="nav-text"></span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#总结"><span class="nav-number">9.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2019 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">YangL</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">64.1k</span>
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+<div class="powered-by">
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <i class="fa fa-user-md"></i>
+    <span id="busuanzi_container_site_uv">
+        本站访客数:<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span id="busuanzi_container_site_pv">
+        本站访问量<span id="busuanzi_value_site_pv"></span>
+    </span>
+</div>
+
+<script>
+      var now = new Date(); 
+      function createtime() { 
+          var grt= new Date("03/12/2019 12:00:00");//此处修改你的建站时间或者网站上线时间 
+          now.setTime(now.getTime()+250); 
+          days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days); 
+          hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours); 
+          if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum); 
+          mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;} 
+          seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum); 
+          snum = Math.round(seconds); if(String(snum).length ==1 ){snum = "0" + snum;} 
+          document.getElementById("timeDate").innerHTML = "本站已安全运行 "+dnum+" 天 "; 
+          document.getElementById("times").innerHTML = hnum + " 小时 " + mnum + " 分 " + snum + " 秒"; 
+      } 
+  setInterval("createtime()",250);
+  </script>
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'manual') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/shizuku.model.json"},"display":{"position":"right","width":70,"height":120},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
